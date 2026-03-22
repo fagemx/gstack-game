@@ -1,12 +1,24 @@
 ---
 name: game-review
-description: "Interactive game design document review. Evaluates core loop, progression, retention, economy, and player motivation through structured AskUserQuestion flow."
+description: |
+  Trigger: User wants a structured review of a Game Design Document (GDD).
+  Use when: "review my GDD", "game review", "check my game design", "how's my GDD", "/game-review", or user has a docs/gdd.md and asks for design feedback.
+  Do NOT use when: User wants code review (use /review), balance-specific analysis (use /balance-review), or brainstorming from scratch (use /game-ideation).
 user_invocable: true
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun scripts/gen-skill-docs.ts -->
 
 {{PREAMBLE}}
+
+## Load References
+
+```bash
+echo "=== Loading game-review reference files ==="
+ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
+```
+
+**Read ALL `references/` files NOW before any user interaction.** They contain rubrics, frameworks, forcing questions, and protocols. Zero interruption — load everything upfront.
 
 ## Artifact Discovery
 
@@ -26,96 +38,33 @@ echo "---"
 [ -z "$GDD" ] && echo "No GDD found"
 ```
 
-If no GDD found, offer `/game-import` first (to convert an external document), or `/game-ideation` (to brainstorm from scratch).
-
-If a prior game review exists, read it. Note previous score and findings — check if flagged issues have been addressed since last review.
-
----
+If no GDD found, offer `/game-import` or `/game-ideation`. If prior review exists, read it and note previous score/findings.
 
 # /game-review: Game Design Document Review
 
-Review a game design document interactively. Work through each section one issue at a time via AskUserQuestion. Every recommendation includes WHY and a concrete alternative. No vague praise — specific critique with actionable fixes.
-
-## Anti-Sycophancy Protocol
-
-**FORBIDDEN PHRASES — never use these or any paraphrase:**
-- "This mechanic is really fun!"
-- "Players will love this"
-- "The art style is unique"
-- "This will go viral"
-- "Great design choice"
-- "This is a solid foundation"
-- "Interesting approach"
-
-**CALIBRATED ACKNOWLEDGMENT — use this instead:**
-- Name the specific design decision and WHY it works mechanically: "The cooldown reset on kill creates a snowball dynamic that rewards aggressive play — this matches the stated 'high-risk high-reward' pillar."
-- If something is genuinely well-designed, describe the mechanical reason it works, never just say it's "good" or "interesting."
-
-**PUSH-BACK CADENCE:**
-1. Push once: State the concern directly.
-2. Push again: If the designer's response is vague ("we'll tune it later"), ask for the specific tuning plan, target values, and validation method.
-3. Escalate: If still vague after two pushes, flag as ESCALATE — "This needs a concrete plan before the GDD can be considered complete."
-
----
+Interactive GDD review via AskUserQuestion. Every recommendation includes WHY + concrete alternative. No vague praise. Apply `references/gotchas.md` for the entire review.
 
 ## Phase 0: Read & Orient
 
-Read the GDD. Then extract the 5 context anchors. Present what you found (and what's missing) via AskUserQuestion:
+Read the GDD. Extract the 5 context anchors (Genre & Platform, Target Session Length, Monetization Model, Target Audience, Design Pillars). Present via AskUserQuestion as a table with ✅/❌ status and what was found. For ❌ items, provide best-guess with [inferred] tag. Ask: A) Correct — proceed, B) Fix these.
 
-> **[Re-ground]** Reviewing `[GDD name]` for `[game title]` on `[branch]`.
->
-> Here's what I found in your GDD:
->
-> | Context Anchor | Status | What I Found |
-> |---|---|---|
-> | Genre & Platform | ✅/❌ | {found or "not stated"} |
-> | Target Session Length | ✅/❌ | {found or "not stated"} |
-> | Monetization Model | ✅/❌ | {found or "not stated"} |
-> | Target Audience | ✅/❌ | {found or "not stated"} |
-> | Design Pillars | ✅/❌ | {found or "not stated — I need these to validate design coherence"} |
->
-> {For each ❌, provide a best-guess with [inferred] tag if possible.}
->
-> **Are these correct?** Any I should update before we start the review?
-> A) Correct — proceed to mode selection
-> B) Fix these: {user corrects}
-
-**STOP.** Wait for confirmation. If any anchor is missing and can't be inferred, ask ONE question per missing anchor. Do NOT batch.
-
-Example for missing platform:
-> Your GDD doesn't specify the target platform. This matters because it changes which sections I prioritize.
->
-> A) **Mobile** — I'll weight retention and economy heavily
-> B) **PC / Console** — I'll weight core loop depth and narrative
-> C) **Web** — I'll weight accessibility and session flexibility
-> D) **Multiple / undecided** — I'll use balanced weights
->
-> RECOMMENDATION: Choose based on where your FIRST players will be. You can add platforms later.
-> Player Impact: 8/10 — platform shapes every other design decision.
-
-**STOP.** Wait for answer. Repeat for each missing anchor ONE AT A TIME.
+**STOP.** Wait for confirmation. For each missing anchor that can't be inferred, ask ONE question with A/B/C/D choices, a RECOMMENDATION, and Player Impact rating. **STOP** after each. Do NOT batch.
 
 ### Mode Selection
 
 After ALL anchors are established, ask the user to select a review mode:
 
-**AskUserQuestion:**
+**AskUserQuestion:** Present 5 modes with RECOMMENDATION based on confirmed anchors:
 
-> Now I know the context. Let me calibrate the review.
->
-> Different games have different priorities — a mobile gacha lives or dies on its economy; a narrative PC game lives or dies on pacing. Choose the mode so I focus on what matters most for YOUR game.
->
-> RECOMMENDATION: {Choose based on the platform/genre anchors just confirmed. State why.}
->
-> - **A) Mobile / Casual** — Heavy weight on retention hooks (D1/D7/D30), economy balance, session fit, monetization ethics. Core loop must complete in <2 min. Player Impact: 9/10 if F2P.
-> - **B) PC / Console** — Heavy weight on core loop depth, mastery curve, narrative integration, session arc. Economy secondary unless live-service. Player Impact: 9/10 if premium.
-> - **C) Multiplayer / Competitive** — Heavy weight on balance fairness, matchmaking, counterplay, anti-cheat surface. Economy evaluated for P2W risk. Player Impact: 9/10 if PvP-centric.
-> - **D) Narrative** — Heavy weight on pacing, branching, emotional arc, ludonarrative consonance. Economy and retention secondary. Player Impact: 9/10 if story-driven.
-> - **E) Tabletop / Physical** — Heavy weight on rules clarity, component ergonomics, session length, player count scaling. No digital economy. Player Impact: 9/10 if physical game.
+> - **A) Mobile / Casual** — retention, economy, session fit, monetization ethics
+> - **B) PC / Console** — core loop depth, mastery curve, narrative, session arc
+> - **C) Multiplayer / Competitive** — balance, matchmaking, counterplay, P2W risk
+> - **D) Narrative** — pacing, branching, emotional arc, ludonarrative consonance
+> - **E) Tabletop / Physical** — rules clarity, component ergonomics, player count scaling
 
 **STOP.** Wait for mode selection before starting any section review.
 
-### Mode Weight Adjustments
+### Mode Weight Table
 
 | Section | A: Mobile | B: PC/Console | C: Multiplayer | D: Narrative | E: Tabletop |
 |---------|-----------|---------------|----------------|--------------|-------------|
@@ -130,515 +79,101 @@ After ALL anchors are established, ask the user to select a review mode:
 
 ## Review Pacing
 
-**After completing EACH section**, present the section score and ask before continuing:
-
-> **Section {N} — {name}: {score}/10**
-> {1-sentence summary of the biggest finding}
->
-> A) **Continue to Section {N+1}** — {next section name}
-> B) **Go back** — I want to address an issue from this section first
-> C) **Fast-forward** — skip to the score summary (I've seen enough)
-> D) **Stop here** — save progress, I'll come back later
-
-**STOP.** Wait for answer.
-
-If user chooses C (fast-forward): Complete remaining sections with AUTO-only analysis (flag issues but don't ask), then present the full score summary. Mark review as `DONE_WITH_CONCERNS — fast-forwarded from Section {N}`.
-
-If user chooses D (stop): Present partial score, list what hasn't been reviewed, and note which sections to pick up next time.
-
-### Forcing Question Smart Routing
-
-Each section says "must ask at least 2" forcing questions. But don't always ask the same ones. Route based on the GDD's state:
-
-| GDD State | Focus Forcing Questions On |
-|-----------|---------------------------|
-| GDD is early (many ⚠️/❌ from import) | Foundational questions — "Can you describe the core loop?" "Who comes back tomorrow?" |
-| GDD is detailed but untested | Validation questions — "Have you watched someone play?" "What breaks at 2x scale?" |
-| GDD is post-playtest revision | Depth questions — "What did playtesters do that surprised you?" "What did you change since last review?" |
-
-Determine state from `docs/gdd.md`'s GDD Status section (written by `/game-import`) or by reading the GDD's depth.
+**After EACH section**, present: `Section {N} — {name}: {score}/10` + 1-sentence biggest finding. Offer: A) Continue to next, B) Go back, C) Fast-forward (AUTO-only remaining → `DONE_WITH_CONCERNS`), D) Stop here (partial score + pickup list). **STOP.** Wait for answer.
 
 ---
 
 ## Section 1: Core Loop (核心循環)
 
-### Nested Loop Model
+Evaluate the nested loop model (micro/meso/macro/meta), MDA framework alignment, and core loop clarity/depth/uniqueness. Apply `references/core-loop.md` for the full evaluation framework, forcing questions, and action classification.
 
-Evaluate the GDD for explicit definition of ALL four loop tiers:
+**Score using the Section 1 rubric from `references/scoring.md`. Section 1 Score: ___/10**
 
-| Loop Tier | Timescale | What It Delivers | Example (Hades) |
-|-----------|-----------|------------------|-----------------|
-| **Micro-loop** | 10-30 seconds | Single satisfying action cycle | Attack → dodge → special → pick up reward |
-| **Meso-loop** | 5-15 minutes | Goal-reward cycle within a session | Clear a room sequence → choose boon → advance |
-| **Macro-loop** | Full session | Complete session arc with closure | Full run attempt → death → mirror upgrades |
-| **Meta-loop** | Days/weeks | Long-term progression and mastery | Unlock weapons → deepen NPC relationships → reveal story |
-
-### MDA Framework Check
-
-Design must flow BACKWARD from Aesthetics:
-1. What should the player FEEL? (target Aesthetics from the 8 MDA categories: Sensation, Fantasy, Narrative, Challenge, Fellowship, Discovery, Expression, Submission)
-2. What player BEHAVIORS produce that feeling? (Dynamics)
-3. What RULES generate those behaviors? (Mechanics)
-
-**If the GDD starts with mechanics and never states target feelings: -3 points.** This is designing forward (mechanic-first) instead of backward (experience-first).
-
-### Evaluation Criteria
-
-| Criterion | Points | Deduction Rules |
-|-----------|--------|-----------------|
-| **Clarity** | 0-2 | Can describe core loop in one sentence using "verb → feedback → reward → repeat" format. 2 = crystal clear, 1 = understandable but wordy, 0 = unclear or missing |
-| **Session Fit** | 0-2 | Loop completion fits target session length. 2 = natural stopping point within target, 1 = roughly fits but has dead time or overruns, 0 = mismatch (e.g., 20-min loop for a 2-min mobile session) |
-| **Depth** | 0-2 | Mastery comes from doing the loop BETTER, not just more. 2 = clear skill ceiling with discoverable techniques, 1 = some depth but mostly linear, 0 = flat repetition with no skill expression |
-| **Fail State** | 0-2 | Failure is interesting, not just punishing. 2 = failure teaches something and creates interesting decisions, 1 = failure is tolerable but generic (respawn, retry), 0 = no fail state described OR failure is purely punitive |
-| **Uniqueness** | 0-2 | The "It's the game where you..." test. 2 = describable unique verb/mechanic a player would tell a friend, 1 = recognizable genre execution with a twist, 0 = generic description indistinguishable from competitors |
-
-**Section 1 Score: ___/10**
-
-### Forcing Questions
-
-Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route based on GDD state:
-
-**If GDD is early / core loop unclear — ask Q1 first:**
-
-**Q1:** "Describe the core loop in exactly one sentence using the format: **verb → feedback → reward → repeat.**"
-
-Push until you hear: A single sentence with a clear verb. Not a paragraph. Not a feature list.
-Red flags: "It depends on the mode." "There are multiple loops." — Push: "Which one is the PRIMARY 30-second loop a player does 100 times per session?"
-
-**STOP.** Wait for answer.
-
-**If GDD has a defined loop — ask Q2:**
-
-**Q2:** "What is the 30-second micro-loop? Is it intrinsically fun with ZERO rewards?"
-
-Push until you hear: The designer either confirms the raw action is satisfying (like Tetris line clears with no XP) or admits it depends on extrinsic reward. If the latter: "That's a treadmill, not a game. The micro-loop must be fun on its own."
-
-**STOP.** Wait for answer.
-
-**If GDD is detailed / post-playtest — ask Q3 or Q4:**
-
-**Q3:** "What does the player do on the 100th repetition that they didn't do on the 1st?"
-Tests depth. If "nothing different, just bigger numbers" → depth = 0.
-
-**Q4:** "What happens in the 5 seconds after the player fails?"
-Tests fail state design. Good: Spelunky shows the ghost of your run. Bad: "Game Over, return to menu."
-
-**STOP after each.** Minimum 2 questions per section. Skip any whose answer is already clear from the GDD.
-
-### Action Classification
-
-- **AUTO:** Flag naming inconsistencies (loop described differently in different sections), missing fail state description, loop timescale math errors (stated "2-minute loop" but described steps total 8+ minutes)
-- **ASK:** Core loop changes (adding/removing a verb), session length mismatch requiring redesign, depth concerns
-- **ESCALATE:** No core loop defined at all. GDD describes features but never the moment-to-moment play. Review CANNOT proceed without this.
-
-**STOP.** Present ONE issue at a time via AskUserQuestion. Proceed only after all Section 1 issues are resolved or deferred.
+**STOP.** Present section score and review pacing options.
 
 ---
 
 ## Section 2: Progression & Retention (進度與留存)
 
-### SDT Integration at Each Retention Tier
+Evaluate SDT integration at each retention tier (FTUE/D1/D7/D30), flow state design, difficulty curve shape, and churn point identification. Apply `references/progression.md` for the full evaluation framework, benchmarks, forcing questions, and action classification.
 
-Every retention hook must satisfy at least one Self-Determination Theory need:
+**Score using the Section 2 rubric from `references/scoring.md`. Section 2 Score: ___/10**
 
-| Retention Tier | Timeframe | SDT Need to Satisfy | Example |
-|----------------|-----------|---------------------|---------|
-| **FTUE** | First 60 seconds | **Competence** — "I can do this" | Tutorial rewards first correct action immediately |
-| **D1 (come back tomorrow)** | 0-24 hours | **Autonomy** — "I want to try MY strategy" | Unfinished build, unanswered question, untried path |
-| **D7 (weekly habit)** | 1-7 days | **Competence** — "I'm getting better" | Visible skill growth, new abilities earned, mastery milestones |
-| **D30 (invested identity)** | 7-30 days | **Relatedness** — "This is MY world/team/character" | Social bonds, reputation, sunk-cost identity, community |
-
-### Flow State Design
-
-Check for **sawtooth difficulty curve**: tension builds → milestone release → re-engage at higher baseline.
-
-**Red flags:**
-- Flat difficulty = boredom (player coasts without challenge)
-- Vertical spike = frustration (sudden difficulty wall with no preparation)
-- No difficulty curve described = the GDD assumes difficulty "just works" (it never does)
-
-### Evaluation Criteria
-
-| Criterion | Points | Deduction Rules |
-|-----------|--------|-----------------|
-| **FTUE Quality** | 0-2 | Time to first meaningful action documented AND < benchmark (30s mobile, 2min PC, 5min complex strategy). 2 = explicit plan with timing, 1 = described but no timing target, 0 = not addressed |
-| **Retention Hooks** | 0-3 | D1, D7, D30 hooks explicitly identified. 1 point each. 0 if the GDD says "players will want to come back" without specifying WHY |
-| **Difficulty Curve** | 0-2 | Explicit difficulty progression plan. 2 = sawtooth pattern with milestone releases described, 1 = general "difficulty increases" statement, 0 = not addressed |
-| **Churn Point Analysis** | 0-3 | Top 3 likely quit points identified with mitigation plan. 1 point per identified churn point with specific mitigation. 0 if churn points not considered |
-
-**Section 2 Score: ___/10**
-
-### Reference Benchmarks
-
-| Metric | Good | Average | Problem |
-|--------|------|---------|---------|
-| FTUE to first action | <30s (mobile), <2min (PC) | 30-60s / 2-5min | >60s / >5min |
-| D1 retention | 40%+ | 25-40% | <25% |
-| D7 retention | 15%+ | 8-15% | <8% |
-| D30 retention | 5%+ (F2P), 20%+ (premium) | 3-5% / 10-20% | <3% / <10% |
-| Session length vs target | Within ±20% | Within ±50% | >2x or <0.5x target |
-
-### Forcing Questions
-
-Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route:
-
-**If GDD has no retention hooks — ask Q1 first:**
-
-**Q1:** "A player finishes their first session and closes the app. Name the SPECIFIC thing that makes them open it again tomorrow."
-
-Push until you hear: A concrete mechanism. "They have 3 unclaimed daily rewards and their base is still upgrading" = specific. "They'll want to see what happens next" = vague (push: "What SPECIFICALLY happens next that they know about but haven't experienced yet?").
-Red flags: "The gameplay is fun enough to come back." — That's hope, not design.
-
-**STOP.** Wait for answer.
-
-**If GDD has retention but no churn analysis — ask Q2:**
-
-**Q2:** "Where does the player most likely quit FOREVER? What is the specific plan to prevent that?"
-
-Push until you hear: A named moment + a specific intervention. "After the 3rd boss when difficulty spikes — we add an adaptive difficulty hint system" = good. "We'll tune it in playtest" = vague (push once, then flag as ASK).
-
-**STOP.** Wait for answer.
-
-**If GDD is detailed — ask Q3:**
-
-**Q3:** "Does challenge scale with SKILL or with TIME PLAYED?"
-
-Skill gates = mastery satisfaction. Time gates = obligation. The GDD should know which and why.
-
-**STOP after each.** Minimum 2, skip if already answered in GDD.
-
-### Action Classification
-
-- **AUTO:** FTUE timing exceeds benchmark without justification, retention hooks described inconsistently across sections
-- **ASK:** Difficulty curve design choices, content gate vs skill gate decisions, churn mitigation strategies
-- **ESCALATE:** No retention hooks identified at all. GDD assumes players will "just keep playing."
-
-**STOP.** One issue per AskUserQuestion.
+**STOP.** Present section score and review pacing options.
 
 ---
 
 ## Section 3: Economy & Monetization (經濟系統)
 
-### Sink/Faucet Model
+Evaluate sink/faucet balance, reward psychology (reinforcement schedules), currency clarity, monetization ethics, and spending tier health. Apply `references/economy.md` for the full evaluation framework, red flags, forcing questions, and action classification.
 
-The GDD MUST map resource flows explicitly. For each currency:
+**Score using the Section 3 rubric from `references/scoring.md`. Section 3 Score: ___/10**
 
-```
-FAUCETS (sources)              SINKS (drains)
-─────────────────              ──────────────
-Quest rewards     ──→  [Currency Pool]  ──→  Item purchases
-Daily login       ──→                   ──→  Upgrade costs
-Battle drops      ──→                   ──→  Repair/maintenance
-IAP               ──→                   ──→  Gacha/loot boxes
-                                        ──→  Trading fees
-                                        ──→  Expiration/decay
-```
-
-If the GDD has no sink/faucet map: **-3 points.** An economy without mapped flows WILL break.
-
-### Reward Psychology
-
-Check which reinforcement schedules the economy uses:
-
-| Schedule | Pattern | Effect | Example |
-|----------|---------|--------|---------|
-| **Fixed Ratio** | Every N actions → reward | Predictable grind | 10 kills = 1 level up |
-| **Variable Ratio** | Random chance per action → reward | Most addictive, use carefully | Loot drops, gacha |
-| **Fixed Interval** | Every N minutes → reward | Creates routine | Daily login bonus |
-| **Variable Interval** | Random timing → reward | Maintains vigilance | Random world events |
-
-**The GDD should be INTENTIONAL about which schedules it uses.** If the economy accidentally relies on variable ratio for core progression, flag as ASK — this can create addiction patterns that harm player wellbeing.
-
-### Evaluation Criteria
-
-| Criterion | Points | Deduction Rules |
-|-----------|--------|-----------------|
-| **Currency Clarity** | 0-2 | Number of currencies and exchange rates. 2 = ≤3 currencies with intuitive exchange, 1 = 4-5 currencies or unclear exchange, 0 = 6+ currencies OR no exchange rate defined |
-| **Sink/Faucet Balance** | 0-3 | Explicit flow model. 3 = full map with equilibrium analysis, 2 = sinks and faucets listed but not balanced, 1 = only faucets described (no sinks), 0 = no economy flow model |
-| **Monetization Ethics** | 0-3 | 3 = clear ethical boundaries stated, F2P experience is genuinely fun, no pay-to-win in competitive contexts. 2 = mostly fair but some grey areas. 1 = concerning patterns (first IAP before aha moment, hard currency pay-only). 0 = predatory patterns or not addressed |
-| **Spending Tier Health** | 0-2 | 2 = value proposition for minnow/dolphin/whale tiers all make sense. 1 = one tier is poorly served. 0 = whale-dependent design or no tier analysis |
-
-**Section 3 Score: ___/10**
-
-### Economy Red Flags (each is -1 from Sink/Faucet or Monetization score)
-
-- More than 3 currencies without clear purpose → cognitive overload
-- No meaningful sinks → hyperinflation, everything becomes worthless
-- First IAP offered before aha moment → premature monetization
-- Hard currency ONLY obtainable by paying → pay-to-win perception
-- No pity system for gacha/probabilistic rewards → player frustration spiral
-- Gini coefficient not considered → wealth gap makes late-joiners feel hopeless
-- Reward schedule not documented → economy runs on accident, not design
-- "Surprise mechanics" language used to obscure loot box mechanics → ethical flag
-
-### Forcing Questions
-
-Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route:
-
-**If economy is undefined — ask Q3 first (simplest, most revealing):**
-
-**Q3:** "What is the FIRST thing a player is asked to spend real money on, and have they had their 'aha moment' yet?"
-
-Push until you hear: A specific item/offer AND its timing relative to the player's first delight moment. Monetizing before delight is extractive. If the designer says "we haven't decided monetization yet" — that's fine, note it and skip to Q1.
-
-**STOP.** Wait for answer.
-
-**If economy exists but no stress test — ask Q2:**
-
-**Q2:** "What breaks first if players earn 2x the intended currency rate?"
-
-Push until you hear: A specific failure point. "Nothing, they'd just progress faster" means sinks are missing. Good answer: "Upgrade costs would be trivialized by Day 7, we'd need to add a prestige sink."
-
-**STOP.** Wait for answer.
-
-**If economy is detailed — ask Q1:**
-
-**Q1:** "A player has been playing for 30 days without spending money. Describe their exact resource state."
-
-Push until you hear: Specific numbers or ranges. If the designer can't answer, the economy isn't designed, it's hoped.
-
-**STOP after each.** Minimum 2 for Mode A (Mobile/F2P). Minimum 1 for other modes (can skip if premium with no in-game economy).
-
-### Action Classification
-
-- **AUTO:** Currency naming inconsistencies, math errors in stated earn rates vs costs, exchange rate contradictions
-- **ASK:** Monetization model choices, gacha/loot box inclusion, premium currency pricing
-- **ESCALATE:** Economy has no sinks (guaranteed hyperinflation), OR monetization targets minors with predatory patterns
-
-**STOP.** One issue per AskUserQuestion.
+**STOP.** Present section score and review pacing options.
 
 ---
 
 ## Section 4: Player Motivation & Emotion (玩家動機)
 
-### Full SDT Analysis
+Evaluate full SDT analysis across systems, Bartle + Quantic Foundry player type coverage, ludonarrative consonance, and emotional arc design. Apply `references/motivation.md` for the full evaluation framework, forcing questions, and action classification.
 
-For EACH major game system, evaluate whether it serves Autonomy, Competence, or Relatedness:
+**Score using the Section 4 rubric from `references/scoring.md`. Section 4 Score: ___/10**
 
-| System | Autonomy (meaningful choice) | Competence (skill growth) | Relatedness (connection) |
-|--------|------------------------------|---------------------------|--------------------------|
-| Core loop | Does the player choose HOW to engage? | Does skill improve outcomes? | Is there shared experience? |
-| Progression | Multiple viable paths? | Clear mastery markers? | Social comparison/cooperation? |
-| Economy | Spending choices matter? | Earning efficiency improves with skill? | Trading/gifting possible? |
-| Social | Player-driven interactions? | Skill-based social status? | Meaningful bonds formed? |
-
-**A system that serves ZERO SDT needs is a system that doesn't motivate.** Flag any such system as ASK.
-
-### Player Type Coverage (Bartle + Quantic Foundry)
-
-**Bartle Taxonomy:**
-
-| Type | What They Want | What the GDD Offers (fill in) |
-|------|---------------|-------------------------------|
-| **Achiever** | Goals, completion, progression, visible milestones | ___ |
-| **Explorer** | Discovery, hidden content, systemic depth, knowledge | ___ |
-| **Socializer** | Cooperation, shared experience, community, identity | ___ |
-| **Competitor** | Fair PvP, rankings, skill expression, meaningful stakes | ___ |
-
-**Quantic Foundry Motivations** (more granular):
-
-Check which of these 6 clusters the GDD serves:
-- **Action** (destruction, excitement) — Does the game deliver visceral thrills?
-- **Social** (competition, community) — Does the game create social bonds or rivalries?
-- **Mastery** (challenge, strategy) — Does the game reward thinking and skill?
-- **Achievement** (completion, power) — Does the game satisfy collectors and completionists?
-- **Immersion** (fantasy, story) — Does the game transport the player somewhere?
-- **Creativity** (design, discovery) — Does the game let players express themselves?
-
-**The GDD doesn't need to serve ALL types, but it MUST know which types it's targeting and which it's explicitly NOT serving.**
-
-### Ludonarrative Consonance Check
-
-Do the mechanics reinforce the narrative, or contradict it?
-
-| Test | Pass | Fail |
-|------|------|------|
-| Theme ↔ Mechanics | Story says "choices matter" AND mechanics have meaningful branching | Story says "choices matter" BUT all paths lead to same outcome |
-| Tone ↔ Feel | Dark narrative AND weighty, consequential mechanics | Dark narrative BUT bouncy, forgiving mechanics (unless intentional contrast) |
-| Character ↔ Abilities | Player character is described as weak/vulnerable AND gameplay reflects this | Character described as weak BUT player is a one-hit-kill powerhouse |
-| World ↔ Systems | World has scarce resources AND economy reflects scarcity | World described as post-apocalyptic BUT shops are fully stocked |
-
-**Intentional dissonance is valid IF the GDD acknowledges and justifies it.** Unintentional dissonance is a design flaw.
-
-### Evaluation Criteria
-
-| Criterion | Points | Deduction Rules |
-|-----------|--------|-----------------|
-| **SDT Coverage** | 0-3 | Each SDT need (Autonomy, Competence, Relatedness) served by at least one core system = 1 point each. 0 for any unserved need |
-| **Player Type Targeting** | 0-3 | Target player types explicitly identified = 1 point. Systems designed for those types = 1 point. Non-target types acknowledged = 1 point |
-| **Ludonarrative Consonance** | 0-2 | 2 = mechanics and narrative reinforce each other (or intentional dissonance is justified). 1 = minor contradictions. 0 = major unacknowledged dissonance |
-| **Emotional Arc** | 0-2 | 2 = session emotional arc explicitly mapped (tension/release/climax/resolution). 1 = general mood described but no arc. 0 = no emotional design consideration |
-
-**Section 4 Score: ___/10**
-
-### Forcing Questions
-
-Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route:
-
-**If player motivation is undefined — ask Q1 (most accessible):**
-
-**Q1:** "Which Bartle type does this game serve WORST, and what happens when that player type tries your game?"
-
-Push until you hear: A named type AND a specific bad experience. "Explorers — there's no hidden content, they'd get bored after seeing all the levels" = good. "We serve all types" = red flag (push: "Every game serves some types better than others. Which type would give your game a 5/10 review?").
-
-**STOP.** Wait for answer.
-
-**If motivation is defined but emotional design is vague — ask Q2:**
-
-**Q2:** "Name a specific moment where the player feels powerful. Now name one where they feel vulnerable. How many minutes apart are they?"
-
-Push until you hear: Two concrete moments with a time gap. Games with no vulnerability have no tension. Games with no power have no satisfaction. If the moments are >20 min apart, the emotional pacing may be too slow.
-
-**STOP.** Wait for answer.
-
-**If GDD has narrative — ask Q3 (Mode D priority):**
-
-**Q3:** "The game's story says {X}. Do the mechanics also say {X}? Give me one specific example."
-
-Push until you hear: A concrete mechanic-narrative alignment. If the designer can't think of one, the mechanics and narrative are likely disconnected. That's not fatal, but it should be intentional.
-
-**STOP after each.** Minimum 2 for Mode D (Narrative). Minimum 1 for other modes.
-
-### Action Classification
-
-- **AUTO:** Player type terminology inconsistencies, MDA aesthetic labels used incorrectly
-- **ASK:** Which player types to target, emotional arc design, SDT trade-offs between systems
-- **ESCALATE:** GDD has no concept of target player motivation — mechanics exist without any stated purpose for WHY a player would engage
-
-**STOP.** One issue per AskUserQuestion.
+**STOP.** Present section score and review pacing options.
 
 ---
 
 ## Section 5: Risk Assessment (風險評估)
 
-### Risk Matrix
+Evaluate across 5 risk categories: pillar violation, scope (Lake vs Ocean), technical feasibility, market differentiation, and retention cliffs. Apply `references/risk.md` for the full risk matrix, forcing questions, and action classification.
 
-For EACH identified risk, evaluate on two axes:
+**Score using the Section 5 rubric from `references/scoring.md`. Section 5 Score: ___/10**
 
-| | Minor (annoyance) | Significant (friction) | Critical (game-breaking) |
-|---|---|---|---|
-| **High probability** | MEDIUM | HIGH | CRITICAL |
-| **Medium probability** | LOW | MEDIUM | HIGH |
-| **Low probability** | IGNORE | LOW | MEDIUM |
-
-### Standard Risk Categories
-
-Evaluate the GDD against these risk categories. Each applies differently per review mode.
-
-**1. Design Pillar Violation Risk**
-Does any designed feature CONTRADICT a stated design pillar?
-- Example: Pillar says "player agency in every encounter" but a cutscene removes control for 2 minutes
-- Example: Pillar says "fair competition" but paid items have stat bonuses
-- **If pillars are not defined, this entire category is ESCALATE**
-
-**2. Scope Risk — Lake vs Ocean Test**
-- **Lake:** Bounded scope, clear bottom, knowable size. "10 levels with 3 enemy types each."
-- **Ocean:** Unbounded scope, unknown depth, grows as you explore. "Procedurally generated infinite world with emergent narratives."
-- Most failed indie games are Oceans that thought they were Lakes.
-- **Forcing Q:** "Can you list every piece of content this game needs to be shippable? If the list has 'etc.' or '...' anywhere, it's an Ocean."
-
-**3. Technical Feasibility Risk**
-Does any mechanic require technology the team hasn't proven?
-- Netcode for real-time multiplayer
-- Procedural generation at scale
-- AI-driven narrative
-- Cross-platform save sync
-
-**4. Market Differentiation Risk**
-Can you describe this game without using the name of another game?
-- "It's like X but Y" is a starting point, not a destination
-- What is the ONE thing a player would describe to a friend?
-
-**5. Retention Cliff Risk**
-Where is the most likely point where players quit and never return?
-- End of tutorial (didn't hook)
-- First paywall (felt unfair)
-- Content drought (ran out of things to do)
-- Difficulty wall (couldn't progress)
-
-### Evaluation Criteria
-
-| Criterion | Points | Deduction Rules |
-|-----------|--------|-----------------|
-| **Risk Identification** | 0-3 | 3 = risks identified across all 5 categories with probability/impact ratings. 2 = most categories covered. 1 = only obvious risks listed. 0 = no risk analysis |
-| **Mitigation Specificity** | 0-3 | 3 = every high+ risk has a specific mitigation plan with timeline. 2 = mitigations exist but are vague ("we'll playtest"). 1 = mitigations for some risks only. 0 = no mitigations |
-| **Pillar Coherence** | 0-2 | 2 = no feature contradicts stated pillars, OR contradictions are acknowledged with justification. 1 = minor pillar tensions unaddressed. 0 = major pillar violations OR no pillars to check against |
-| **Scope Realism** | 0-2 | 2 = scope is Lake-sized with concrete content list. 1 = scope is ambitious but bounded. 0 = scope is Ocean-sized with no cut plan |
-
-**Section 5 Score: ___/10**
-
-### Forcing Questions
-
-Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route:
-
-**Always ask Q1 (scope is the #1 indie game killer):**
-
-**Q1:** "List every piece of content needed to ship. If your list contains '...' or 'etc.' or 'and more,' it's an Ocean, not a Lake."
-
-Push until you hear: A finite list. "5 levels, 3 boss types, 12 enemy variants, 1 hub area" = Lake. "Procedurally generated with endless variations..." = Ocean (push: "What is the MINIMUM content set for a shippable version?").
-
-**STOP.** Wait for answer.
-
-**If scope seems large — ask Q2:**
-
-**Q2:** "What is the ONE feature you would cut if you had to ship 3 months early? What breaks without it?"
-
-Push until you hear: A named feature AND an honest impact assessment. "The crafting system — combat still works without it, but long-term engagement drops" = good. "Nothing can be cut" = red flag (every game has a cut list; if you can't name one, you haven't prioritized).
-
-**STOP.** Wait for answer.
-
-**If design pillars exist — ask Q3:**
-
-**Q3:** "Name one mechanic that contradicts a design pillar. If you can't find one, you haven't looked hard enough."
-
-Push until you hear: An honest contradiction. Every real GDD has at least one tension between ideals and implementation. If the designer finds none, either the pillars are too vague or the self-assessment isn't honest.
-
-**STOP after each.** Minimum 2. Q1 is always asked.
-
-### Action Classification
-
-- **AUTO:** Risk probability/impact labels missing, mitigation plans that say "TBD" (flag for completion)
-- **ASK:** Risk mitigation strategies, scope reduction decisions, pillar violation trade-offs
-- **ESCALATE:** Ocean-sized scope with no cut plan AND no stated MVP, OR critical risks with zero mitigation
-
-**STOP.** One issue per AskUserQuestion.
+**STOP.** Present section score and review pacing options.
 
 ---
 
 ## Section 6: Cross-Section Consistency Check (跨段交叉驗證)
 
-This section does NOT introduce new evaluation criteria. It cross-validates findings across Sections 1-5 to find contradictions invisible within any single section.
+Cross-validate findings across Sections 1-5 for contradictions invisible within any single section. Apply `references/cross-section.md` for the full cross-validation matrix and action classification.
 
-### Cross-Validation Matrix
+**Score using the Section 6 rubric from `references/scoring.md`. Section 6 Score: ___/10**
 
-| Intersection | What to Check | Red Flag Example |
-|---|---|---|
-| **Core Loop × Economy** | Does the loop generate currency at the rate the economy expects? | Loop takes 30s but economy assumes 5-min earning cycles |
-| **Core Loop × Motivation** | Does the loop serve the stated target player types? | Targets Explorers but loop is linear with no discovery |
-| **Progression × Economy** | Do progression gates align with spending opportunities? | Progression requires items only available via IAP at level 5, before D1 retention hook |
-| **Progression × Motivation** | Do progression rewards match player type needs? | Achiever-targeted game but progression rewards are cosmetic-only (no measurable milestones) |
-| **Economy × Retention** | Do monetization touchpoints align with retention hooks? | Paywall hits at the exact churn point instead of at a delight peak |
-| **Motivation × Risk** | Do identified player types have risks addressed? | Targets Socializers but no plan for toxic behavior |
-| **Risk × Core Loop** | Do core loop risks have system-level mitigations? | Core loop depends on real-time multiplayer but no offline fallback for connection issues |
-| **Pillars × Everything** | Does every section's design trace back to at least one pillar? | Section 3 economy design serves no stated pillar |
+**STOP.** Present section score and review pacing options.
 
-### Evaluation Criteria
+---
 
-| Criterion | Points | Deduction Rules |
-|-----------|--------|-----------------|
-| **Internal Consistency** | 0-4 | Start at 4. Deduct 1 for each cross-section contradiction found (max -4) |
-| **Pillar Traceability** | 0-3 | 3 = every major design decision traces to a pillar. 2 = most do. 1 = some decisions seem arbitrary. 0 = no pillar connection visible |
-| **System Coherence** | 0-3 | 3 = all systems reinforce each other (positive coherence). 2 = systems are independent but not contradictory. 1 = some systems work against each other. 0 = systems actively undermine each other |
+## Forcing Question Smart Routing
 
-**Section 6 Score: ___/10**
+Minimum 2 forcing questions per section. Route by GDD state (check GDD Status section or infer from depth):
 
-### Action Classification
+| GDD State | Focus On |
+|-----------|----------|
+| Early (many ⚠️/❌) | Foundational — "Describe the core loop" / "Who comes back tomorrow?" |
+| Detailed but untested | Validation — "Have you watched someone play?" / "What breaks at 2x scale?" |
+| Post-playtest revision | Depth — "What surprised playtesters?" / "What changed since last review?" |
 
-- **AUTO:** Terminology inconsistencies across sections (e.g., "gold" in Section 1, "coins" in Section 3 for the same currency)
-- **ASK:** Cross-section design tensions that require a design decision to resolve
-- **ESCALATE:** Fundamental contradictions between core loop and economy, or between stated pillars and actual design
+---
 
-**STOP.** One issue per AskUserQuestion.
+## Fix-then-Rescore Loop
+
+When user fixes a flagged issue: re-read updated section → re-score ONLY that section → update running score → continue. Score improves during review; final score reflects GDD state at END, not beginning.
+
+## Baseline → Final Re-score
+
+If user updated GDD during review: record baseline scores at first pass, re-score changed sections after fixes, present delta table (Section / Baseline / Final / Change for each section + weighted total). If final score is WORSE than baseline: **WARN prominently** — a fix introduced a new problem.
+
+---
+
+## Important Rules
+
+- **ONE question at a time.** Never batch forcing questions.
+- **Section transitions mandatory.** Score + pacing options after every section.
+- **Smart-skip** questions already answered in the GDD.
+- **Push twice max.** Vague answer → push for specifics → still vague → flag ASK, move on.
+- **Escape hatch:** 1st "skip ahead" → 2 more questions then AUTO-only. 2nd → respect it, AUTO-only all remaining.
+- **No code suggestions.** Design review only. Technical issues → note for `/game-eng-review`.
+- **Status:** DONE (≥6.0) / DONE_WITH_CONCERNS (4.0-5.9 or fast-forwarded) / BLOCKED (ESCALATE) / NEEDS_CONTEXT (stopped)
 
 ---
 
@@ -646,7 +181,7 @@ This section does NOT introduce new evaluation criteria. It cross-validates find
 
 ### GDD Health Score
 
-Calculate after all sections are reviewed. Show individual scores AND deduction reasons for transparency.
+Calculate after all sections. Use score interpretation from `references/scoring.md`.
 
 ```
 GDD Health Score (Mode: [A/B/C/D/E])
@@ -660,14 +195,7 @@ GDD Health Score (Mode: [A/B/C/D/E])
   ─────────────────────────────────────────────
   WEIGHTED TOTAL:                  _._/10
 
-Score Interpretation:
-  8.0-10.0  SHIP-READY — GDD is comprehensive, internally consistent, ready for production
-  6.0-7.9   SOLID — Good foundation, address flagged issues before full production
-  4.0-5.9   NEEDS WORK — Significant gaps that will cause problems in production
-  2.0-3.9   MAJOR REVISION — Fundamental design questions unanswered
-  0.0-1.9   START OVER — Not a GDD yet, more of a concept note
-
-Top 3 Deductions (biggest point losses):
+Top 3 Deductions:
   1. [Section] [Criterion]: -N because [specific reason]
   2. [Section] [Criterion]: -N because [specific reason]
   3. [Section] [Criterion]: -N because [specific reason]
@@ -678,114 +206,47 @@ Top 3 Deductions (biggest point losses):
 ```
 /game-review Completion Summary
 ═══════════════════════════════════
-Mode: [A/B/C/D/E] — [Mobile/PC/Multiplayer/Narrative/Tabletop]
-GDD: [filename]
-Branch: [branch]
-
-Section Results:
-  Step 0: Genre & Context — [established / missing items]
-  Section 1 — Core Loop:         _/10, ___ issues found, ___ resolved, ___ deferred
-  Section 2 — Progression:       _/10, ___ issues found, ___ resolved, ___ deferred
-  Section 3 — Economy:           _/10, ___ issues found, ___ resolved, ___ deferred
-  Section 4 — Player Motivation: _/10, ___ issues found, ___ resolved, ___ deferred
-  Section 5 — Risk Assessment:   _/10, ___ risks identified, ___ high-impact
-  Section 6 — Cross-Consistency: _/10, ___ contradictions found
-
-WEIGHTED TOTAL: _._/10
-
+Mode: [A/B/C/D/E] | GDD: [filename] | Branch: [branch]
 Status: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT
-```
 
-**Status definitions:**
-- **DONE** — All sections reviewed, all critical issues resolved, GDD Health Score ≥ 6.0
-- **DONE_WITH_CONCERNS** — All sections reviewed, some issues deferred, GDD Health Score 4.0-5.9
-- **BLOCKED** — Review could not complete due to ESCALATE items (missing core loop, no pillars, fundamental contradictions)
-- **NEEDS_CONTEXT** — Review paused because critical context is missing (no target audience, no monetization model, etc.)
+  S0 Context:        [established / missing items]
+  S1 Core Loop:      _/10  (___ found, ___ resolved, ___ deferred)
+  S2 Progression:    _/10  (___ found, ___ resolved, ___ deferred)
+  S3 Economy:        _/10  (___ found, ___ resolved, ___ deferred)
+  S4 Motivation:     _/10  (___ found, ___ resolved, ___ deferred)
+  S5 Risk:           _/10  (___ risks, ___ high-impact)
+  S6 Consistency:    _/10  (___ contradictions)
+  WEIGHTED TOTAL:    _._/10
+```
 
 ### Playtest Protocol
 
-Write a playtest observation guide based on review findings:
-
-- **Key moments to watch:** First 30s (FTUE), first fail, first purchase prompt, first session end, each identified churn point from Section 2
-- **Questions to ask after:** "What was the most fun part?" / "When were you confused?" / "Would you play again tomorrow? Why specifically?" / "What would you tell a friend this game is about?"
-- **Metrics to track:** Session length, quit points, currency earned vs spent, feature discovery rate, D1 return rate
-- **Red flag behaviors:** Player pauses and looks confused for >5s, player clicks same button repeatedly, player closes app during specific sequence
+Write a playtest observation guide: key moments to watch (FTUE, first fail, first purchase, session end, churn points), post-session questions, metrics to track (session length, quit points, currency flow, D1 return), red flag behaviors (confusion pauses >5s, repeated clicks, mid-sequence exits).
 
 ### NOT in Scope
 
-List deferred work with rationale for each item. Format:
 ```
 - [Issue]: Deferred because [reason]. Revisit when [condition].
 ```
 
 ### Failure Modes
 
-For each core feature identified in Section 1, write one realistic failure scenario:
 ```
-- [Feature]: Fails when [specific condition]. Player reaction: [what they do]. Mitigation: [specific fix].
+- [Feature]: Fails when [condition]. Player reaction: [behavior]. Mitigation: [fix].
 ```
 
 ---
 
-## Important Rules
-
-- **Questions ONE AT A TIME.** Never batch multiple forcing questions into one AskUserQuestion.
-- **Section transitions are mandatory.** After each section, present the score and ask before continuing.
-- **Smart-skip forcing questions** whose answers are already clear from the GDD. Don't ask what's already written.
-- **Push once, then push again.** If the designer gives a vague answer, push for specifics. If still vague after two pushes, flag as ASK and move on. Don't push a third time.
-- **Escape hatch:** If user says "just give me the score" or "skip ahead":
-  - First time: "Two more questions in this section, then I'll fast-forward." Ask 2, then switch to AUTO-only for remaining sections.
-  - Second time: Respect it. Complete remaining sections with AUTO-only analysis, present full score summary.
-- **Never suggest code or implementation.** This skill reviews design documents, not code. If a design issue implies a technical solution, note "this will need technical review in `/game-eng-review`" — don't specify HOW.
-- **Fix-then-rescore loop:** When an ASK item is resolved and the user updates the GDD:
-  1. Re-read the updated section
-  2. Re-score ONLY that section
-  3. Update the running score
-  4. Continue to next issue or next section
-  This means the score IMPROVES during the review as issues are addressed. The final score reflects the GDD's state at the END of the review, not the beginning.
-- **Completion status:**
-  - DONE — All 6 sections reviewed, GDD Health Score ≥ 6.0
-  - DONE_WITH_CONCERNS — Reviewed but score 4.0-5.9 or fast-forwarded
-  - BLOCKED — ESCALATE items prevented completion (no core loop, no pillars)
-  - NEEDS_CONTEXT — Critical context missing, user chose to stop
-
-## Baseline → Final Re-score (if GDD was updated during review)
-
-If the user updated the GDD during this review session (fixing issues you flagged):
-
-1. **Record baseline score** at the start of the review (from first pass through all sections)
-2. **After user fixes**: re-read the updated sections and re-score ONLY the changed sections
-3. **Present delta:**
-
-```
-Score Delta:
-  Section            Baseline    Final    Change
-  Core Loop:         _/10        _/10     +_
-  Progression:       _/10        _/10     +_
-  ...
-  WEIGHTED TOTAL:    _._/10      _._/10   +_._
-```
-
-If final score is WORSE than baseline: **WARN prominently** — a fix introduced a new problem.
-
 ## Save Artifact
-
-Save the review report to shared storage for downstream skills:
 
 ```bash
 _DATETIME=$(date +%Y%m%d-%H%M%S)
 echo "Saving review to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-game-review-${_DATETIME}.md"
 ```
 
-Write the full Completion Summary + GDD Health Score + Playtest Protocol to `$_PROJECTS_DIR/{user}-{branch}-game-review-{datetime}.md`.
+Write Completion Summary + GDD Health Score + Playtest Protocol to that path. If prior review exists, include `Supersedes: {prior filename}`.
 
-If a prior game review exists, the new one includes `Supersedes: {prior filename}` for revision tracking.
-
-This artifact is discoverable by:
-- `/balance-review` — reads flagged economy issues
-- `/player-experience` — reads identified churn points
-- `/game-direction` — reads risk assessment and scope concerns
-- `/game-ship` — checks review status as a release gate
+Discoverable by: `/balance-review` (economy issues), `/player-experience` (churn points), `/game-direction` (risk/scope), `/game-ship` (release gate).
 
 ## Review Log
 

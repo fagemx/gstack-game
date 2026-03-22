@@ -76,7 +76,7 @@ GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null
 [ -n "$GDD" ] && echo "GDD found: $GDD" || echo "No GDD found"
 ```
 
-If no GDD found, offer `/game-ideation` first.
+If no GDD found, offer `/game-import` first (to convert an external document), or `/game-ideation` (to brainstorm from scratch).
 
 ---
 

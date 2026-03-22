@@ -2,10 +2,11 @@
 name: gstack-game
 version: 0.2.0
 description: |
-  Game development workflow skills for Claude Code. 21 interactive review skills
+  Game development workflow skills for Claude Code. 22 interactive review skills
   covering the full game dev pipeline — concept brainstorming to shipping.
 
   When you notice the user is at these stages, suggest the appropriate skill:
+  - User has a PDF/doc/notes they want to turn into a GDD → suggest /game-import
   - Brainstorming a game idea → suggest /game-ideation
   - Reviewing a game plan (strategy/direction) → suggest /game-direction
   - Reviewing a game design document → suggest /game-review
@@ -192,6 +193,7 @@ Escalation: 3 failed attempts → STOP. Security/balance uncertainty → STOP. B
 
 | User is doing... | Suggest |
 |-------------------|---------|
+| "I have a GDD/PDF/doc to import" | `/game-import` |
 | "I have a game idea" | `/game-ideation` |
 | "Should we build this?" | `/game-direction` |
 | "Review this GDD" | `/game-review` |

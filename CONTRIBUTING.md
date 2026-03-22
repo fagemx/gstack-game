@@ -4,199 +4,198 @@
 
 gstack-game needs **domain experts** more than it needs programmers.
 
-The engineering backbone (template engine, preamble injection, scoring framework) is solid. What's missing is **game industry experience** — the scoring weights, benchmark numbers, forcing questions, and review criteria that only come from shipping real games.
+The engineering backbone is solid. What's missing is **game industry experience** — the benchmark numbers, common pitfalls, and review criteria that only come from shipping real games.
 
 If you've shipped a game, designed an economy system, led a QA team, or directed art production — your knowledge is exactly what this project needs.
 
 ---
 
-## How to contribute
+## Three Ways to Contribute
 
-### 1. Pick a skill that matches your expertise
+### ⚡ 5 Minutes: Open an Issue (no clone needed)
 
-| Your background | Skills you can improve | What's needed |
-|-----------------|----------------------|---------------|
-| **Game Designer** (5+ years) | `/game-review`, `/game-ideation`, `/player-experience` | Scoring weights, forcing questions, review criteria |
-| **Game Producer / Creative Director** | `/game-direction`, `/game-retro` | Cognitive patterns, scope decision frameworks, milestone criteria |
-| **Economy / Systems Designer** | `/balance-review` | Difficulty curve benchmarks, Sink/Faucet ratios, pity system thresholds |
-| **Game Programmer** (Unity/Godot/Unreal) | `/game-code-review`, `/game-eng-review`, `/game-debug` | Engine-specific review points, frame budget patterns, common pitfalls |
-| **UX Researcher / UI Designer** | `/game-ux-review`, `/player-experience`, `/playtest` | Persona parameters, usability benchmarks, test protocols |
-| **QA Lead** | `/game-qa`, `/game-visual-qa` | Bug severity definitions, category weights, platform-specific checklists |
-| **Technical Artist** | `/asset-review`, `/game-visual-qa` | Performance budgets, naming conventions, style consistency criteria |
-| **Producer / PM** | `/game-ship`, `/game-docs` | Platform submission checklists, patch notes best practices |
-| **Marketing / Publishing** | `/pitch-review` | LTV/CPI benchmarks, market size data, UA strategy frameworks |
+**For:** You spotted a wrong number, know a mistake Claude makes, or have a question that should be asked during review.
 
-### 2. Read the current skill
+Open a GitHub Issue using one of these templates:
 
-Each skill lives in `skills/<name>/SKILL.md.tmpl`. Read the current version to understand the structure.
+- **[Report Wrong Benchmark](../../issues/new?template=benchmark.yml)** — a number is outdated or incorrect
+- **[Add Gotcha](../../issues/new?template=gotcha.yml)** — Claude makes a specific mistake on this task
+- **[Add Forcing Question](../../issues/new?template=forcing-question.yml)** — a critical question the review should ask but doesn't
+- **[Calibrate Scoring](../../issues/new?template=scoring.yml)** — a scoring weight or threshold needs adjustment
 
-Every skill follows the same pattern:
-- YAML frontmatter → `{{PREAMBLE}}` → Sections → AUTO/ASK/ESCALATE → Anti-Sycophancy → Scoring → Completion Summary → Review Log
+Filled issues get converted directly into PRs. No git, no clone, no build required.
 
-### 3. Improve the domain content
-
-Edit the `.tmpl` file (never edit `SKILL.md` directly — it's generated).
-
-**What "improve" means:**
-
-| Type of improvement | Example |
-|--------------------|---------|
-| **Calibrate scoring weights** | "Core Loop should be 30% not 25% — in mobile F2P, the loop IS the game" |
-| **Add forcing questions** | "You're missing: 'What happens when two players exploit this simultaneously?'" |
-| **Fix wrong benchmarks** | "D1 retention 40% is good for premium, but for F2P hyper-casual it should be 50%+" |
-| **Add game-type variations** | "This section assumes F2P mobile. Add a Mode for premium PC games." |
-| **Add engine-specific checks** | "Unity: check for `FindObjectOfType` in Update — it's an O(n) scan every frame" |
-| **Improve anti-sycophancy** | "Add to forbidden list: 'The controls feel tight' — meaningless without specifying input latency" |
-| **Add missing categories** | "QA is missing Network Testing for multiplayer games" |
-
-### 4. Build and test
-
-```bash
-bun run build    # Regenerate SKILL.md from your .tmpl changes
-bun test         # Verify nothing broke (11 validation tests)
-```
-
-### 5. Submit a PR
-
-- Title: `improve(skill-name): what you changed`
-- Body: Explain **why** — cite your experience, reference shipped games, link industry data
-- Tag your expertise: `[Game Designer, 8 years, shipped 3 F2P mobile titles]`
+**Examples:** See [Contribution Examples](#contribution-examples) below.
 
 ---
 
-## What needs expert help right now
+### 🔧 30 Minutes: Edit references/ Files (clone repo)
 
-### Critical (these skills work but scoring may be wrong)
+**For:** You want to fix several things at once, add a full section, or deeply revise existing content.
 
-**`/game-review` — GDD Health Score weights**
-```
-Current:  Core Loop 25% | Progression 20% | Economy 20% | Motivation 15% | Risk 10% | Cross-check 10%
-Question: Should weights change by game type? Mobile F2P vs premium PC vs competitive PvP?
-Need:     Game designer who has reviewed 10+ GDDs professionally
-```
-
-**`/balance-review` — Economy health thresholds**
-```
-Current:  Faucet/Sink ratio 0.9-1.1 = healthy, Gini < 0.3 for co-op, < 0.5 for competitive
-Question: Are these numbers right? What about idle games where inflation IS the design?
-Need:     Economy designer who has tuned a live game economy
-```
-
-**`/game-code-review` — Frame budget thresholds**
-```
-Current:  60 FPS = 16.6ms budget, generic allocation warnings
-Question: What are the real hot-path patterns per engine? Unity GC traps? Godot GDScript bottlenecks?
-Need:     Senior game programmer with profiling experience
-```
-
-### Important (structure is good, content needs depth)
-
-**`/player-experience` — Persona behavioral parameters**
-```
-Current:  6 personas with estimated frustration tolerance, reading willingness, etc.
-Question: Are these numbers calibrated? "Casual newcomer quits after 2 failures" — is that real?
-Need:     UX researcher with playtest observation data
-```
-
-**`/game-ideation` — Forcing questions**
-```
-Current:  6 questions (Fun Reality, Comp Honesty, Session Test, Repeatability, Scope Honesty, Player Observation)
-Question: Are there fatal blind spots these don't catch? What do experienced game directors ask first?
-Need:     Game director or creative lead who has greenlit/killed projects
-```
-
-**`/game-direction` — Producer cognitive patterns**
-```
-Current:  10 patterns (Player-First, Scope Instinct, Platform Awareness, etc.)
-Question: Are these the right 10? Missing: IP strategy? Localization? Age rating? Live ops economics?
-Need:     Game producer with 3+ shipped titles
-```
-
-**`/pitch-review` — Market benchmarks**
-```
-Current:  LTV/CPI > 1.5 = viable, generic revenue tiers
-Question: These numbers are stale within months. What's the framework for finding current data?
-Need:     Publishing/marketing professional or indie with Sensor Tower / AppMagic access
-```
-
-### Skeleton skills (need significant content)
-
-| Skill | Quality | What's missing |
-|-------|---------|---------------|
-| `/asset-review` (35%) | Naming + budget structure only | Art style consistency criteria, per-engine import settings, texture/mesh quality benchmarks |
-| `/game-visual-qa` (35%) | Basic checklist | Visual quality thresholds, animation timing standards, what "polish" means quantitatively |
-| `/playtest` (40%) | Protocol structure | Validated observation metrics, interview question bank, statistical significance guidance |
-| `/game-debug` (40%) | 3-strike structure | Game-specific bug pattern library (physics tunneling, desync, save corruption recipes) |
-| `/game-retro` (40%) | Metrics structure | Healthy velocity ranges, bug density benchmarks, milestone confidence calibration |
-| `/game-codex` (40%) | Adversarial framing | Game-specific exploit taxonomy, cheat vector catalog, economy abuse patterns |
-| `/game-docs` (40%) | Patch notes format | Player communication best practices, balance change explanation templates |
-
----
-
-## Cross-cutting improvements (apply to multiple skills)
-
-### Game type adaptation
-
-Most skills assume one-size-fits-all. Reality is different:
-
-| Game type | What changes |
-|-----------|-------------|
-| **F2P Mobile** | Economy + monetization pressure sections are critical, session = 3 min |
-| **Premium PC/Console** | Economy section optional, core loop depth + narrative matter more |
-| **Competitive PvP** | Balance section is everything, matchmaking + anti-cheat needed |
-| **Narrative** | Pacing + branching + emotional arc, progression = story progress |
-| **Tabletop/Board** | Physical component budget, rules clarity, session length, no code review |
-| **VR** | Comfort rating, motion sickness prevention, interaction paradigm |
-
-**If you know one type deeply, help us add proper mode selection for it.**
-
-### Anti-sycophancy expansion
-
-Every skill has a "forbidden phrases" list. We need more domain-specific examples:
-
-```
-Current forbidden:
-  ❌ "Players will love this"
-  ❌ "The game feel is great"
-
-Need more like:
-  ❌ "The art style is cohesive" (without naming which elements match and which don't)
-  ❌ "Good use of juice" (without specifying which feedback channel: visual? audio? haptic?)
-  ❌ "Solid progression" (without citing time-to-milestone data)
-```
-
-**If you notice AI reviewers giving empty praise in your domain, add it to the forbidden list.**
-
-### Shared vocabulary
-
-The preamble has a game design vocabulary list. Is it complete?
-
-```
-Current: core loop, FTUE, aha moment, churn point, sink, faucet, retention hook,
-         skill gate, content gate, time gate, Bartle types, flow state, whale/dolphin/minnow
-
-Missing? Send suggestions for terms every game designer uses but we forgot.
-```
-
----
-
-## Development setup
+Each skill's domain knowledge lives in `skills/<name>/references/` — **all pure markdown**, no skill architecture knowledge needed.
 
 ```bash
 git clone https://github.com/fagemx/gstack-game.git
 cd gstack-game
-bun run build    # Generate all SKILL.md
-bun test         # Run validation (11 tests, <2s)
 ```
 
-Edit `.tmpl` files, never `.md` files. Run `bun run build` after changes.
+#### Your Expertise → Which Files to Edit
 
-## Code style
+| Your background | Files to edit |
+|-----------------|--------------|
+| **Economy / Systems Designer** | `skills/balance-review/references/` — gotchas.md, scoring.md, economy-model.md, progression.md |
+| **Game Designer** | `skills/game-review/references/` — core-loop.md, progression.md, motivation.md, gotchas.md |
+| **UX Researcher** | `skills/player-experience/references/` — personas.md, emotion-vocabulary.md, walkthrough-phases.md |
+| **Marketing / Publishing** | `skills/pitch-review/references/` — market-positioning.md, business-case.md, gotchas.md |
+| **Game Programmer** | `skills/game-code-review/SKILL.md.tmpl`, `skills/game-eng-review/SKILL.md.tmpl` |
+| **QA Lead** | `skills/game-qa/SKILL.md.tmpl` |
 
-- Commit messages: `improve(skill-name): what and why`
-- One logical change per commit
-- Include both `.tmpl` and generated `.md` in the same commit
+#### After Editing
+
+```bash
+bun run build    # Regenerate SKILL.md (not needed if you only changed references/)
+bun test         # Verify nothing broke
+```
+
+Submit a PR:
+- Title: `improve(balance-review): update F2P economy benchmarks`
+- Body: explain **why** — cite your experience or data sources
+- Tag your expertise: `[Economy Designer, 6 years, shipped 2 F2P mobile titles]`
+
+---
+
+### 🏗️ Advanced: Write Skill Templates (requires architecture understanding)
+
+**For:** Adding new skills or major skill restructuring.
+
+Read these first:
+- `CLAUDE.md` — developer handbook
+- `docs/skill-writing-patterns.md` — 7+4 writing patterns
+- `docs/skill-writing-doctrine-nox.md` — 8 core principles
+- `skills/skill-review/references/refactor-patterns.md` — refactoring method
+
+Key rules:
+- Edit `.tmpl` files, never `.md` directly
+- Skills over 300 lines need `references/` split
+- All references read upfront before interaction (方案 1, zero interruption)
+- Run `bun run build` + `bun test` after changes
+
+---
+
+## Contribution Examples
+
+### Example 1: Add a Gotcha (5 minutes)
+
+**Scenario:** You're an economy designer and noticed `/balance-review` flags inflation as a bug in idle games.
+
+**Open an Issue:**
+
+> **Skill:** /balance-review
+> **File:** references/gotchas.md
+> **Type:** New Gotcha
+>
+> **What Claude does wrong:**
+> Claude flags inflation rate > 1.2 as a red flag when analyzing idle game economies.
+>
+> **What's correct:**
+> In idle games, inflation IS the design. Currency values growing 10-50% per hour is normal — the player expects "numbers go up." The correct check is whether inflation rate matches prestige reset frequency, not the absolute rate.
+>
+> **Evidence:** Shipped 2 idle games (5M+ combined downloads), tuned live economy for 6 months.
+
+**Result:** Maintainer adds this to `skills/balance-review/references/gotchas.md`.
+
+---
+
+### Example 2: Fix a Benchmark (5 minutes)
+
+**Scenario:** You work in publishing and the CPI numbers in `/pitch-review` are from 2024.
+
+**Open an Issue:**
+
+> **Skill:** /pitch-review
+> **File:** references/scoring.md
+> **Type:** Fix Benchmark
+>
+> **Current value:** LTV/CPI > 1.5 = viable
+> **Should be:** 2026 iOS casual game CPI is now $3-5 (post-ATT). LTV/CPI > 2.0 = viable, 1.5-2.0 = risky.
+>
+> **Source:** Sensor Tower 2026 Q1 report + our UA data from 4 titles
+
+---
+
+### Example 3: Add a Forcing Question (5 minutes)
+
+**Scenario:** You're a game director who thinks `/game-review` misses a key question.
+
+**Open an Issue:**
+
+> **Skill:** /game-review
+> **File:** references/core-loop.md
+> **Type:** New Forcing Question
+>
+> **Question:** "Turn off all sound effects and just look at the screen. Is the core loop still fun? Now turn off the screen and just listen. Still fun? If neither works, your game feel is packaging, not design."
+>
+> **Why it matters:** I've greenlit 20+ projects. The most common false positive is "demo looks cool but plays hollow." Stripping sensory packaging exposes whether the core loop has real juice.
+>
+> **Suggested placement:** Section 1 Forcing Questions, as Q5
+
+---
+
+### Example 4: Edit a references/ File (30 minutes)
+
+**Scenario:** You're a UX researcher who knows the Casual Newcomer persona is wrong.
+
+**Edit:** `skills/player-experience/references/personas.md`
+
+```diff
+ ### Persona 1: Casual Newcomer (FTUE Focus)
+ - **Context:** First mobile game session on commute.
+-  3 minutes of attention before deciding if it's worth keeping.
++  90 seconds of attention before deciding if it's worth keeping.
++  (Source: our playtest data shows 50% of casual players decide in 90 seconds,
++  not 3 minutes. 3 minutes is "already interested" players.)
+ - **Frustration tolerance:** 1-2 failures before quitting.
++  (Note: if the first failure has no feedback — why it happened, how to
++  improve — tolerance drops to 0. They leave without a second attempt.)
+```
+
+Submit PR with playtest data source.
+
+---
+
+## What Needs Expert Help Right Now
+
+### 🔴 Critical (affects scoring accuracy)
+
+| Skill | What's needed | Who can help |
+|-------|--------------|-------------|
+| `/balance-review` | Idle/incremental game economy model adaptation | Economy designer who shipped idle games |
+| `/game-review` | GDD weight calibration across game types | Designer who has reviewed 10+ GDDs |
+| `/game-code-review` | Unity / Godot / Unreal hot-path pitfalls | Game programmer with profiling experience |
+| `/pitch-review` | 2026 LTV/CPI/UA benchmarks | Publisher with Sensor Tower or data.ai access |
+
+### 🟡 Important (content exists but needs depth)
+
+| Skill | What's needed | Who can help |
+|-------|--------------|-------------|
+| `/player-experience` | Playtest-validated persona behavioral parameters | UX researcher with observation data |
+| `/game-ideation` | More forcing questions (blind spots in current 6?) | Game director who has greenlit/killed projects |
+| `/game-direction` | IP strategy, localization, age rating cognitive patterns | Producer with 3+ shipped titles |
+
+### ⚪ Skeleton Skills (need significant content)
+
+| Skill | Current | What's missing |
+|-------|---------|---------------|
+| `/asset-review` | 117L, 35% | Art style consistency criteria, texture/mesh quality benchmarks |
+| `/game-visual-qa` | 129L, 35% | Visual quality thresholds, animation timing standards |
+| `/playtest` | 165L, 40% | Observation metrics, interview question bank, statistical significance |
+| `/game-debug` | 115L, 40% | Game-specific bug pattern library (physics tunneling, desync, save corruption) |
+
+---
 
 ## Questions?
 
 Open an issue. Tag it with the skill name and your area of expertise.
+
+Not sure where your contribution fits? Open an issue saying "I want to contribute XX experience, not sure which skill" — we'll help you find the right place.

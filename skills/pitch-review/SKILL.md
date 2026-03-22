@@ -494,39 +494,70 @@ If no deck exists, score based on verbal pitch clarity. A concept without a deck
 
 ## Forcing Questions（逼問清單）
 
-These questions are mandatory. Ask them directly. Do not soften them. Accept only specific, evidence-based answers.
+Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route based on pitch stage:
 
-### 1. Fun Reality
-> "Is the fun you're describing something you've SEEN players experience, or something you IMAGINE they'll experience?"
+| Stage | Ask these (minimum 3) | Why |
+|-------|----------------------|-----|
+| Napkin idea | Q1, Q2, Q3 | Validate fun, find comp set, scope reality |
+| Concept doc | Q2, Q3, Q5 | Differentiation, scope, critical assumption |
+| Has prototype | Q1, Q5, Q6 | Fun observed? Kill question? Player observation? |
+| Has playtest data | Q4, Q5, Q6 | Market validation, assumption test, observation |
 
-If imagined: the entire pitch is a hypothesis. Label it as such. This is not a criticism — most pitches start as hypotheses — but it must be acknowledged, not glossed over.
+### Q1. Fun Reality
 
-### 2. Comp Honesty
-> "Name the game MOST SIMILAR to yours. Now: why would a fan of THAT game switch to yours?"
+**Ask:** "Is the fun you're describing something you've SEEN players experience, or something you IMAGINE they'll experience?"
 
-If the answer is "our game is completely unique" — push back. Nothing is completely unique. Refusing to name comps suggests either market ignorance or fear of comparison.
+Push until you hear: An honest label — "imagined" or "observed." If imagined: the entire pitch is a hypothesis. That's not fatal, but it must be labeled, not hidden.
+Red flags: "Everyone I've told the idea to says it sounds fun." — Interest is not fun. Push: "Has anyone actually PLAYED it and been unable to stop?"
 
-### 3. Scope Truth
-> "What's the absolute MINIMUM version of this game that's still fun? How long would it take to build THAT?"
+**STOP.** Wait for answer.
 
-If the minimum version is still 18 months of work, the scope is dangerous. If the minimum version can ship in 3 months, that's a much better starting point.
+### Q2. Comp Honesty
 
-### 4. Market Test
-> "If you put up a Steam page today with just a trailer, what wishlist count would you expect in 30 days?"
+**Ask:** "Name the game MOST SIMILAR to yours. Why would a fan of THAT game switch to yours?"
 
-If they don't know: this is a signal that market validation hasn't been considered. If their answer is wildly optimistic (e.g., "100,000 wishlists" for a solo dev's first game), recalibrate gently but firmly.
+Push until you hear: A specific game name AND a specific reason to switch. "Our game is completely unique" = denial or market ignorance. Push: "If a player searches the App Store for your game, what search terms would they use? Those terms lead to your comps."
 
-**Reference:** Median Steam wishlists at launch for indie games: ~2,000-7,000. Games with 50,000+ wishlists at launch are in the top ~5%.
+**STOP.** Wait for answer.
 
-### 5. Kill Question
-> "What single thing, if proven wrong, would make this game NOT WORTH BUILDING?"
+### Q3. Scope Truth
 
-Every pitch has a critical assumption. If the pitcher can't name it, they haven't thought deeply enough about what makes their game work. If they CAN name it — ask whether they've tested it.
+**Ask:** "What's the absolute MINIMUM version that's still fun? How long to build THAT?"
 
-### 6. Observation Test
-> "Have you watched someone play a prototype? Not a guided demo — just handed them the controller and watched silently?"
+Push until you hear: A scope estimate for the minimum, not the vision. If minimum is still 18 months, scope is dangerous. If minimum can ship in 3 months, much better.
+Red flags: "We need the full version for it to make sense." — Push: "Minecraft launched with just blocks and survival. What's YOUR equivalent?"
 
-From the Iceberg Framework: watching real players (not team members) play without guidance is the single most valuable validation step. If this hasn't happened, every claim about "fun" is speculation.
+**STOP.** Wait for answer.
+
+### Q4. Market Test
+
+**Ask:** "If you put up a Steam page today with just a trailer, what wishlist count would you expect in 30 days?"
+
+Push until you hear: A specific number. If they don't know: market validation hasn't been considered. If wildly optimistic: recalibrate. Reference: Median indie wishlists at launch ~2,000-7,000. 50,000+ = top ~5%.
+
+**STOP.** Wait for answer.
+
+### Q5. Kill Question
+
+**Ask:** "What single thing, if proven wrong, would make this game NOT WORTH BUILDING?"
+
+Push until you hear: A named critical assumption. Every pitch has one. If they can't name it, they haven't thought deeply enough. If they CAN name it — ask: "Have you tested it?"
+Red flags: "Nothing could kill this idea." — Everything has a kill condition. Push: "What if the core mechanic isn't fun? What if the market is smaller than you think? What if the tech doesn't work?"
+
+**STOP.** Wait for answer.
+
+### Q6. Observation Test
+
+**Ask:** "Have you watched someone play a prototype? Not a guided demo — just handed them the controller and watched silently?"
+
+Push until you hear: A specific observation. "They got confused at the menu." "They played for 40 minutes straight." "They asked when the next build would be ready." If this hasn't happened, every claim about "fun" is speculation.
+Red flags: "We did a demo for investors." — Demos are theater, not validation.
+
+**STOP.** Wait for answer.
+
+**Escape hatch:** If user pushes back on forcing questions:
+- First time: "These questions ARE the review. A pitch that can't survive these won't survive a publisher meeting. Two more, then we move."
+- Second time: Respect it. Note skipped questions in completion summary.
 
 ---
 
@@ -571,6 +602,31 @@ The reviewer SHOULD say:
 - Core assumption identified in Kill Question has been tested and failed
 
 ---
+
+## Section Transitions
+
+**After completing EACH section**, present the score and ask before continuing:
+
+> **Section {N} — {name}: {score}/10**
+> Key finding: {1-sentence summary}
+>
+> A) **Continue to Section {N+1}**
+> B) **Dig deeper** — discuss this finding
+> C) **Fast-forward** — skip to score summary + recommendation
+> D) **Stop here**
+
+**STOP.** Wait after every section.
+
+## Important Rules
+
+- **Questions ONE AT A TIME.** Never batch forcing questions or section findings.
+- **Section transitions mandatory.** Score + ask before every next section.
+- **Forcing questions route by stage.** Napkin ideas get different questions than prototyped games.
+- **Push once, push again, then move on.** Don't push a third time — flag and continue.
+- **Escape hatch:** Respect on second request. Present what's been covered.
+- **Never promise success.** This skill evaluates pitch QUALITY, not market OUTCOME. "Your pitch is well-structured" ≠ "this game will succeed."
+- **Market data has a shelf life.** All benchmark numbers (wishlists, LTV/CPI, revenue medians) become stale within months. Always note: "verify with current data from {source}."
+- **The RECOMMENDATION is mandatory.** Every pitch review ends with GREENLIGHT / PROTOTYPE FIRST / PIVOT / PASS — with specific reasoning.
 
 ## Completion Summary
 

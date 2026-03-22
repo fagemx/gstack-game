@@ -105,6 +105,22 @@ Based on `_DIFF_LOC`, select the review depth:
 | Medium | 50 - 199 | Standard two-pass review. |
 | Large | 200+ | Full two-pass + adversarial challenge. |
 
+**AskUserQuestion — confirm scope before reviewing:**
+
+> **[Re-ground]** Code review for `[branch]` → `[base]`. {N} files changed, {LOC} lines.
+>
+> Review depth: **{Small/Medium/Large}** based on diff size.
+> File types: {list of domain categories found}
+> Skipping: {any domain rules that don't apply, e.g., "no network code in diff"}
+>
+> A) **Proceed** — start Pass 1 (critical issues)
+> B) **Adjust scope** — include/exclude specific files
+> C) **Full review** — force large-depth even on small diff
+>
+> RECOMMENDATION: {Based on diff. Small diffs rarely need adversarial.}
+
+**STOP.** Wait for confirmation.
+
 ### File Type Classification
 
 Classify each changed file to determine which domain rules apply. A file may match multiple categories.
@@ -332,6 +348,40 @@ After the adversarial pass, cross-reference findings with Pass 1/Pass 2:
 
 ---
 
+## Pass Transitions
+
+**After Pass 1, present findings and ask before continuing:**
+
+> **Pass 1 — Critical Issues:**
+> - AUTO-fixed: {N} (import ordering, unused vars, etc.)
+> - ASK items: {N} (presenting one at a time below)
+> - ESCALATE: {N} (review-blocking)
+>
+> {If ASK items exist, present the FIRST one as AskUserQuestion with options: Fix / Defer / Dismiss}
+
+**After all ASK items in Pass 1 are resolved, ask:**
+
+> Pass 1 complete. {N} critical issues found ({N} fixed, {N} deferred, {N} dismissed).
+>
+> A) **Continue to Pass 2** — informational findings (code org, test gaps, performance)
+> B) **Skip Pass 2** — enough information, go to summary
+> C) **Launch adversarial pass** — skip Pass 2, go straight to chaos engineering mode (Large diffs only)
+
+**STOP.** Wait for answer.
+
+**After Pass 2 (if run), ask before adversarial:**
+
+> Pass 2 complete. {N} informational findings.
+>
+> A) **Done** — proceed to summary
+> B) **Launch adversarial pass** — independent context, chaos engineer mindset (adds 2-5 min)
+>
+> RECOMMENDATION: {Adversarial recommended if diff is 200+ LOC or touches networking/serialization/economy}
+
+**STOP.** Wait for answer.
+
+---
+
 ## Anti-Sycophancy Rules
 
 **Forbidden phrases — never use these in review output:**
@@ -402,6 +452,20 @@ After the summary, list anything intentionally skipped:
 - Domain rules that don't apply (e.g., "No network code in diff — skipped 1.3")
 
 ---
+
+## Important Rules
+
+- **AUTO items: fix silently, report after.** Don't ask about import ordering. Just fix it and list in summary.
+- **ASK items: ONE AT A TIME.** Present each with: file:line, what's wrong, why it matters, fix options.
+- **ESCALATE items: stop and report immediately.** Don't continue reviewing if a security hole or data loss vector is found.
+- **Pass transitions are mandatory.** Present Pass 1 summary before starting Pass 2. Present Pass 2 summary before adversarial.
+- **Push-back when user dismisses Critical:** Push once with consequences ("negative damage = healing in PvP"). If dismissed again, record as acknowledged risk.
+- **Never redesign.** "This allocation should be pooled" = review. "Here's how to implement an object pool using {specific pattern}" = implementation. Stay in review.
+- **Escape hatch:** If user says "just fix what you can":
+  - AUTO-fix everything possible
+  - List ASK items as a table (don't present one by one)
+  - Skip adversarial
+  - Present summary
 
 ## Review Log
 

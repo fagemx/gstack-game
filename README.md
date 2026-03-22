@@ -4,7 +4,7 @@
 
 [繁體中文](README.zh-TW.md)
 
-21 interactive AI review skills covering the entire game development pipeline — from concept brainstorming to shipping. Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
+22 interactive AI review skills covering the entire game development pipeline — from concept brainstorming to shipping. Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
 
 gstack is Garry Tan's AI engineering workflow for Web/SaaS. gstack-game ports that same methodology to game dev: game design theory (MDA, SDT, Flow State) replaces SaaS metrics (MRR, churn). Core loop, retention hooks, and Sink/Faucet economy models replace API endpoints and database schemas. The engineering backbone (template engine, preamble injection, anti-sycophancy) maintains gstack-level quality.
 
@@ -18,10 +18,10 @@ gstack is Garry Tan's AI engineering workflow for Web/SaaS. gstack-game ports th
 ## Quick start: your first 10 minutes
 
 1. Install gstack-game (30 seconds — see below)
-2. Run `/game-ideation` — describe your game idea. It structures it into Fantasy/Loop/Twist, then challenges your assumptions with 6 forcing questions.
-3. Run `/game-review` — design review any GDD
-4. Run `/player-experience` — simulate a player walkthrough
-5. Run `/game-code-review` — game-aware code review on any branch with changes
+2. Run `/game-import` — convert your PDF/doc/notes into a standardized GDD. It reads your file, audits completeness against an 8-section standard, asks about gaps, and writes `docs/gdd.md`.
+3. Run `/game-review` — design review the GDD. Section-by-section with scoring, forcing questions, and recommendations.
+4. Run `/player-experience` — simulate a player walkthrough with a specific persona.
+5. Run `/game-ideation` — brainstorm from scratch if you don't have a design yet.
 6. Stop there. You'll know if this is for you.
 
 ---
@@ -57,7 +57,64 @@ cp -r /path/to/gstack-game/skills/game-review your-project/.claude/skills/
 ## See it work
 
 ```
-You:    I want to make an idle mobile game where the player runs a dungeon
+You:    I have a game design PDF I'd like to review
+You:    /game-import
+
+Claude: I found your PDF. Let me read it and check what's there.
+
+        | Section              | Status |
+        | Core Loop            | ✅     |
+        | Systems Detail       | ✅     |
+        | Progression          | ❌     |
+        | Economy              | ❌     |
+        | Player Motivation    | ❌     |
+
+        3/8 sections missing. Want me to ask about each gap?
+        A) Probe the gaps — one question per missing section
+        B) Just write the GDD — mark gaps as ❌
+        C) Focus on critical gaps only
+
+You:    A
+
+Claude: Your GDD doesn't define how players come back.
+        What pulls a player back for a second session?
+        A) New content unlocks
+        B) Unfinished business — "my character is still growing"
+        C) Daily rewards / rituals
+        D) I don't know yet — mark as TBD
+
+        → [walks through each gap with one focused question]
+        → Writes docs/gdd.md (116 lines, 5/8 sections)
+        → "Ready for /game-review"
+
+You:    /game-review
+
+Claude: Mode: A (Mobile/Casual) — weights adjusted
+
+        Section 1 — Core Loop: 7/10
+        "The 4-phase loop is clear but meso-loop is undefined."
+        A) Continue to Progression  B) Dig deeper  C) Fast-forward
+
+        → [walks through each section, one issue at a time]
+
+        GDD Health Score: 5.8/10
+        STATUS: DONE_WITH_CONCERNS
+
+You:    /player-experience
+
+Claude: Who should I pretend to be?
+        A) Casual Newcomer (3-min attention)
+        B) Interested Returner (Day 2-3)
+        → [recommends A based on GDD state]
+
+        Phase 1 — First Contact (0-30s):
+        0:00 — I see a loading screen. Emotion: Neutral
+        0:12 — First tap. Emotion: Engaged ✅ Aha moment
+        1:30 — Waiting for next wave. Emotion: Bored 🔴
+
+        "Would this persona return? My assessment: unlikely — 1:30 dead time."
+
+You:    I want to brainstorm a new concept instead
 You:    /game-ideation
 
 Claude: First — what stage are you at? Do you have a prototype, or just the concept?
@@ -125,10 +182,11 @@ gstack-game is a process, not a collection of tools. Skills are ordered the way 
 
 **Think → Plan → Review → Build → Test → Ship → Reflect**
 
-Each skill feeds the next. `/game-ideation` writes a concept doc that `/game-review` reads. `/game-code-review` catches bugs that `/game-ship` verifies are fixed.
+Each skill feeds the next. `/game-import` converts your PDF into a GDD that `/game-review` reads. `/game-review` flags economy issues that `/balance-review` digs into. All outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
 
 | Skill | Your specialist | What they do |
 |-------|----------------|--------------|
+| `/game-import` | **Document Specialist** | Convert any format (PDF, Notion, verbal description) into standardized `docs/gdd.md`. Audit completeness against 8-section standard. Pipeline gateway. |
 | `/game-ideation` | **Game Design Mentor** | Structure concepts with Fantasy/Loop/Twist, challenge assumptions with 6 forcing questions, plan next validation step with Iceberg framework |
 | `/game-direction` | **Producer / Creative Director** | Challenge "why build this game?", 10 cognitive patterns for strategic review, scope decisions (ADD/KEEP/DEFER/CUT) |
 | `/game-review` | **Senior Game Designer** | GDD review: Core Loop, Progression, Economy, Motivation, Risk. Quantified GDD Health Score |
@@ -260,11 +318,11 @@ gstack-game includes **opt-in** usage telemetry, disabled by default.
 
 ```
 ## gstack-game
-Available skills: /game-ideation, /game-direction, /game-review, /game-eng-review,
-/balance-review, /player-experience, /game-ux-review, /pitch-review,
-/game-code-review, /game-qa, /game-ship, /game-debug, /game-retro,
-/game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest,
-/careful, /guard, /unfreeze.
+Available skills: /game-import, /game-ideation, /game-direction, /game-review,
+/game-eng-review, /balance-review, /player-experience, /game-ux-review,
+/pitch-review, /game-code-review, /game-qa, /game-ship, /game-debug,
+/game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review,
+/playtest, /careful, /guard, /unfreeze.
 ```
 
 ---

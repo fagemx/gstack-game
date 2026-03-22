@@ -4,7 +4,7 @@
 
 [English](README.md)
 
-從概念發想到上架發布的 21 個互動式 AI 審查技能。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
+從概念發想到上架發布的 22 個互動式 AI 審查技能。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
 
 gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-game 把同一套方法論搬到遊戲開發：用遊戲設計理論（MDA、SDT、Flow State）取代 SaaS 指標（MRR、churn），用 core loop、retention hook、Sink/Faucet 經濟模型取代 API endpoint 和 database schema。工程骨架（template engine、preamble injection、反諂媚機制）維持 gstack 同等品質。
 
@@ -18,10 +18,10 @@ gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-ga
 ## Quick Start：前 10 分鐘
 
 1. 安裝 gstack-game（30 秒 — 見下方）
-2. 跑 `/game-ideation` — 描述你的遊戲想法。它會用 Fantasy/Loop/Twist 框架幫你結構化，然後用 6 個逼問問題挑戰你的前提。
-3. 跑 `/game-review` — 對任何 GDD 做設計審查
-4. 跑 `/player-experience` — 模擬玩家走查你的遊戲
-5. 跑 `/game-code-review` — 對任何有改動的分支做遊戲感知的 code review
+2. 跑 `/game-import` — 把你的 PDF/文件/筆記轉成標準 GDD。它會讀取檔案、對照 8-section 標準做完整度審計、問你缺失的部分、然後寫出 `docs/gdd.md`。
+3. 跑 `/game-review` — 逐 section 設計審查，帶評分、逼問、建議。
+4. 跑 `/player-experience` — 用特定 persona 模擬玩家走查。
+5. 跑 `/game-ideation` — 如果還沒有設計，從零發想。
 6. 到這裡停。你會知道這對你有沒有用。
 
 ---
@@ -241,11 +241,11 @@ gstack-game 包含 **opt-in** 的使用統計，預設關閉。
 
 ```
 ## gstack-game
-Available skills: /game-ideation, /game-direction, /game-review, /game-eng-review,
-/balance-review, /player-experience, /game-ux-review, /pitch-review,
-/game-code-review, /game-qa, /game-ship, /game-debug, /game-retro,
-/game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest,
-/careful, /guard, /unfreeze.
+Available skills: /game-import, /game-ideation, /game-direction, /game-review,
+/game-eng-review, /balance-review, /player-experience, /game-ux-review,
+/pitch-review, /game-code-review, /game-qa, /game-ship, /game-debug,
+/game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review,
+/playtest, /careful, /guard, /unfreeze.
 ```
 
 ---

@@ -50,6 +50,30 @@ function processTemplate(tmplPath: string, skillName: string): string {
 // Main
 let driftCount = 0;
 
+// Process root-level SKILL.md.tmpl (routing skill) if it exists
+const rootTmpl = join(ROOT, "SKILL.md.tmpl");
+const rootOut = join(ROOT, "SKILL.md");
+if (existsSync(rootTmpl)) {
+  const generated = processTemplate(rootTmpl, "gstack-game");
+  if (DRY_RUN) {
+    if (existsSync(rootOut)) {
+      const existing = readFileSync(rootOut, "utf-8");
+      if (existing !== generated) {
+        console.log(`  DRIFT: SKILL.md (root)`);
+        driftCount++;
+      } else {
+        console.log(`  ✓ SKILL.md (root, up to date)`);
+      }
+    } else {
+      console.log(`  MISSING: SKILL.md (root)`);
+      driftCount++;
+    }
+  } else {
+    writeFileSync(rootOut, generated, "utf-8");
+    console.log(`  ✓ SKILL.md (root)`);
+  }
+}
+
 const skillDirs = readdirSync(SKILLS_DIR, { withFileTypes: true })
   .filter((d) => d.isDirectory() && d.name !== "shared")
   .map((d) => d.name);

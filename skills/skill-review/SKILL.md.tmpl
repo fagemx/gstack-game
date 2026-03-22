@@ -34,7 +34,8 @@ Parse `$ARGUMENTS`:
 1. **Args is a skill name** (e.g., `game-qa`) → Review that single skill
 2. **Args is `all` or `scan`** → Scan all skills, produce dashboard
 3. **Args is `refactor <skill-name>`** → Score + refactor that skill (create references/, rewrite template)
-4. **Args is empty** → Ask user what to do
+4. **Args starts with `loop`** → extract skill name after `loop` (e.g., `loop game-qa`) → Auto fix loop: score → fix → re-score → repeat until Usable (18+) or max 3 iterations
+5. **Args is empty** → Ask user what to do
 
 ---
 
@@ -224,6 +225,193 @@ Refactor complete: /[name]
   - A1:  1→2 (trigger description rewritten)
   - E13: 1→2 (upstream artifact search added)
 ```
+
+---
+
+## Operation: Loop (Auto Fix)
+
+Self-reviewing, self-fixing loop. Like `pr-review-loop` but for skill quality instead of code quality.
+
+### Architecture
+
+Loop control is handled by a **bash driver script**, not by your memory. You MUST follow the ACTION output from the driver at every step.
+
+```
+┌──────────┐     ACTION: SCORE        ┌─────────┐
+│  Driver   │ ───────────────────────→ │   LLM   │  ← full 15-dimension rubric
+│  Script   │ ←──────────────────────  │ (you)   │
+│           │   score-done {total}     │         │
+│           │                          │         │
+│           │     ACTION: FIX          │         │  ← fix top 3 improvements
+│           │ ───────────────────────→ │         │
+│           │ ←──────────────────────  │         │
+│           │       fix-done           │         │
+│           │                          │         │
+│           │     ACTION: PASS         │         │  ← score ≥ 18, done
+│           │ ───────────────────────→ │         │
+└──────────┘                           └─────────┘
+```
+
+### Step 1: Create driver script
+
+```bash
+cat > /tmp/skill-review-loop-driver.sh << 'DRIVER'
+#!/bin/bash
+set -euo pipefail
+
+SKILL="$1"
+CMD="$2"
+STATE="/tmp/skill-review-loop-${SKILL}.state"
+
+case "$CMD" in
+  init)
+    echo "0" > "$STATE"
+    echo "ACTION: SCORE"
+    ;;
+  score-done)
+    TOTAL="${3:-0}"
+    ITER=$(cat "$STATE")
+    ITER=$((ITER + 1))
+    echo "$ITER" > "$STATE"
+    if [ "$TOTAL" -ge 18 ]; then
+      echo "ACTION: PASS"
+    elif [ "$ITER" -ge 3 ]; then
+      echo "ACTION: MAX_ITER"
+    else
+      echo "ACTION: FIX"
+    fi
+    ;;
+  fix-done)
+    echo "ACTION: SCORE"
+    ;;
+esac
+DRIVER
+chmod +x /tmp/skill-review-loop-driver.sh
+```
+
+### Step 2: Initialize
+
+```bash
+ACTION=$(/tmp/skill-review-loop-driver.sh "$SKILL_NAME" init)
+# Output: ACTION: SCORE
+```
+
+### Step 3: Action Loop
+
+Read the ACTION output and execute. **Always call driver after completing an action.**
+
+### On `ACTION: SCORE`
+
+1. Read the skill's SKILL.md.tmpl + all references/ files
+2. Score against the full 15-dimension rubric from `references/rubric.md`
+3. Record the score and top 3 improvement priorities
+4. Report to driver:
+
+```bash
+ACTION=$(/tmp/skill-review-loop-driver.sh "$SKILL_NAME" score-done "$TOTAL_SCORE")
+```
+
+5. Follow the returned ACTION.
+
+### On `ACTION: FIX`
+
+Read the current iteration number:
+```bash
+ITER=$(cat /tmp/skill-review-loop-${SKILL_NAME}.state)
+```
+
+Fix the top 3 improvements from the most recent scoring. For each fix:
+
+**What to fix per dimension:**
+
+| Dimension | How to fix |
+|-----------|-----------|
+| D10 (Progressive Disclosure) | Create references/ directory, split content out, rewrite main template. Follow `references/refactor-patterns.md` exactly. |
+| A1 (Trigger Description) | Rewrite frontmatter description as trigger condition (what + when + when NOT + adjacent skills). |
+| C7 (Gotchas) | Create `references/gotchas.md` with Claude-specific mistakes for this skill's domain + forbidden phrases + forcing questions. |
+| E13 (Artifact Discovery) | Add bash block at top to search $_PROJECTS_DIR for upstream artifacts. |
+| E14 (Output Contract) | Add Save Artifact section that writes to $_PROJECTS_DIR. |
+| E15 (Workflow Position) | Add downstream discoverability list + next-skill recommendation. |
+| A2 (Role Identity) | Add a one-sentence role lock at the top of the skill content. |
+| A3 (Mode Routing) | Add Step 0 with AskUserQuestion mode selection or args parsing. |
+| B5 (STOP Gates) | Add "STOP. One issue per AskUserQuestion." at end of each section. |
+| C8 (Scoring) | Add explicit scoring rubric with point values per criterion. |
+| C9 (Benchmarks) | Add structured benchmark tables from industry data. |
+| B6 (Recovery) | Add interrupt recovery procedure. |
+| D11 (Helper Code) | Add scripts/ directory with relevant tools. |
+| D12 (Config/Memory) | Add config.json pattern + review log readback. |
+| B4 (Flow Externalization) | Add TodoWrite requirement or explicit phase tracking. |
+
+**Rules:**
+- Only fix the top 3 from the scoring. Don't touch anything else.
+- After fixing, regenerate: `bun scripts/gen-skill-docs.ts`
+- Verify the fix didn't break existing mechanisms (grep for preserved patterns from refactor-patterns.md)
+
+Report to driver:
+```bash
+ACTION=$(/tmp/skill-review-loop-driver.sh "$SKILL_NAME" fix-done)
+# Always returns: ACTION: SCORE
+```
+
+Follow the returned ACTION (loop back to scoring).
+
+### On `ACTION: PASS`
+
+```bash
+ITER=$(cat /tmp/skill-review-loop-${SKILL_NAME}.state)
+```
+
+The skill reached Usable quality (≥ 18/30). Present the result:
+
+```
+/skill-review loop complete — PASS ✅
+
+Skill: /[name]
+Iterations: [N]
+
+Score progression:
+  Round 1: [score]/30 — fixed [D10, A1, C7]
+  Round 2: [score]/30 — fixed [E13, E14, C8]
+  Round 3: [score]/30 — PASS
+
+Final scorecard:
+  [full 15-dimension scorecard]
+
+Remaining gaps (below 2/2):
+  - [dimension]: [current score] — [what would make it a 2]
+```
+
+Commit all changes:
+```bash
+git add skills/$SKILL_NAME/
+git commit -m "refactor($SKILL_NAME): Auto-reviewed to [score]/30 ([grade]) in [N] rounds
+
+Improvements:
+- [list what was fixed per round]
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
+```
+
+### On `ACTION: MAX_ITER`
+
+Max 3 iterations reached. Present what was achieved and what remains:
+
+```
+/skill-review loop — MAX ITERATIONS (3 rounds)
+
+Skill: /[name]
+Score: [start]/30 → [final]/30 (+[delta])
+
+Fixed in 3 rounds:
+  [list all fixes]
+
+Remaining issues (need manual attention):
+  - [dimension]: [score] — [what's needed]
+
+Status: DONE_WITH_CONCERNS — improved but below Usable threshold.
+```
+
+Commit whatever was improved. Don't leave uncommitted changes.
 
 ---
 

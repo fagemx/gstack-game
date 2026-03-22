@@ -33,6 +33,14 @@ done
 done
 [ "$_GDD_FOUND" -eq 0 ] && echo "No GDD markdown files found in repo"
 echo "---"
+echo "=== Checking shared storage ==="
+PREV_IMPORT=$(ls -t $_PROJECTS_DIR/*-gdd-import-*.md 2>/dev/null | head -1)
+[ -n "$PREV_IMPORT" ] && echo "Prior GDD import: $PREV_IMPORT"
+PREV_CONCEPT=$(ls -t $_PROJECTS_DIR/*-concept-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CONCEPT" ] && echo "Prior concept: $PREV_CONCEPT"
+PREV_GAME_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_GAME_REVIEW" ] && echo "Prior game review: $PREV_GAME_REVIEW"
+echo "---"
 echo "=== Checking for importable source files ==="
 _SRC_FOUND=0
 for ext in pdf docx txt rtf html; do
@@ -482,6 +490,22 @@ Game Import Summary:
 
   STATUS: DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT
 ```
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-gdd-import-${_DATETIME}.md"
+```
+
+Write a copy of the GDD to `$_PROJECTS_DIR/{user}-{branch}-gdd-import-{datetime}.md`. This is a snapshot of the imported GDD at the time of import (the canonical version lives at `docs/gdd.md`). If a prior GDD import exists, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-review` — reads the GDD for design review
+- `/player-experience` — reads the GDD for walkthrough simulation
+- `/balance-review` — reads economy and progression sections
+- `/game-eng-review` — reads technical specs section
+- `/game-direction` — reads scope and milestones
 
 ## Review Log
 

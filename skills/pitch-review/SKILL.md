@@ -9,27 +9,47 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.1.0"
+_GD_VERSION="0.2.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
-for _p in ".claude/skills/game-review/../../../gstack-game/bin" ".claude/skills/game-review/../../bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
+for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
   [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
 done
-# Fallback: search common locations
-[ -z "$_GG_BIN" ] && [ -f ".claude/skills/gstack-game/bin/gstack-config" ] && _GG_BIN=".claude/skills/gstack-game/bin"
 [ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
+
+# Project identification
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+_USER=$(whoami 2>/dev/null || echo "unknown")
+
+# Session tracking
 mkdir -p ~/.gstack/sessions
 touch ~/.gstack/sessions/"$PPID"
 _PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
-_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _TEL_START=$(date +%s)
 _SESSION_ID="$-$(date +%s)"
+
+# Shared artifact storage (cross-skill, cross-session)
+mkdir -p ~/.gstack/projects/$_SLUG
+_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+
+# Telemetry
 mkdir -p ~/.gstack/analytics
-echo '{"skill":"pitch-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+echo '{"skill":"pitch-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+
+echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"
 echo "PROACTIVE: $_PROACTIVE"
+echo "PROJECTS_DIR: $_PROJECTS_DIR"
 echo "GD_VERSION: $_GD_VERSION"
 ```
+
+**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
+- Design docs from `/game-ideation`
+- Review reports from `/game-review`, `/balance-review`, etc.
+- Player journey maps from `/player-experience`
+
+All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
@@ -91,6 +111,23 @@ DECK=$(ls -t docs/*deck* *.pptx *.key *.pdf 2>/dev/null | head -1)
 ```
 
 If no materials found, proceed with verbal review — a pitch review is valuable even for napkin ideas.
+
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior work ==="
+PREV_PITCH=$(ls -t $_PROJECTS_DIR/*-pitch-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_PITCH" ] && echo "Prior pitch review: $PREV_PITCH"
+PREV_CONCEPT=$(ls -t $_PROJECTS_DIR/*-concept-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CONCEPT" ] && echo "Prior concept: $PREV_CONCEPT"
+PREV_DIRECTION=$(ls -t $_PROJECTS_DIR/*-direction-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_DIRECTION" ] && echo "Prior direction review: $PREV_DIRECTION"
+LOCAL_PITCH=$(ls -t docs/*pitch* docs/*proposal* docs/*concept* 2>/dev/null | head -1)
+[ -n "$LOCAL_PITCH" ] && echo "Local pitch doc: $LOCAL_PITCH"
+echo "---"
+```
+
+If a prior pitch review exists, read it. Note previous Pitch Health Score and recommendation — check if flagged issues have been addressed since last review.
 
 ---
 
@@ -682,6 +719,20 @@ Recommendation thresholds:
 > AI confidence: ~70% — market data and revenue benchmarks cited in this review are estimates based on publicly available data and may not reflect current market conditions. Verify comp set revenue figures, CPI benchmarks, and genre trend data with current sources before making investment decisions.
 
 ---
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-pitch-review-${_DATETIME}.md"
+```
+
+Write the Pitch Health Score + Completion Summary + Forcing Question answers to `$_PROJECTS_DIR/{user}-{branch}-pitch-review-{datetime}.md`. If a prior pitch review exists, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-direction` — reads market positioning and feasibility assessment
+- `/game-review` — reads differentiation and comp set analysis
+- `/game-ideation` — reads pitch gaps for further concept development
 
 ## Review Log
 

@@ -9,27 +9,47 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.1.0"
+_GD_VERSION="0.2.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
-for _p in ".claude/skills/game-review/../../../gstack-game/bin" ".claude/skills/game-review/../../bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
+for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
   [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
 done
-# Fallback: search common locations
-[ -z "$_GG_BIN" ] && [ -f ".claude/skills/gstack-game/bin/gstack-config" ] && _GG_BIN=".claude/skills/gstack-game/bin"
 [ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
+
+# Project identification
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+_USER=$(whoami 2>/dev/null || echo "unknown")
+
+# Session tracking
 mkdir -p ~/.gstack/sessions
 touch ~/.gstack/sessions/"$PPID"
 _PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
-_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _TEL_START=$(date +%s)
 _SESSION_ID="$-$(date +%s)"
+
+# Shared artifact storage (cross-skill, cross-session)
+mkdir -p ~/.gstack/projects/$_SLUG
+_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+
+# Telemetry
 mkdir -p ~/.gstack/analytics
-echo '{"skill":"game-code-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+echo '{"skill":"game-code-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+
+echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"
 echo "PROACTIVE: $_PROACTIVE"
+echo "PROJECTS_DIR: $_PROJECTS_DIR"
 echo "GD_VERSION: $_GD_VERSION"
 ```
+
+**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
+- Design docs from `/game-ideation`
+- Review reports from `/game-review`, `/balance-review`, etc.
+- Player journey maps from `/player-experience`
+
+All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
@@ -88,6 +108,19 @@ echo "DIFF_LOC: $_DIFF_LOC"
 echo "COMMIT: $_COMMIT"
 echo "$_DIFF_STAT"
 ```
+
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior code reviews ==="
+PREV_CODE_REVIEW=$(ls -t $_PROJECTS_DIR/*-${_BRANCH}-code-review-*.md $_PROJECTS_DIR/*-code-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CODE_REVIEW" ] && echo "Prior code review: $PREV_CODE_REVIEW"
+PREV_ENG=$(ls -t $_PROJECTS_DIR/*-eng-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_ENG" ] && echo "Prior eng review: $PREV_ENG"
+echo "---"
+```
+
+If a prior code review exists on this branch, read it. Note previously flagged issues — check if they were addressed or if the same patterns recur.
 
 Read the full diff:
 
@@ -466,6 +499,20 @@ After the summary, list anything intentionally skipped:
   - List ASK items as a table (don't present one by one)
   - Skip adversarial
   - Present summary
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-code-review-${_DATETIME}.md"
+```
+
+Write the Game Code Review Summary to `$_PROJECTS_DIR/{user}-{branch}-code-review-{datetime}.md`. If a prior code review exists on this branch, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-ship` — checks code review status as a merge/release gate
+- `/game-eng-review` — reads recurring code-level issues for architecture-level assessment
+- `/game-qa` — reads flagged areas for targeted testing
 
 ## Review Log
 

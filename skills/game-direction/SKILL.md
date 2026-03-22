@@ -9,27 +9,47 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.1.0"
+_GD_VERSION="0.2.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
-for _p in ".claude/skills/game-review/../../../gstack-game/bin" ".claude/skills/game-review/../../bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
+for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
   [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
 done
-# Fallback: search common locations
-[ -z "$_GG_BIN" ] && [ -f ".claude/skills/gstack-game/bin/gstack-config" ] && _GG_BIN=".claude/skills/gstack-game/bin"
 [ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
+
+# Project identification
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+_USER=$(whoami 2>/dev/null || echo "unknown")
+
+# Session tracking
 mkdir -p ~/.gstack/sessions
 touch ~/.gstack/sessions/"$PPID"
 _PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
-_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _TEL_START=$(date +%s)
 _SESSION_ID="$-$(date +%s)"
+
+# Shared artifact storage (cross-skill, cross-session)
+mkdir -p ~/.gstack/projects/$_SLUG
+_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+
+# Telemetry
 mkdir -p ~/.gstack/analytics
-echo '{"skill":"game-direction","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+echo '{"skill":"game-direction","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+
+echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"
 echo "PROACTIVE: $_PROACTIVE"
+echo "PROJECTS_DIR: $_PROJECTS_DIR"
 echo "GD_VERSION: $_GD_VERSION"
 ```
+
+**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
+- Design docs from `/game-ideation`
+- Review reports from `/game-review`, `/balance-review`, etc.
+- Player journey maps from `/player-experience`
+
+All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
@@ -81,6 +101,23 @@ ROADMAP=$(ls -t docs/*roadmap* docs/*milestone* docs/*timeline* 2>/dev/null | he
 ```
 
 If no GDD or concept doc found, suggest `/game-ideation` first. Direction review without a concept is premature.
+
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior work ==="
+PREV_DIRECTION=$(ls -t $_PROJECTS_DIR/*-direction-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_DIRECTION" ] && echo "Prior direction review: $PREV_DIRECTION"
+PREV_CONCEPT=$(ls -t $_PROJECTS_DIR/*-concept-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CONCEPT" ] && echo "Prior concept: $PREV_CONCEPT"
+PREV_GAME_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_GAME_REVIEW" ] && echo "Prior game review: $PREV_GAME_REVIEW"
+PREV_PITCH=$(ls -t $_PROJECTS_DIR/*-pitch-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_PITCH" ] && echo "Prior pitch review: $PREV_PITCH"
+echo "---"
+```
+
+If a prior direction review exists, read it. Note previous findings — check if flagged issues have been addressed since last review.
 
 # /game-direction: Game Direction Review
 
@@ -509,6 +546,21 @@ Full risk matrix as documented in Section 3.
 - `/balance-review` — if economy or progression risks flagged
 - `/game-ideation` — if premise challenge suggests rethinking the concept
 - `/pitch-review` — if market risk is high, validate the pitch
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-direction-review-${_DATETIME}.md"
+```
+
+Write the Direction Review report (Completion Summary + Scope Change Log + Risk Register) to `$_PROJECTS_DIR/{user}-{branch}-direction-review-{datetime}.md`. If a prior direction review exists, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-review` — reads scope decisions and risk findings
+- `/game-eng-review` — reads technical risk flags and scope constraints
+- `/pitch-review` — reads strategic alignment and market positioning
+- `/game-ship` — checks direction review status as a release gate
 
 ## Review Log
 

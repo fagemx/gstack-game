@@ -9,27 +9,47 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.1.0"
+_GD_VERSION="0.2.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
-for _p in ".claude/skills/game-review/../../../gstack-game/bin" ".claude/skills/game-review/../../bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
+for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
   [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
 done
-# Fallback: search common locations
-[ -z "$_GG_BIN" ] && [ -f ".claude/skills/gstack-game/bin/gstack-config" ] && _GG_BIN=".claude/skills/gstack-game/bin"
 [ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
+
+# Project identification
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+_USER=$(whoami 2>/dev/null || echo "unknown")
+
+# Session tracking
 mkdir -p ~/.gstack/sessions
 touch ~/.gstack/sessions/"$PPID"
 _PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
-_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _TEL_START=$(date +%s)
 _SESSION_ID="$-$(date +%s)"
+
+# Shared artifact storage (cross-skill, cross-session)
+mkdir -p ~/.gstack/projects/$_SLUG
+_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+
+# Telemetry
 mkdir -p ~/.gstack/analytics
-echo '{"skill":"game-eng-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+echo '{"skill":"game-eng-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+
+echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"
 echo "PROACTIVE: $_PROACTIVE"
+echo "PROJECTS_DIR: $_PROJECTS_DIR"
 echo "GD_VERSION: $_GD_VERSION"
 ```
+
+**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
+- Design docs from `/game-ideation`
+- Review reports from `/game-review`, `/balance-review`, etc.
+- Player journey maps from `/player-experience`
+
+All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
@@ -79,6 +99,25 @@ GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null
 ```
 
 If no architecture doc found, ask the user to provide one or describe the architecture verbally. Proceed with available information but note gaps.
+
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior work ==="
+PREV_ENG=$(ls -t $_PROJECTS_DIR/*-eng-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_ENG" ] && echo "Prior eng review: $PREV_ENG"
+PREV_GDD=$(ls -t $_PROJECTS_DIR/*-gdd-import-*.md $_PROJECTS_DIR/*-design-*.md 2>/dev/null | head -1)
+[ -n "$PREV_GDD" ] && echo "Prior GDD artifact: $PREV_GDD"
+PREV_DIRECTION=$(ls -t $_PROJECTS_DIR/*-direction-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_DIRECTION" ] && echo "Prior direction review: $PREV_DIRECTION"
+LOCAL_GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* 2>/dev/null | head -1)
+[ -n "$LOCAL_GDD" ] && echo "Local GDD: $LOCAL_GDD"
+LOCAL_ARCH=$(ls -t docs/*arch* docs/*technical* docs/*engine* 2>/dev/null | head -1)
+[ -n "$LOCAL_ARCH" ] && echo "Local architecture doc: $LOCAL_ARCH"
+echo "---"
+```
+
+If a prior eng review exists, read it. Note previous Architecture Health Score and flagged issues — check if those issues have been addressed.
 
 ---
 
@@ -606,6 +645,21 @@ For each identified tech debt item:
   - Second time: Respect it. Complete remaining sections AUTO-only, present score summary.
 - **"We'll optimize later" is a red flag, not an answer.** Optimization is architectural. If the frame budget isn't set now, it won't be set later — it'll be discovered as a crisis.
 - **Never prescribe specific technology.** "You need a job system" = review. "Use Unity DOTS with Burst compiler" = consulting. This skill reviews, not consults.
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-eng-review-${_DATETIME}.md"
+```
+
+Write the Architecture Health Score + Completion Summary + Technical Debt Register to `$_PROJECTS_DIR/{user}-{branch}-eng-review-{datetime}.md`. If a prior eng review exists, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-code-review` — reads architecture decisions for code-level validation
+- `/game-direction` — reads technical risk assessment and scope constraints
+- `/game-ship` — checks eng review status as a release gate
+- `/game-qa` — reads performance targets and platform requirements
 
 ## Review Log
 

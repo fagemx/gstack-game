@@ -21,6 +21,25 @@ GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null
 
 If no architecture doc found, ask the user to provide one or describe the architecture verbally. Proceed with available information but note gaps.
 
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior work ==="
+PREV_ENG=$(ls -t $_PROJECTS_DIR/*-eng-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_ENG" ] && echo "Prior eng review: $PREV_ENG"
+PREV_GDD=$(ls -t $_PROJECTS_DIR/*-gdd-import-*.md $_PROJECTS_DIR/*-design-*.md 2>/dev/null | head -1)
+[ -n "$PREV_GDD" ] && echo "Prior GDD artifact: $PREV_GDD"
+PREV_DIRECTION=$(ls -t $_PROJECTS_DIR/*-direction-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_DIRECTION" ] && echo "Prior direction review: $PREV_DIRECTION"
+LOCAL_GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* 2>/dev/null | head -1)
+[ -n "$LOCAL_GDD" ] && echo "Local GDD: $LOCAL_GDD"
+LOCAL_ARCH=$(ls -t docs/*arch* docs/*technical* docs/*engine* 2>/dev/null | head -1)
+[ -n "$LOCAL_ARCH" ] && echo "Local architecture doc: $LOCAL_ARCH"
+echo "---"
+```
+
+If a prior eng review exists, read it. Note previous Architecture Health Score and flagged issues — check if those issues have been addressed.
+
 ---
 
 # /game-eng-review: Game Technical Architecture Review
@@ -547,6 +566,21 @@ For each identified tech debt item:
   - Second time: Respect it. Complete remaining sections AUTO-only, present score summary.
 - **"We'll optimize later" is a red flag, not an answer.** Optimization is architectural. If the frame budget isn't set now, it won't be set later — it'll be discovered as a crisis.
 - **Never prescribe specific technology.** "You need a job system" = review. "Use Unity DOTS with Burst compiler" = consulting. This skill reviews, not consults.
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-eng-review-${_DATETIME}.md"
+```
+
+Write the Architecture Health Score + Completion Summary + Technical Debt Register to `$_PROJECTS_DIR/{user}-{branch}-eng-review-{datetime}.md`. If a prior eng review exists, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-code-review` — reads architecture decisions for code-level validation
+- `/game-direction` — reads technical risk assessment and scope constraints
+- `/game-ship` — checks eng review status as a release gate
+- `/game-qa` — reads performance targets and platform requirements
 
 ## Review Log
 

@@ -9,27 +9,47 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.1.0"
+_GD_VERSION="0.2.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
-for _p in ".claude/skills/game-review/../../../gstack-game/bin" ".claude/skills/game-review/../../bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
+for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
   [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
 done
-# Fallback: search common locations
-[ -z "$_GG_BIN" ] && [ -f ".claude/skills/gstack-game/bin/gstack-config" ] && _GG_BIN=".claude/skills/gstack-game/bin"
 [ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
+
+# Project identification
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+_USER=$(whoami 2>/dev/null || echo "unknown")
+
+# Session tracking
 mkdir -p ~/.gstack/sessions
 touch ~/.gstack/sessions/"$PPID"
 _PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
-_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _TEL_START=$(date +%s)
 _SESSION_ID="$-$(date +%s)"
+
+# Shared artifact storage (cross-skill, cross-session)
+mkdir -p ~/.gstack/projects/$_SLUG
+_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+
+# Telemetry
 mkdir -p ~/.gstack/analytics
-echo '{"skill":"game-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+echo '{"skill":"game-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+
+echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"
 echo "PROACTIVE: $_PROACTIVE"
+echo "PROJECTS_DIR: $_PROJECTS_DIR"
 echo "GD_VERSION: $_GD_VERSION"
 ```
+
+**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
+- Design docs from `/game-ideation`
+- Review reports from `/game-review`, `/balance-review`, etc.
+- Player journey maps from `/player-experience`
+
+All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
@@ -67,16 +87,27 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ```
 
 
-## Design Doc Check
+## Artifact Discovery
 
 ```bash
-SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null | head -1)
-[ -z "$GDD" ] && GDD=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)
-[ -n "$GDD" ] && echo "GDD found: $GDD" || echo "No GDD found"
+echo "=== Checking for design docs and prior reviews ==="
+# Local GDD
+GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null | head -1)
+[ -n "$GDD" ] && echo "GDD: $GDD ($(wc -l < "$GDD") lines)"
+# Shared artifacts
+PREV_CONCEPT=$(ls -t $_PROJECTS_DIR/*-concept-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CONCEPT" ] && echo "Prior concept: $PREV_CONCEPT"
+PREV_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_REVIEW" ] && echo "Prior game review: $PREV_REVIEW"
+PREV_BALANCE=$(ls -t $_PROJECTS_DIR/*-balance-report-*.md 2>/dev/null | head -1)
+[ -n "$PREV_BALANCE" ] && echo "Prior balance review: $PREV_BALANCE"
+echo "---"
+[ -z "$GDD" ] && echo "No GDD found"
 ```
 
 If no GDD found, offer `/game-import` first (to convert an external document), or `/game-ideation` (to brainstorm from scratch).
+
+If a prior game review exists, read it. Note previous score and findings — check if flagged issues have been addressed since last review.
 
 ---
 
@@ -785,11 +816,55 @@ For each core feature identified in Section 1, write one realistic failure scena
   - First time: "Two more questions in this section, then I'll fast-forward." Ask 2, then switch to AUTO-only for remaining sections.
   - Second time: Respect it. Complete remaining sections with AUTO-only analysis, present full score summary.
 - **Never suggest code or implementation.** This skill reviews design documents, not code. If a design issue implies a technical solution, note "this will need technical review in `/game-eng-review`" — don't specify HOW.
+- **Fix-then-rescore loop:** When an ASK item is resolved and the user updates the GDD:
+  1. Re-read the updated section
+  2. Re-score ONLY that section
+  3. Update the running score
+  4. Continue to next issue or next section
+  This means the score IMPROVES during the review as issues are addressed. The final score reflects the GDD's state at the END of the review, not the beginning.
 - **Completion status:**
   - DONE — All 6 sections reviewed, GDD Health Score ≥ 6.0
   - DONE_WITH_CONCERNS — Reviewed but score 4.0-5.9 or fast-forwarded
   - BLOCKED — ESCALATE items prevented completion (no core loop, no pillars)
   - NEEDS_CONTEXT — Critical context missing, user chose to stop
+
+## Baseline → Final Re-score (if GDD was updated during review)
+
+If the user updated the GDD during this review session (fixing issues you flagged):
+
+1. **Record baseline score** at the start of the review (from first pass through all sections)
+2. **After user fixes**: re-read the updated sections and re-score ONLY the changed sections
+3. **Present delta:**
+
+```
+Score Delta:
+  Section            Baseline    Final    Change
+  Core Loop:         _/10        _/10     +_
+  Progression:       _/10        _/10     +_
+  ...
+  WEIGHTED TOTAL:    _._/10      _._/10   +_._
+```
+
+If final score is WORSE than baseline: **WARN prominently** — a fix introduced a new problem.
+
+## Save Artifact
+
+Save the review report to shared storage for downstream skills:
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving review to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-game-review-${_DATETIME}.md"
+```
+
+Write the full Completion Summary + GDD Health Score + Playtest Protocol to `$_PROJECTS_DIR/{user}-{branch}-game-review-{datetime}.md`.
+
+If a prior game review exists, the new one includes `Supersedes: {prior filename}` for revision tracking.
+
+This artifact is discoverable by:
+- `/balance-review` — reads flagged economy issues
+- `/player-experience` — reads identified churn points
+- `/game-direction` — reads risk assessment and scope concerns
+- `/game-ship` — checks review status as a release gate
 
 ## Review Log
 

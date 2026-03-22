@@ -9,27 +9,47 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.1.0"
+_GD_VERSION="0.2.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
-for _p in ".claude/skills/game-review/../../../gstack-game/bin" ".claude/skills/game-review/../../bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
+for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
   [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
 done
-# Fallback: search common locations
-[ -z "$_GG_BIN" ] && [ -f ".claude/skills/gstack-game/bin/gstack-config" ] && _GG_BIN=".claude/skills/gstack-game/bin"
 [ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
+
+# Project identification
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+_USER=$(whoami 2>/dev/null || echo "unknown")
+
+# Session tracking
 mkdir -p ~/.gstack/sessions
 touch ~/.gstack/sessions/"$PPID"
 _PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
-_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _TEL_START=$(date +%s)
 _SESSION_ID="$-$(date +%s)"
+
+# Shared artifact storage (cross-skill, cross-session)
+mkdir -p ~/.gstack/projects/$_SLUG
+_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+
+# Telemetry
 mkdir -p ~/.gstack/analytics
-echo '{"skill":"game-ideation","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+echo '{"skill":"game-ideation","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+
+echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"
 echo "PROACTIVE: $_PROACTIVE"
+echo "PROJECTS_DIR: $_PROJECTS_DIR"
 echo "GD_VERSION: $_GD_VERSION"
 ```
+
+**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
+- Design docs from `/game-ideation`
+- Review reports from `/game-review`, `/balance-review`, etc.
+- Player journey maps from `/player-experience`
+
+All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
@@ -67,16 +87,26 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ```
 
 
-## Existing Concept Check
+## Artifact Discovery
 
 ```bash
-SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+echo "=== Checking for prior work ==="
+# Local docs
 CONCEPT=$(ls -t docs/*concept* docs/*idea* docs/*pitch* *.concept.md 2>/dev/null | head -1)
-[ -z "$CONCEPT" ] && CONCEPT=$(ls -t ~/.gstack/projects/$SLUG/*-concept-*.md 2>/dev/null | head -1)
-[ -n "$CONCEPT" ] && echo "Existing concept found: $CONCEPT" || echo "No existing concept — starting fresh"
+[ -n "$CONCEPT" ] && echo "Local concept: $CONCEPT"
+GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null | head -1)
+[ -n "$GDD" ] && echo "GDD exists: $GDD"
+# Shared artifacts from prior sessions
+PREV_CONCEPT=$(ls -t $_PROJECTS_DIR/*-concept-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CONCEPT" ] && echo "Prior concept (shared): $PREV_CONCEPT"
+PREV_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_REVIEW" ] && echo "Prior game review: $PREV_REVIEW"
+echo "---"
+[ -z "$CONCEPT" ] && [ -z "$PREV_CONCEPT" ] && echo "No existing concept — starting fresh"
 ```
 
-If an existing concept is found, ask: resume and refine, or start a new concept?
+If prior concept found, read it. Then ask: resume and refine, or start fresh?
+If prior game-review found, read its findings — they inform which parts of the concept need rethinking.
 
 # /game-ideation: Interactive Game Concept Brainstorming
 
@@ -546,6 +576,25 @@ Game Ideation Session:
 - **Pushing back IS the value.** If the user says something vague and you accept it, you've failed. Push for specifics. The concept gets sharper with each push.
 - **Escape hatch:** Respect on second request. Note skipped questions. Produce output from what exists.
 - **End with the assignment.** Every session must produce one concrete action for the user to take NEXT — not "go build it" but "play these 3 competitor games and write down what frustrates you" or "build a paper prototype of the core loop and test it with 3 people."
+
+## Save Artifacts
+
+Save the Concept One-Pager to both local and shared locations:
+
+1. **Local:** Write to `docs/concept.md` in the project repo (for version control)
+2. **Shared:** Write to `$_PROJECTS_DIR/{user}-{branch}-concept-{datetime}.md` (for cross-session discovery)
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving concept to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-concept-${_DATETIME}.md"
+```
+
+If a prior concept exists in shared storage, the new one includes:
+```markdown
+Supersedes: {prior filename}
+```
+
+This creates a revision chain — you can trace how a concept evolved across ideation sessions.
 
 ## Review Log
 

@@ -33,6 +33,23 @@ DECK=$(ls -t docs/*deck* *.pptx *.key *.pdf 2>/dev/null | head -1)
 
 If no materials found, proceed with verbal review — a pitch review is valuable even for napkin ideas.
 
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior work ==="
+PREV_PITCH=$(ls -t $_PROJECTS_DIR/*-pitch-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_PITCH" ] && echo "Prior pitch review: $PREV_PITCH"
+PREV_CONCEPT=$(ls -t $_PROJECTS_DIR/*-concept-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CONCEPT" ] && echo "Prior concept: $PREV_CONCEPT"
+PREV_DIRECTION=$(ls -t $_PROJECTS_DIR/*-direction-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_DIRECTION" ] && echo "Prior direction review: $PREV_DIRECTION"
+LOCAL_PITCH=$(ls -t docs/*pitch* docs/*proposal* docs/*concept* 2>/dev/null | head -1)
+[ -n "$LOCAL_PITCH" ] && echo "Local pitch doc: $LOCAL_PITCH"
+echo "---"
+```
+
+If a prior pitch review exists, read it. Note previous Pitch Health Score and recommendation — check if flagged issues have been addressed since last review.
+
 ---
 
 ## Step 0: Pitch Context（提案背景）
@@ -623,6 +640,20 @@ Recommendation thresholds:
 > AI confidence: ~70% — market data and revenue benchmarks cited in this review are estimates based on publicly available data and may not reflect current market conditions. Verify comp set revenue figures, CPI benchmarks, and genre trend data with current sources before making investment decisions.
 
 ---
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-pitch-review-${_DATETIME}.md"
+```
+
+Write the Pitch Health Score + Completion Summary + Forcing Question answers to `$_PROJECTS_DIR/{user}-{branch}-pitch-review-{datetime}.md`. If a prior pitch review exists, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-direction` — reads market positioning and feasibility assessment
+- `/game-review` — reads differentiation and comp set analysis
+- `/game-ideation` — reads pitch gaps for further concept development
 
 ## Review Log
 

@@ -19,6 +19,25 @@ GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md design/gdd/
 
 If no GDD found, ask the user to provide a game design document, spec, or description of the game to walk through.
 
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior work ==="
+PREV_WALKTHROUGH=$(ls -t $_PROJECTS_DIR/*-player-walkthrough-*.md 2>/dev/null | head -1)
+[ -n "$PREV_WALKTHROUGH" ] && echo "Prior player walkthrough: $PREV_WALKTHROUGH"
+PREV_GAME_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_GAME_REVIEW" ] && echo "Prior game review: $PREV_GAME_REVIEW"
+PREV_BALANCE=$(ls -t $_PROJECTS_DIR/*-balance-report-*.md 2>/dev/null | head -1)
+[ -n "$PREV_BALANCE" ] && echo "Prior balance review: $PREV_BALANCE"
+LOCAL_GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* 2>/dev/null | head -1)
+[ -n "$LOCAL_GDD" ] && echo "Local GDD: $LOCAL_GDD"
+echo "---"
+```
+
+If a prior player walkthrough exists, read it. Note which personas were used and what churn points were identified — compare against this walkthrough.
+
+If a prior game review exists, read it for known design issues and churn risk areas to pay special attention to during the walkthrough.
+
 # /player-experience: Player Experience Walkthrough
 
 Unlike other review skills that analyze documents from outside, this skill **role-plays as a player**. It walks through the game moment-by-moment in first person, narrating what the player sees, feels, thinks, and does — then flags where the experience breaks down.
@@ -540,6 +559,21 @@ Recommended next steps:
   - DONE_WITH_CONCERNS — Walkthrough complete but multiple unhealthy patterns found
   - BLOCKED — Cannot simulate (no core loop defined, persona has no entry point)
   - NEEDS_CONTEXT — Too many GDD blind spots to produce meaningful walkthrough
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-player-walkthrough-${_DATETIME}.md"
+```
+
+Write the Player Journey Map + Score + Completion Summary to `$_PROJECTS_DIR/{user}-{branch}-player-walkthrough-{datetime}.md`. If a prior walkthrough exists, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/balance-review` — reads churn risk moments and friction points for economy tuning
+- `/game-review` — reads identified design gaps and blind spots
+- `/game-direction` — reads retention risk assessment
+- `/game-ux-review` — reads UI/UX friction points identified during walkthrough
 
 ## Review Log
 

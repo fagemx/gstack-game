@@ -30,6 +30,19 @@ echo "COMMIT: $_COMMIT"
 echo "$_DIFF_STAT"
 ```
 
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior code reviews ==="
+PREV_CODE_REVIEW=$(ls -t $_PROJECTS_DIR/*-${_BRANCH}-code-review-*.md $_PROJECTS_DIR/*-code-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CODE_REVIEW" ] && echo "Prior code review: $PREV_CODE_REVIEW"
+PREV_ENG=$(ls -t $_PROJECTS_DIR/*-eng-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_ENG" ] && echo "Prior eng review: $PREV_ENG"
+echo "---"
+```
+
+If a prior code review exists on this branch, read it. Note previously flagged issues — check if they were addressed or if the same patterns recur.
+
 Read the full diff:
 
 ```bash
@@ -407,6 +420,20 @@ After the summary, list anything intentionally skipped:
   - List ASK items as a table (don't present one by one)
   - Skip adversarial
   - Present summary
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-code-review-${_DATETIME}.md"
+```
+
+Write the Game Code Review Summary to `$_PROJECTS_DIR/{user}-{branch}-code-review-{datetime}.md`. If a prior code review exists on this branch, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-ship` — checks code review status as a merge/release gate
+- `/game-eng-review` — reads recurring code-level issues for architecture-level assessment
+- `/game-qa` — reads flagged areas for targeted testing
 
 ## Review Log
 

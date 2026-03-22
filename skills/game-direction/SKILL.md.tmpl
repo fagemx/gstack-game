@@ -23,6 +23,23 @@ ROADMAP=$(ls -t docs/*roadmap* docs/*milestone* docs/*timeline* 2>/dev/null | he
 
 If no GDD or concept doc found, suggest `/game-ideation` first. Direction review without a concept is premature.
 
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior work ==="
+PREV_DIRECTION=$(ls -t $_PROJECTS_DIR/*-direction-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_DIRECTION" ] && echo "Prior direction review: $PREV_DIRECTION"
+PREV_CONCEPT=$(ls -t $_PROJECTS_DIR/*-concept-*.md 2>/dev/null | head -1)
+[ -n "$PREV_CONCEPT" ] && echo "Prior concept: $PREV_CONCEPT"
+PREV_GAME_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_GAME_REVIEW" ] && echo "Prior game review: $PREV_GAME_REVIEW"
+PREV_PITCH=$(ls -t $_PROJECTS_DIR/*-pitch-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_PITCH" ] && echo "Prior pitch review: $PREV_PITCH"
+echo "---"
+```
+
+If a prior direction review exists, read it. Note previous findings — check if flagged issues have been addressed since last review.
+
 # /game-direction: Game Direction Review
 
 Review game direction from a producer/creative director perspective. Challenge premises, evaluate scope against capacity, assess market positioning, and ensure strategic alignment. Work through each section one issue at a time via AskUserQuestion.
@@ -450,6 +467,21 @@ Full risk matrix as documented in Section 3.
 - `/balance-review` — if economy or progression risks flagged
 - `/game-ideation` — if premise challenge suggests rethinking the concept
 - `/pitch-review` — if market risk is high, validate the pitch
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-direction-review-${_DATETIME}.md"
+```
+
+Write the Direction Review report (Completion Summary + Scope Change Log + Risk Register) to `$_PROJECTS_DIR/{user}-{branch}-direction-review-{datetime}.md`. If a prior direction review exists, include `Supersedes: {prior filename}` at the top.
+
+This artifact is discoverable by:
+- `/game-review` — reads scope decisions and risk findings
+- `/game-eng-review` — reads technical risk flags and scope constraints
+- `/pitch-review` — reads strategic alignment and market positioning
+- `/game-ship` — checks direction review status as a release gate
 
 ## Review Log
 

@@ -84,44 +84,48 @@ Review game economy, difficulty tuning, progression pacing, and monetization pre
 
 ---
 
-## Step 0: Balance Context
+## Phase 0: Balance Context
 
-Before reviewing, establish these four things. If any are unknown, ask the user.
+Read the GDD and any balance/economy docs found. Extract what you can, then confirm with the user via AskUserQuestion:
 
-1. **Game type** — determines which sections matter most:
-   - Action/platformer → difficulty curve is primary
-   - RPG/strategy → economy + progression are primary
-   - PvP/competitive → character balance is primary
-   - Idle/incremental → economy math is everything
+> **[Re-ground]** Starting balance review for `[game title]` on `[branch]`.
+>
+> I need to calibrate this review. Here's what I found and what I need from you:
+>
+> | Context | Found | Need |
+> |---------|-------|------|
+> | Game type | {found or "?"} | {needed if missing} |
+> | Monetization | {found or "?"} | {needed if missing} |
+> | Available data | {what exists — spreadsheet? GDD only? live data?} | |
+> | Dev stage | {found or "?"} | |
+>
+> **Most important question: What data do you have?**
+> A) **Spreadsheet with formulas** — I can verify the math directly (deepest review)
+> B) **Simulation output or graphs** — I can analyze curves and trends
+> C) **Playtest data** — gold standard, I'll focus on what the data reveals
+> D) **GDD / design doc only** — theoretical review, I'll flag what needs testing
+> E) **Nothing yet** — I'll tell you what to build and what numbers to track
+>
+> RECOMMENDATION: Choose honestly. A theoretical review (D) is useful but different from a data review (A-C). Don't pretend you have data you don't.
 
-2. **Monetization model** — changes the entire review lens:
-   - Premium (pay once) → no monetization section, focus on difficulty + pacing
-   - F2P with IAP → full economy + monetization pressure analysis
-   - Ad-supported → session length economics, ad placement timing
-   - Subscription/season pass → content velocity, season economy
-
-3. **Available data** — determines review depth:
-   - Spreadsheet with formulas → can verify math directly
-   - Simulation output → can analyze curves
-   - Playtest data → gold standard, can spot real problems
-   - Design doc only → theoretical review, flag what needs testing
-   - Nothing → skill becomes "here's what you need to build"
-
-4. **Development stage** — calibrates expectations:
-   - Pre-production → numbers are aspirational targets, review for structural soundness
-   - Production → numbers should be testable, review for internal consistency
-   - Live/post-launch → numbers are real, review against player behavior data
+**STOP.** Wait for answer. The data level determines the entire review depth.
 
 ### Mode Selection
 
-Based on context, select the primary review mode. Sections marked [SKIP] for a mode are omitted unless the user requests them.
+**AskUserQuestion:**
 
-| Mode | When | Sections |
-|------|------|----------|
-| **A: F2P Mobile** | Free-to-play with IAP | All 6 sections, monetization weighted heavily |
-| **B: Premium** | Pay-once games | Sections 1-3 + 5 + 6. Section 4 [SKIP] |
-| **C: Competitive/PvP** | Character/unit balance focus | Sections 1 + 5 + 6. Sections 2-4 as needed |
-| **D: Live Service** | Already launched, tuning | All sections with live data emphasis |
+> Based on your game type and monetization, which review mode?
+>
+> RECOMMENDATION: {Based on context — RPG+F2P → Mode A, Platformer+Premium → Mode B, etc.}
+>
+> A) **F2P Mobile** — full economy + monetization pressure. All 6 sections. Heaviest review.
+> B) **Premium** — difficulty curve + progression + balance. Skip monetization section.
+> C) **Competitive/PvP** — character/unit balance is everything. Focus on Section 5.
+> D) **Live Service** — already launched, tuning from real data. All sections with data emphasis.
+>
+> Player Impact: Mode determines which numbers I scrutinize and which I skip.
+
+**STOP.** Wait for mode selection.
 
 Present mode selection via AskUserQuestion with `RECOMMENDATION` based on context gathered.
 
@@ -620,14 +624,79 @@ Show the numbers. Always.
    experience for median spenders?"
 ```
 
-### Forcing Questions (use when designer says "it's fine")
-1. What does the economy look like on Day 30? Show me the stockpile number.
-2. What happens to a player who fails this boss 5 times in a row? Walk me through their experience minute by minute.
-3. If I removed this monetization entirely, would the game still be fun? If yes, why is it there? If no, what does that say about the core loop?
-4. What's the worst experience a free player will have? Describe that specific moment.
-5. If a player spends $100 in the first week, what can they NOT do that a Day-30 free player CAN do? (If the answer is "nothing", spending has trivialized the game.)
+### Forcing Questions
+
+Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route based on data and mode:
+
+| Data level | Mode | Ask these (minimum 2) |
+|-----------|------|----------------------|
+| Design doc only | Any | Q1 (Day 30 stockpile), Q2 (failure cascade) |
+| Spreadsheet/sim | F2P | Q1, Q3 (remove monetization test), Q4 (worst F2P moment) |
+| Spreadsheet/sim | Premium | Q2 (failure cascade), Q1 (Day 30 stockpile) |
+| Playtest data | Any | Q4 (worst F2P moment), Q5 (whale vs veteran) |
+
+**Q1:** "What does the economy look like on Day 30 for a free player? Show me the stockpile number."
+
+Push until you hear: A specific number or range. "About 5,000 gold with 3 mid-tier items." If they can't answer: "Then the economy isn't designed — it's hoped. You need a simulation."
+Red flags: "We'll balance it with playtest data." — Push: "Playtest data tells you what's WRONG. A model tells you what you EXPECT. You need the expectation first."
+
+**STOP.** Wait for answer.
+
+**Q2:** "A player fails this boss 5 times in a row. Walk me through their experience minute by minute."
+
+Push until you hear: Specific recovery mechanics and emotional arc. What resources are lost? What hint is given? What alternative path exists? If the answer is "they try again" × 5, the difficulty curve has no safety valve.
+
+**STOP.** Wait for answer.
+
+**Q3 (F2P only):** "If I removed monetization entirely, would the game still be fun? If yes, why is it there? If no, what does that say about the core loop?"
+
+Push until you hear: An honest assessment of whether monetization enhances or replaces the fun. "We need it for revenue" is a business answer, not a design answer. The design question is: "Does the free experience feel complete, or does it feel deliberately broken?"
+
+**STOP.** Wait for answer.
+
+**Q4:** "What's the worst experience a free player will have? Describe that specific moment."
+
+Push until you hear: A specific moment — "Day 5, they hit the paywall at level 12 and can't progress without buying energy or waiting 8 hours." If the designer can't describe the worst moment, they haven't stress-tested the F2P path.
+
+**STOP.** Wait for answer.
+
+**Q5:** "A player spends $100 in week 1. What can they NOT do that a Day-30 free player CAN do?"
+
+If the answer is "nothing" — spending has trivialized the game. If the answer is "everything" — F2P is unviable. The healthy answer is somewhere between.
+
+**STOP.** Wait for answer.
+
+**Escape hatch:** If user says "I don't have the numbers yet":
+- Acknowledge: "That's fine at this stage. I'll document what NEEDS to be modeled, and you can rerun this review when data exists."
+- Switch to structural review: check for sink/faucet categories, currency count, pity system design — the structural decisions, not the numbers.
 
 ---
+
+## Section Transitions
+
+**After completing EACH section**, present the section score and ask before continuing:
+
+> **Section {N} — {name}: {score}/10**
+> Key finding: {1-sentence summary with specific numbers}
+>
+> A) **Continue to Section {N+1}** — {next section name}
+> B) **Dig deeper** — ask about a specific number or ratio in this section
+> C) **Fast-forward** — skip to score summary
+> D) **Stop here** — save progress
+
+If user chooses C: Complete remaining sections with AUTO-only (flag issues, don't ask). Present full score summary.
+
+**STOP.** Wait for answer after every section.
+
+## Important Rules
+
+- **Numbers, not feelings.** Every finding must reference a specific value, ratio, or curve. "The economy feels off" is not a finding. "Faucet/Sink ratio is 1.87, healthy range is 0.9-1.1" is a finding.
+- **ONE issue per AskUserQuestion.** Don't batch economy and difficulty findings.
+- **Section transitions are mandatory.** Present score + key finding + ask before continuing.
+- **Escape hatch for missing data:** If the user doesn't have numbers, switch to structural review (categories, not values). Don't punish early-stage projects for not having a spreadsheet.
+- **AI confidence disclaimer:** All benchmarks are industry heuristics. Always note "calibrate with YOUR playtest data."
+- **Escape hatch for long reviews:** Respect "fast-forward" on first request for balance-review specifically — economy deep-dives can be exhausting.
+- **Never design the economy.** This skill REVIEWS numbers. "Your sink rate is too low" = review. "Add a repair cost of 50 gold per death" = design. Design belongs to the designer.
 
 ## Completion Summary
 

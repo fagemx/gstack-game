@@ -1,0 +1,13 @@
+{
+  "name": "gstack-game",
+  "version": "0.2.0",
+  "description": "Game development workflow skills for Claude Code — from concept to shipping. Built on gstack patterns.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "bun run gen:skill-docs",
+    "gen:skill-docs": "bun run scripts/gen-skill-docs.ts",
+    "gen:skill-docs:check": "bun run scripts/gen-skill-docs.ts --dry-run",
+    "test": "bun run gen:skill-docs:check"
+  }
+}

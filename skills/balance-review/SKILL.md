@@ -67,32 +67,618 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ```
 
 
+## Balance Doc Check
+
+```bash
+SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+BDOC=$(ls -t docs/*balance* docs/*economy* docs/*progression* docs/*difficulty* design/gdd/*economy* design/gdd/*balance* assets/data/*curve* 2>/dev/null | head -1)
+[ -z "$BDOC" ] && BDOC=$(ls -t ~/.gstack/projects/$SLUG/*-balance-*.md ~/.gstack/projects/$SLUG/*-economy-*.md 2>/dev/null | head -1)
+[ -n "$BDOC" ] && echo "Balance doc found: $BDOC" || echo "No balance doc found — will review from GDD or user description"
+```
+
 # /balance-review: Game Economy & Balance Review
 
-TODO: Full implementation. Sections to build:
+Review game economy, difficulty tuning, progression pacing, and monetization pressure interactively. Work through each section one issue at a time via AskUserQuestion.
 
-### Section 1: Difficulty Curve（難度曲線）
-- Flow state analysis (challenge vs skill over time)
-- Spike detection (sudden difficulty jumps)
-- Recovery mechanics (what happens after repeated failure)
+**This skill reviews NUMBERS, not feelings.** Every finding must reference a specific value, ratio, or curve. If the data doesn't exist yet, the finding is "you don't have data for X — here's how to get it."
 
-### Section 2: Economy Model（經濟模型）
-- Currency flow diagram (ASCII art: sources → player → sinks)
-- Inflation/deflation projections
-- Exchange rate clarity
+---
 
-### Section 3: Progression Pacing（進度節奏）
-- Time-to-milestone mapping
-- Grind ratio (effort per meaningful unlock)
-- Content runway (how long until player runs out of new stuff)
+## Step 0: Balance Context
 
-### Section 4: Monetization Pressure（付費壓力）
-- Free player viability scoring
-- Paywall timing analysis
-- Whale/dolphin/minnow experience comparison
+Before reviewing, establish these four things. If any are unknown, ask the user.
+
+1. **Game type** — determines which sections matter most:
+   - Action/platformer → difficulty curve is primary
+   - RPG/strategy → economy + progression are primary
+   - PvP/competitive → character balance is primary
+   - Idle/incremental → economy math is everything
+
+2. **Monetization model** — changes the entire review lens:
+   - Premium (pay once) → no monetization section, focus on difficulty + pacing
+   - F2P with IAP → full economy + monetization pressure analysis
+   - Ad-supported → session length economics, ad placement timing
+   - Subscription/season pass → content velocity, season economy
+
+3. **Available data** — determines review depth:
+   - Spreadsheet with formulas → can verify math directly
+   - Simulation output → can analyze curves
+   - Playtest data → gold standard, can spot real problems
+   - Design doc only → theoretical review, flag what needs testing
+   - Nothing → skill becomes "here's what you need to build"
+
+4. **Development stage** — calibrates expectations:
+   - Pre-production → numbers are aspirational targets, review for structural soundness
+   - Production → numbers should be testable, review for internal consistency
+   - Live/post-launch → numbers are real, review against player behavior data
+
+### Mode Selection
+
+Based on context, select the primary review mode. Sections marked [SKIP] for a mode are omitted unless the user requests them.
+
+| Mode | When | Sections |
+|------|------|----------|
+| **A: F2P Mobile** | Free-to-play with IAP | All 6 sections, monetization weighted heavily |
+| **B: Premium** | Pay-once games | Sections 1-3 + 5 + 6. Section 4 [SKIP] |
+| **C: Competitive/PvP** | Character/unit balance focus | Sections 1 + 5 + 6. Sections 2-4 as needed |
+| **D: Live Service** | Already launched, tuning | All sections with live data emphasis |
+
+Present mode selection via AskUserQuestion with `RECOMMENDATION` based on context gathered.
+
+**STOP.** Confirm mode before proceeding to Section 1.
+
+---
+
+## Section 1: Difficulty Curve（難度曲線）
+
+### 1A. Flow State Analysis
+
+Map challenge level vs player skill over time. Reference **Csikszentmihalyi's Flow Model**: the player must stay in the **flow channel** between anxiety (too hard) and boredom (too easy).
+
+Check for the **sawtooth pattern** — healthy difficulty looks like:
+```
+Challenge
+  ^
+  |     /\      /\        /\
+  |    /  \    /  \      /  \
+  |   /    \  /    \    /    \
+  |  /      \/      \  /      \
+  | /                \/
+  +──────────────────────────────→ Time
+    tension→release→tension (HEALTHY)
+```
+
+Unhealthy patterns to flag:
+- **Flat line** — no tension variation → boredom → churn
+- **Constant escalation** — never releases tension → exhaustion → churn
+- **Cliff** — sudden vertical jump → frustration → rage quit
+- **Sawtooth with wrong frequency** — releases too often (no tension builds) or too rarely (fatigue)
+
+For each level/stage/chapter, ask:
+- What new challenge is introduced?
+- What previously learned skill does it test?
+- Where is the release point?
+
+### 1B. Spike Detection
+
+Quantitative checks:
+
+| Condition | Verdict |
+|-----------|---------|
+| Difficulty increase > 2× from previous level/stage | **SPIKE** — flag for review |
+| Multiple spikes within 3 consecutive levels | **DEATH ZONE** — ESCALATE |
+| No difficulty increase for 5+ consecutive levels | **PLATEAU** — flag for review |
+| First spike occurs before player has all core mechanics | **PREMATURE** — ESCALATE |
+| Spike coincides with monetization prompt | **FRUSTRATION MONETIZATION** — ESCALATE |
+
+Difficulty can be measured as: time-to-complete, failure rate, number of attempts, DPS-check threshold, or any game-appropriate metric. Ask the user which metric applies.
+
+### 1C. Recovery Mechanics
+
+After the player fails, what happens?
+
+| Question | Healthy Answer | Red Flag |
+|----------|---------------|----------|
+| What happens after 3 consecutive failures? | Adaptive difficulty, hint system, or optional skip | Nothing — same wall, same result |
+| Is failure cost proportional to progress invested? | Lose 1-5 minutes of progress | Lose 30+ minutes of progress |
+| Does rubber-banding exist? | Struggling players get subtle help | No help, or help is patronizing |
+| Is failure informative? | Player knows WHY they failed | Death feels random or unfair |
+| Can failure be profitable? | Player gains knowledge, resources, or partial credit | Pure punishment |
+
+### 1D. Difficulty Scoring
+
+```
+Flow channel adherence:    _/3  (3=clear sawtooth, 2=mostly good, 1=flat/escalating, 0=chaotic)
+Spike frequency:           _/2  (2=smooth, 1=1-3 spikes, 0=>3 spikes)
+Recovery mechanics:        _/3  (3=adaptive+informative, 2=basic recovery, 1=checkpoint only, 0=harsh)
+Difficulty variety:        _/2  (2=multiple challenge types, 1=single dimension, 0=pure stat check)
+───────────────────────────
+DIFFICULTY CURVE SCORE:    _/10
+```
+
+**STOP.** Present findings via AskUserQuestion. One issue at a time. Proceed only after all issues resolved or deferred.
+
+---
+
+## Section 2: Economy Model（經濟模型）
+
+### 2A. Sink/Faucet Mapping
+
+Draw the complete resource flow for each currency. Every resource in the game must appear in this map.
+
+```
+FAUCETS (sources)              SINKS (drains)
+─────────────────              ──────────────
+Quest rewards         ──┐  ┌── Equipment upgrades
+Daily login bonus     ──┤  ├── Consumables (potions, ammo)
+Achievement awards    ──┤  ├── Cosmetic purchases
+PvP victory rewards   ──┼──┼── Repair / maintenance costs
+Selling items         ──┤  ├── Trading post fees / tax
+IAP (real money)      ──┘  └── Gacha / loot box pulls
+
+                    PLAYER
+               ┌──────────────┐
+               │  STOCKPILE   │
+               │  Health: ???  │
+               └──────────────┘
+```
+
+For each currency, determine:
+- **Total faucet output per hour** (for a typical active player)
+- **Total sink demand per hour** (assuming player engages with available sinks)
+- **Faucet/Sink ratio** = faucet ÷ sink
+
+| Ratio | Diagnosis | Consequence |
+|-------|-----------|-------------|
+| > 1.2 | **Inflationary** | Currency loses meaning over time. By Day 14, prices feel trivial. Players stockpile with nothing to spend on. |
+| 0.9 – 1.1 | **Healthy** | Players make meaningful spending decisions. Always slightly want more. |
+| < 0.8 | **Deflationary** | New players can't afford basics. Feels punishing. Creates pay pressure in F2P. |
+
+If faucet/sink ratio cannot be calculated (no data), this is the finding: "Economy has no quantitative model. Build a spreadsheet before tuning anything."
+
+### 2B. Inflation/Deflation Projection
+
+For games with persistent economies (MMO, idle, live service):
+
+Project currency stockpile over time:
+```
+Day    Earned(cumulative)  Spent(cumulative)  Stockpile   Status
+─────  ─────────────────   ─────────────────  ─────────   ──────
+  1         500                 300               200      OK
+  7        4,000               2,800             1,200     OK
+ 14        9,000               5,500             3,500     ⚠️ Growing
+ 30       22,000              11,000            11,000     🔴 Inflated
+ 90       70,000              25,000            45,000     🔴🔴 Broken
+```
+
+If stockpile grows faster than sink capacity, the economy will break. Flag the **day** when stockpile exceeds 2× the cost of the most expensive available item — that's when currency stops feeling valuable.
+
+### 2C. Currency Clarity
+
+| Currency Count | Verdict |
+|---------------|---------|
+| 1 | Clear. Simple. Risk: limited design space for monetization. |
+| 2 | Standard (soft currency + hard/premium currency). Clear if exchange is intuitive. |
+| 3 | Manageable IF each has a distinct purpose and the UI makes it obvious. |
+| 4+ | **Red flag.** Cognitive overload. Players will not track 4 exchange rates. Justify each or consolidate. |
+
+For each currency, verify:
+- Does it have a clear name that implies its use?
+- Can the player see their balance at all times?
+- Is the exchange rate between currencies stable or floating?
+- Can the player convert soft → hard currency? (If no, is that made clear?)
+
+### 2D. Gini Coefficient Target
+
+The **Gini coefficient** measures wealth inequality among players (0 = perfect equality, 1 = one player has everything).
+
+| Game Type | Target Gini | Reasoning |
+|-----------|-------------|-----------|
+| Cooperative / PvE | < 0.3 | Low inequality. All players should feel capable. |
+| Competitive / PvP | 0.3 – 0.5 | Moderate inequality. Skill and time create gap, but not insurmountable. |
+| Sandbox / Open economy | 0.4 – 0.6 | Specialist economies create natural inequality. |
+| > 0.6 in any context | **Flag** | Whale-dominated. New/casual players feel powerless. |
+
+If no player wealth distribution data exists, flag this as a metric to track post-launch.
+
+### 2E. Economy Scoring
+
+```
+Sink/Faucet balance:         _/3  (3=ratio 0.9-1.1, 2=ratio 0.8-1.2, 1=outside range, 0=no sinks)
+Inflation control:           _/2  (2=stable projection, 1=mild inflation, 0=runaway)
+Currency clarity:            _/2  (2=1-2 currencies, 1=3 currencies, 0=4+)
+Wealth distribution health:  _/3  (3=within target Gini, 2=slightly outside, 1=far outside, 0=no data + no plan)
+───────────────────────────
+ECONOMY MODEL SCORE:         _/10
+```
+
+**STOP.** Present findings via AskUserQuestion. One issue at a time.
+
+---
+
+## Section 3: Progression Pacing（進度節奏）
+
+### 3A. Time-to-Milestone Mapping
+
+Map the player's journey through key milestones. Fill in actual values from design doc or playtest data.
+
+```
+Milestone                     Target Time       Actual     Verdict
+────────────────────────      ───────────       ──────     ───────
+First meaningful action       < 30 seconds       ___       OK / SLOW / FAST
+First "I understand" moment   2-5 minutes        ___
+First meaningful choice       5-15 minutes       ___
+First "wow" moment            30-60 minutes      ___
+First build/identity choice   1-3 hours          ___
+First major unlock/chapter    3-8 hours          ___
+Mid-game identity             10-20 hours        ___
+Endgame entry                 20-50 hours        ___
+Mastery / completionism       50-200 hours       ___
+```
+
+Target times vary by genre. Adjust benchmarks:
+- Mobile casual: compress everything by 5-10×
+- Idle/incremental: "first meaningful action" = first prestige mechanic
+- Roguelikes: measure per-run and meta-progression separately
+- MMO: add social milestones (first party, first guild)
+
+Flag any milestone that takes > 2× or < 0.5× the target time.
+
+### 3B. Grind Ratio
+
+**Grind ratio** = Meaningful actions per hour ÷ Total actions per hour
+
+A "meaningful action" is one where the player makes a decision, learns something, or experiences something new. A "grind action" is repetition of a solved problem for resource accumulation.
+
+| Grind Ratio | Verdict |
+|-------------|---------|
+| > 0.5 | **Engaging** — more than half of playtime involves decisions or novelty |
+| 0.3 – 0.5 | **Acceptable** — some grind but regularly punctuated by meaning |
+| 0.2 – 0.3 | **Grindy** — players who dislike repetition will churn here |
+| < 0.2 | **Treadmill** — 🔴 high churn risk. Only works if moment-to-moment gameplay is intrinsically satisfying (e.g., Diablo combat feel) |
+
+For each progression segment, estimate the grind ratio. If it drops below 0.3 for more than 2 hours of playtime, flag it.
+
+### 3C. Content Runway
+
+| Question | Answer | Red Flag If... |
+|----------|--------|---------------|
+| Hours of unique content before repetition starts? | ___ | < 5 hours for premium, < 2 hours for F2P |
+| What happens when unique content runs out? | ___ | "Nothing" or "grind the same levels" |
+| Is new content gated by time, skill, or money? | ___ | Money-gated in premium game |
+| Content addition velocity (for live service)? | ___ | Slower than player consumption rate |
+| Is there an endless scaling system? (e.g., NG+, rifts, floors) | ___ | Scaling is pure stat inflation with no mechanical variety |
+
+### 3D. Pity Systems / Bad Luck Protection
+
+**Rule: Any probabilistic reward system MUST have documented bad luck protection.**
+
+For each probabilistic system (gacha, loot drops, crafting success, crit chance):
+
+| Parameter | Value | Healthy Range |
+|-----------|-------|--------------|
+| Expected attempts for reward | ___ | Depends on context |
+| Pity threshold (guaranteed at N) | ___ | Should exist. If blank, ESCALATE. |
+| Pity threshold ÷ Expected attempts | ___ | 1.5× – 3× expected (< 1.5 = too generous to matter, > 3 = feels broken) |
+| Is pity progress visible to player? | ___ | Should be YES for high-value rewards |
+| Does pity reset on reward? | ___ | Document clearly either way |
+
+**Players who exceed 2× the expected attempts without a reward WILL feel the game is broken.** If no pity system exists for a core reward, ESCALATE.
+
+### 3E. Reward Psychology
+
+Map which **reward schedules** are used where:
+
+| Schedule Type | How It Works | Best For | Danger |
+|--------------|-------------|----------|--------|
+| **Variable Ratio** (slot machine) | Reward after random number of actions | Engagement, "one more try" | Ethically questionable if tied to real money |
+| **Fixed Ratio** (every N actions) | Reward every Nth action | Predictable goals, quest completion | Can feel mechanical |
+| **Variable Interval** (random timing) | Reward at random time intervals | Maintaining check-in behavior | Can create compulsion loops |
+| **Fixed Interval** (daily reset) | Reward available every X hours | Daily retention | Punishes missing a day (FOMO) |
+
+For each major reward system, document:
+1. Which schedule type is it?
+2. Is it appropriate for the context? (Variable ratio on paid gacha = ethical concern)
+3. Does the player understand the schedule? (Transparency vs mystery)
+
+### 3F. Progression Scoring
+
+```
+Milestone pacing:            _/3  (3=all milestones within range, 2=1-2 off, 1=3+ off, 0=no milestone planning)
+Grind ratio health:          _/2  (2=ratio>0.3 throughout, 1=ratio drops below 0.3, 0=ratio<0.2 for extended periods)
+Content runway:              _/2  (2=sufficient+planned, 1=short but acknowledged, 0=no runway planning)
+Reward schedule design:      _/3  (3=intentional+appropriate+documented, 2=mostly intentional, 1=ad-hoc, 0=no design)
+───────────────────────────
+PROGRESSION PACING SCORE:    _/10
+```
+
+**STOP.** Present findings via AskUserQuestion. One issue at a time.
+
+---
+
+## Section 4: Monetization Pressure（付費壓力）
+
+> **Mode B (Premium) skips this section entirely.**
+> **Mode C (Competitive/PvP) reviews only 4A and 4B.**
+
+### 4A. Free Player Viability
+
+| Question | Answer | Verdict |
+|----------|--------|---------|
+| Can a free player complete the core content? | Yes / Partially / No | "No" = ESCALATE |
+| Time penalty: free vs paying player progression speed | ___× slower | ≤ 2× = fair, 3-5× = aggressive, > 5× = hostile |
+| Content locked behind paywall (%) | ___% | < 10% = fair, 10-30% = standard F2P, > 30% = aggressive |
+| Can free players compete in PvP/rankings? | Yes / Partially / No | "No" in competitive game = P2W perception |
+| Does the game become less fun over time without paying? | ___ | If "yes" = slow squeeze, flag |
+
+**P2W Score** (1-10, where 10 = pure pay-to-win):
+- 1-3: Cosmetic only or minor convenience. No competitive advantage.
+- 4-5: Time savers and convenience. Noticeable but not decisive.
+- 6-7: Paying players have meaningful advantage. Free players compensate with skill/time.
+- 8-10: Paying is required to compete or progress. ESCALATE.
+
+### 4B. Paywall Timing
+
+Map when monetization prompts appear relative to the player journey:
+
+```
+Player Journey:
+  [Start] → [Learn] → [Aha Moment] → [Hooked] → [Invested] → [Committed]
+                              ↑                        ↑
+                    TOO EARLY to ask        HEALTHY window to offer
+                    for money (🔴)          (player knows value)
+```
+
+| Timing Check | Finding |
+|-------------|---------|
+| First IAP offer appears BEFORE aha moment? | 🔴 **Premature monetization.** Player hasn't experienced value yet. |
+| First IAP offer appears AFTER player is hooked? | ✅ Player understands what they're paying for. |
+| Soft paywall at natural frustration point? | ⚠️ **Frustration monetization.** Player pays to escape pain, not for delight. |
+| Soft paywall at natural delight point? | ✅ Player pays to get MORE of something they already enjoy. |
+| Hard paywall exists? | Document where. Any hard paywall in core loop = ESCALATE. |
+
+### 4C. Spending Tier Experience
+
+Compare the experience across spending tiers:
+
+| Tier | Monthly Spend | Expected Experience | Acceptable? |
+|------|--------------|---------------------|-------------|
+| **Minnow** (free) | $0 | Full core loop access. Slower progression. Limited cosmetics. | ✅ Must be a complete game. |
+| **Dolphin** | $5 – $20 | Faster progression, more cosmetic options, quality-of-life upgrades. | ✅ Clear value for money. |
+| **Whale** | $50 – $200+ | Extensive cosmetics, fastest progression. | ⚠️ Should NOT trivialize challenge. |
+| **Mega-whale** | $500+ | Diminishing returns. | ✅ Must have diminishing returns. If spending $1000 makes the game 10× easier, ESCALATE. |
+
+Key check: **Does whale spending break the experience for non-whales?**
+- In PvP: Can a whale dominate purely through spending? (If yes, ESCALATE)
+- In PvE: Does whale presence inflate economy for everyone? (If yes, flag)
+- In social features: Does spending create visible class system? (Document perception risk)
+
+### 4D. Monetization Scoring
+
+```
+Free player viability:       _/3  (3=full game free, 2=core free, 1=limited free, 0=paywall in core loop)
+Paywall timing:              _/2  (2=post-hook offers, 1=mixed, 0=premature asks)
+P2W perception:              _/3  (3=cosmetic only, 2=convenience, 1=advantage, 0=required to compete)
+Spending tier fairness:      _/2  (2=diminishing returns, 1=linear value, 0=whale dominance)
+───────────────────────────
+MONETIZATION PRESSURE SCORE: _/10
+```
+
+**STOP.** Present findings via AskUserQuestion. One issue at a time.
+
+---
+
+## Section 5: Character/Unit Balance（角色/單位平衡）
+
+> **Skip this section if the game has no character/unit selection or PvP.**
+> **For PvE-only games with character choice, review only 5A and 5B.**
+
+### 5A. Balance Framework Identification
+
+Identify which balance framework the game uses (reference: Sirlin's framework):
+
+| Framework | Description | Example | Strength | Risk |
+|-----------|------------|---------|----------|------|
+| **Transitive** | A > B > C in both power AND cost | RTS unit tiers | Clear, learnable | Can feel linear, "just build expensive stuff" |
+| **Intransitive** | Rock > Scissors > Paper > Rock | Fighting game matchups | Deep, strategic | Complex to balance, knowledge barrier |
+| **Frustra** | Apparently imbalanced, hidden counters | "OP" character with subtle weakness | Exciting discovery | Feels unfair to new players |
+| **Asymmetric** | Different capabilities, equal viability | L4D survivors vs infected | Unique experiences | Hardest to balance, subjective "fairness" |
+
+Check:
+- Is the chosen framework **consistent** across the roster? (Mixing frameworks without intention creates confusion)
+- Is the framework **communicated** to players? (Intransitive balance requires visible counter information)
+- Does the framework **match the game's competitive goals**? (Casual games should lean transitive; competitive games benefit from intransitive)
+
+### 5B. Win Rate Distribution
+
+For games with playable characters/units/decks:
+
+| Metric | Healthy | Warning | Critical |
+|--------|---------|---------|----------|
+| Win rate range (highest - lowest) | < 10% | 10-15% | > 15% |
+| Any character > 55% win rate (all skill levels) | — | Flag | **Overpowered** — nerf candidate |
+| Any character < 45% win rate (all skill levels) | — | Flag | **Underpowered** — buff candidate |
+| Standard deviation of win rates | < 3% | 3-5% | > 5% = systemic balance problem |
+| Win rate at high skill vs low skill divergence | Similar | > 5% gap | > 10% gap = skill-floor/ceiling problem |
+
+**Important nuance:** A character with 52% win rate overall but 60% at high skill is a different problem than one with 55% at all levels. Segment by skill bracket when data allows.
+
+If no win rate data exists (pre-launch), review for **theoretical dominance**:
+- Is there a strategy/unit that has no clear counter?
+- Is there a strategy/unit that is strictly better than another at the same cost?
+- Does the meta-game have at least 3 viable strategies?
+
+### 5C. Counter System Health
+
+| Check | Healthy | Unhealthy |
+|-------|---------|-----------|
+| Every strong option has at least 2 viable counters | ✅ | ❌ Single counter = fragile balance |
+| No single option counters > 50% of the roster | ✅ | ❌ Centralizing option = must-pick |
+| Counter information is discoverable in-game | ✅ | ❌ Requires wiki/external knowledge |
+| Counter-play is executable at all skill levels | ✅ | ❌ "Just dodge it" is not a counter for casual players |
+| New content doesn't invalidate existing counters | ✅ | ❌ Power creep = old content becomes useless |
+
+### 5D. Character Balance Scoring
+
+```
+Framework consistency:       _/3  (3=clear+consistent, 2=mostly consistent, 1=mixed frameworks, 0=no framework)
+Win rate distribution:       _/3  (3=<10% range, 2=10-15% range, 1=>15% range, 0=no data+no plan)
+Counter system health:       _/2  (2=all checks pass, 1=1-2 fail, 0=3+ fail)
+Power creep resistance:      _/2  (2=planned rotation/scaling, 1=acknowledged, 0=no plan)
+───────────────────────────
+CHARACTER BALANCE SCORE:     _/10
+```
+
+**STOP.** Present findings via AskUserQuestion. One issue at a time.
+
+---
+
+## Section 6: Cross-Section Consistency
+
+This section checks for **contradictions between sections**. These are the hardest problems to find because each section can look fine in isolation.
+
+| Cross-Check | What to Verify | Red Flag |
+|-------------|---------------|----------|
+| **Difficulty × Economy** | Can players afford recovery tools (potions, continues, revives) when difficulty spikes? | Difficulty spike + empty wallet = quit point |
+| **Difficulty × Monetization** | Do difficulty spikes coincide with IAP prompts? | Frustration monetization — deliberately making the game hard to sell the solution |
+| **Progression × Economy** | Does progression speed match resource accumulation? | Unlocking content faster than earning currency to engage with it = frustration |
+| **Progression × Monetization** | Do paywalls hit at progression valleys or peaks? | Valley = "pay to escape boredom" (bad). Peak = "pay to skip what you enjoy" (worse — you're selling skipping your own game) |
+| **Balance × Economy** | Do stronger characters/items cost proportionally more? | If the best option is also the cheapest = no meaningful choice |
+| **Balance × Monetization** | Are paid characters/items stronger than free ones? | P2W perception, even if slight advantage |
+| **Difficulty × Progression** | Does endgame difficulty require endgame progression? | If difficulty plateaus before progression does, endgame feels pointless |
+| **Economy × Content Runway** | Do sinks exist for all progression stages? | Early sinks without late-game sinks = inflation at endgame |
+
+For each cross-check that reveals a conflict, present as a single AskUserQuestion with:
+- The specific contradiction
+- Which two sections conflict
+- A concrete recommendation to resolve
+
+**STOP.** Present cross-section findings via AskUserQuestion. One issue at a time.
+
+---
+
+## Action Triage: AUTO / ASK / ESCALATE
+
+### AUTO (fix or note without asking)
+- Math errors in economy tables (2 + 3 ≠ 6)
+- Missing sink for a documented faucet (or vice versa)
+- Duplicate reward entries in loot tables
+- Inconsistent currency names across documents
+- Scoring calculation errors
+
+### ASK (present via AskUserQuestion)
+- Pacing changes (suggesting slower or faster progression)
+- Monetization model adjustments
+- Difficulty curve reshaping
+- Adding/removing currencies
+- Changing reward schedules
+- Adjusting pity thresholds
+- Grind ratio improvements
+
+### ESCALATE (stop and report — do not suggest a fix)
+- Economy has **no sinks** (guaranteed hyperinflation, cannot be patched with small changes)
+- Core progression is **pay-gated** (fundamental monetization ethics issue)
+- **No fail-state recovery** exists (players hit a wall with no recourse)
+- Difficulty spike + monetization prompt at same point (deliberate frustration monetization pattern)
+- Probabilistic reward with **no pity system** and real money involved
+- Faucet/sink ratio > 2.0 or < 0.5 (economy is structurally broken, not just mistuned)
+- Character with > 60% win rate and no planned nerf
+- 3+ consecutive review findings where user says "we'll fix it later" (pattern of avoidance)
+
+---
+
+## Anti-Sycophancy Protocol
+
+### Forbidden Phrases
+- ❌ "The economy feels balanced"
+- ❌ "Players will find this fair"
+- ❌ "Good progression pacing"
+- ❌ "The difficulty curve looks smooth"
+- ❌ "This monetization is ethical"
+- ❌ "The balance seems fine"
+
+### Required Instead
+Show the numbers. Always.
+
+```
+❌ "The economy seems balanced."
+✅ "Faucet output is 150 gold/hr. Total sink demand is 80 gold/hr.
+   Ratio: 1.87 = inflationary. Currency will lose meaning by Day 14.
+   Recommendation: Add a sink consuming ~60 gold/hr, or reduce quest
+   rewards from 50 → 30 gold."
+
+❌ "Progression feels well-paced."
+✅ "Time to first meaningful choice: 45 minutes. Target for this genre:
+   5-15 minutes. Player has no agency for the first 45 minutes of play.
+   D1 retention risk: HIGH."
+
+❌ "The gacha rates are fair."
+✅ "SSR rate: 0.6%. Expected pulls for SSR: 167. Pity threshold: 300 pulls.
+   Pity/Expected ratio: 1.8× — within healthy range (1.5-3×). However:
+   at $3/pull, expected SSR cost is $501. Top-spending quartile acceptable,
+   but median player will never reach pity. Consider: is this the intended
+   experience for median spenders?"
+```
+
+### Forcing Questions (use when designer says "it's fine")
+1. What does the economy look like on Day 30? Show me the stockpile number.
+2. What happens to a player who fails this boss 5 times in a row? Walk me through their experience minute by minute.
+3. If I removed this monetization entirely, would the game still be fun? If yes, why is it there? If no, what does that say about the core loop?
+4. What's the worst experience a free player will have? Describe that specific moment.
+5. If a player spends $100 in the first week, what can they NOT do that a Day-30 free player CAN do? (If the answer is "nothing", spending has trivialized the game.)
+
+---
+
+## Completion Summary
+
+```
+Balance Health Report
+═══════════════════════════════════════════════════
+
+Game: [game name]
+Mode: [A/B/C/D]
+Data Source: [spreadsheet / simulation / playtest / design doc only]
+Development Stage: [pre-production / production / live]
+
+Section Scores:
+  Difficulty Curve:        _/10  (weight: 25%)
+  Economy Model:           _/10  (weight: 25%)
+  Progression Pacing:      _/10  (weight: 20%)
+  Monetization Pressure:   _/10  (weight: 20%)  [N/A if Mode B]
+  Character Balance:       _/10  (weight: 10%)  [N/A if no PvP/character selection]
+  ──────────────────────────────────────────────
+  WEIGHTED TOTAL:          _/10
+
+  For N/A sections, redistribute weight equally among active sections.
+
+Cross-Section Conflicts:   ___ found
+Unresolved Issues:         ___ (from ASK items user deferred)
+Escalated Issues:          ___ (require structural changes)
+
+Top 3 Priorities:
+  1. [Highest impact finding with specific numbers]
+  2. [Second highest]
+  3. [Third highest]
+
+Data Gaps (things we couldn't verify):
+  - [List what data would improve this review]
+
+⚠️ AI Confidence: 70%
+   Numerical benchmarks are industry heuristics, not universal truths.
+   Calibrate all thresholds with real playtest data for YOUR game.
+   Economy projections assume typical player behavior — outliers will differ.
+
+Next Steps:
+  - [Specific action items]
+  - Consider /player-experience for walkthrough validation
+  - Consider /game-review if GDD hasn't been reviewed yet
+═══════════════════════════════════════════════════
+```
+
+---
 
 ## Review Log
 
 ```bash
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"balance-review","timestamp":"TIMESTAMP","status":"STATUS","unresolved":N,"critical_gaps":N,"mode":"MODE","commit":"COMMIT"}' 2>/dev/null || true
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"balance-review","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"'"$_STATUS"'","unresolved":'"$_UNRESOLVED"',"critical_gaps":'"$_CRITICAL"',"mode":"'"$_MODE"'","scores":{"difficulty":'"$_S1"',"economy":'"$_S2"',"progression":'"$_S3"',"monetization":'"$_S4"',"balance":'"$_S5"',"weighted_total":'"$_TOTAL"'},"commit":"'"$(git rev-parse --short HEAD 2>/dev/null || echo none)"'"}' 2>/dev/null || true
 ```

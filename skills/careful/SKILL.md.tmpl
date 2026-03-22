@@ -1,0 +1,62 @@
+---
+name: careful
+description: "Safety mode. Warns before destructive commands (rm -rf, DROP TABLE, git push -f, force delete). Does NOT restrict file editing scope — use /guard for that."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /careful: Destructive Command Safety
+
+Activates heightened awareness for destructive operations. When active, flag and confirm before executing any potentially destructive command.
+
+## What triggers a warning
+
+| Pattern | Risk | Action |
+|---------|------|--------|
+| `rm -rf` (except node_modules, .next, dist, build, __pycache__) | File deletion | Confirm before executing |
+| `git push -f` / `git push --force` | History rewrite | Confirm + warn about remote impact |
+| `git reset --hard` | Uncommitted work loss | Confirm + suggest stash first |
+| `git clean -f` | Untracked file deletion | Confirm + list what will be deleted |
+| `git branch -D` | Branch deletion | Confirm + check if merged |
+| `DROP TABLE` / `DROP DATABASE` | Data destruction | Confirm + verify environment |
+| `TRUNCATE` | Data deletion | Confirm |
+| `docker system prune` | Container cleanup | Confirm |
+| Kill/stop commands on game servers | Service disruption | Confirm + check player count |
+
+## Safe exceptions (no warning needed)
+
+```
+rm -rf node_modules/
+rm -rf .next/
+rm -rf dist/
+rm -rf build/
+rm -rf __pycache__/
+rm -rf .cache/
+rm -rf tmp/
+git push (without -f)
+```
+
+## Activation
+
+This skill is activated by invoking `/careful`. It stays active for the remainder of the session.
+
+When active, before any Bash command that matches a warning pattern:
+
+> ⚠️ **CAREFUL MODE**: This command will [describe impact].
+> Affected: [list files/data/branches]
+> Reversible: [yes/no/partially]
+>
+> Proceed? (confirm to execute)
+
+## Deactivation
+
+Say "turn off careful mode" or start a new session.
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"careful","timestamp":"TIMESTAMP","status":"ACTIVATED","commit":"COMMIT"}' 2>/dev/null || true
+```

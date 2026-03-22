@@ -1,0 +1,129 @@
+---
+name: game-retro
+description: "Game development sprint/milestone retrospective. Tracks feature completion, bug density trends, velocity, and team health with quantitative metrics."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /game-retro: Development Retrospective
+
+Structured retrospective for game development sprints and milestones.
+
+## Step 0: Retro Scope
+
+```bash
+# Gather git activity for the period
+_SINCE=${1:-"2 weeks ago"}
+echo "=== Retro period: $_SINCE to now ==="
+git log --since="$_SINCE" --oneline --no-merges | head -30
+echo "---"
+git log --since="$_SINCE" --format="%an" | sort | uniq -c | sort -rn | head -10
+echo "---"
+git diff --stat $(git log --since="$_SINCE" --format="%H" | tail -1)..HEAD 2>/dev/null | tail -5
+```
+
+AskUserQuestion: What period are we reviewing? Sprint/milestone name?
+
+## Section 1: Delivery Metrics
+
+**Feature Completion:**
+```
+Planned Features    Completed    Carried Over    Cut
+──────────────      ─────────    ────────────    ───
+___                 ___          ___             ___
+
+Completion Rate: ___%
+```
+
+**Bug Metrics:**
+```
+Bugs opened:     ___
+Bugs closed:     ___
+Net bug delta:   ___ (positive = growing debt)
+Critical bugs:   ___ open / ___ closed
+Bug density:     ___ bugs per 1000 LOC changed
+```
+
+**Velocity:**
+- Story points / features completed vs planned
+- Trend: Accelerating / Stable / Decelerating / Erratic
+
+## Section 2: What Went Well
+
+For each item:
+- What specifically happened?
+- Why did it go well? (skill? process? luck?)
+- Is it repeatable?
+
+## Section 3: What Didn't Go Well
+
+For each item:
+- What specifically happened?
+- Root cause (not blame — systemic issue)
+- Impact on delivery
+
+## Section 4: Surprises & Learnings
+
+- What was unexpected? (positive or negative)
+- What do we know now that we didn't know at sprint start?
+- Any Eureka moments? (conventional approach was wrong, found better way)
+
+## Section 5: Action Items
+
+For each action:
+- **What:** Specific, actionable change
+- **Who:** Owner (person, not "the team")
+- **When:** Deadline or next checkpoint
+- **Measure:** How do we know it worked?
+
+Maximum 3 action items. More than 3 = nothing gets done.
+
+## Section 6: Milestone Health Check
+
+```
+Milestone: [name]
+Target date: [date]
+Current progress: ___%
+
+Risk level: 🟢 On track / 🟡 At risk / 🔴 Behind
+Confidence: [1-10] that we'll hit the date with planned scope
+```
+
+If confidence < 7: What scope cuts would bring it to 8+?
+
+## AUTO/ASK/ESCALATE
+
+- **AUTO:** Calculate metrics from git history, generate charts
+- **ASK:** Interpretation of trends, action item prioritization
+- **ESCALATE:** Velocity declining 3 sprints in a row, critical bug count growing, milestone at risk
+
+## Anti-Sycophancy
+
+Forbidden:
+- ❌ "Great progress this sprint"
+- ❌ "The team worked hard"
+- ❌ "Solid delivery"
+
+Instead: Show the numbers. "Planned 8 features, delivered 5. Completion rate 62.5%, down from 75% last sprint. Trend: decelerating."
+
+## Completion Summary
+
+```
+Retrospective:
+  Period: [dates]
+  Features: ___/___  completed (___%)
+  Bug delta: ___
+  Velocity trend: [accelerating/stable/decelerating]
+  Action items: ___ (max 3)
+  Milestone confidence: ___/10
+  STATUS: DONE
+```
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-retro","timestamp":"TIMESTAMP","status":"STATUS","completion_rate":RATE,"bug_delta":N,"velocity_trend":"TREND","commit":"COMMIT"}' 2>/dev/null || true
+```

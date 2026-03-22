@@ -1,0 +1,32 @@
+---
+name: unfreeze
+description: "Deactivate /guard scope restriction. Returns to normal editing mode."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /unfreeze: Deactivate Guard Mode
+
+Removes the file edit scope restriction set by `/guard`.
+
+## What it does
+
+1. Clears the active scope restriction
+2. Confirms deactivation
+3. `/careful` protections remain active if they were enabled separately
+
+## Usage
+
+Just invoke `/unfreeze`. No arguments needed.
+
+> Guard mode deactivated. All files are now editable.
+> Note: If /careful was active, destructive command warnings are still on.
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"unfreeze","timestamp":"TIMESTAMP","status":"DEACTIVATED","commit":"COMMIT"}' 2>/dev/null || true
+```

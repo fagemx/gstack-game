@@ -1,0 +1,56 @@
+---
+name: guard
+description: "Full safety mode. Combines /careful (destructive command warnings) with file scope restriction. Prevents editing files outside a specified directory."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /guard: Full Safety Mode
+
+Activates BOTH destructive command safety (/careful) AND file edit scope restriction.
+
+## Activation
+
+AskUserQuestion: What directory should I restrict edits to?
+- A) Current feature directory (auto-detect from recent git changes)
+- B) Specific path: [user provides path]
+- C) Only files in current PR/branch diff
+
+## Scope Restriction
+
+When active, before any Edit/Write tool call:
+
+1. Check if target file is within the allowed scope
+2. If outside scope:
+
+> 🛡️ **GUARD MODE**: This file is outside the allowed scope.
+> Scope: [allowed directory]
+> Target: [file being edited]
+>
+> This edit is BLOCKED. To proceed, either:
+> A) Expand scope to include this file
+> B) Temporarily bypass for this one edit
+> C) Deactivate guard mode
+
+## Careful Mode (included)
+
+All /careful protections are also active. See `/careful` for destructive command warnings.
+
+## Use Cases
+
+- **During a focused bug fix:** Guard to only the affected module
+- **During asset work:** Guard to only asset directories (don't accidentally change code)
+- **During balance tuning:** Guard to only data/config files (don't change game logic)
+
+## Deactivation
+
+Say "turn off guard mode" or start a new session.
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"guard","timestamp":"TIMESTAMP","status":"ACTIVATED","scope":"SCOPE","commit":"COMMIT"}' 2>/dev/null || true
+```

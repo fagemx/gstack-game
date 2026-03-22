@@ -1,0 +1,109 @@
+---
+name: game-docs
+description: "Game release documentation update. Generates player-facing patch notes, internal changelog, and updates all project documentation after a release."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /game-docs: Release Documentation
+
+Update all documentation after a game release or patch.
+
+## Step 0: Release Context
+
+```bash
+# Find recent release info
+git tag --sort=-creatordate | head -5
+_LATEST_TAG=$(git tag --sort=-creatordate | head -1)
+[ -n "$_LATEST_TAG" ] && git log "$_LATEST_TAG"..HEAD --oneline --no-merges | head -20
+```
+
+AskUserQuestion: What version is this release? What are the highlights?
+
+## Section 1: Player-Facing Patch Notes
+
+**Format — players read this, not developers:**
+
+```markdown
+# Version X.Y.Z — [Catchy Title]
+
+## ✨ New
+- [Feature in player language] — [what it means for gameplay]
+
+## ⚡ Improved
+- [Improvement] — [why it matters]
+
+## 🐛 Fixed
+- [Bug description in player terms] — [what was happening, now fixed]
+
+## ⚖️ Balance Changes
+- [What changed] — [designer intent / reasoning]
+
+## 🔧 Known Issues
+- [Issue] — [workaround if any]
+```
+
+**Rules:**
+- No code references, file paths, or technical jargon
+- Every change answers "so what?" for the player
+- Balance changes include the WHY (players want to understand intent)
+- Group by impact, not by code area
+
+## Section 2: Internal Changelog
+
+**Format — for the team:**
+
+```markdown
+# [version] — [date]
+
+## Changes
+- [commit-style description] ([files affected]) @[author]
+
+## Metrics
+- LOC changed: ___
+- Files changed: ___
+- Tests added: ___
+- Known debt introduced: ___
+```
+
+## Section 3: Documentation Sweep
+
+Check and update:
+- [ ] README — Version number, install instructions, screenshots current?
+- [ ] GDD — Does it reflect current game state? Mark outdated sections.
+- [ ] API docs — If modding/plugin support exists
+- [ ] Platform store descriptions — App Store/Steam/Play Store
+- [ ] Website/landing page — Screenshots, feature list, trailer
+
+## AUTO/ASK/ESCALATE
+
+- **AUTO:** Generate changelog from git log, update version numbers
+- **ASK:** Patch notes tone/framing, which changes to highlight, balance change explanations
+- **ESCALATE:** Major undocumented breaking change, store description contradicts current build
+
+## Anti-Sycophancy
+
+Forbidden:
+- ❌ "Great release!"
+- ❌ "Players will appreciate these changes"
+
+Instead: "12 changes documented. 3 balance changes need designer intent explanations before publishing."
+
+## Completion Summary
+
+```
+Documentation:
+  Patch notes: [written / updated]
+  Internal changelog: [written / updated]
+  Docs swept: ___/___ up to date
+  STATUS: DONE / DONE_WITH_CONCERNS
+```
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-docs","timestamp":"TIMESTAMP","status":"STATUS","version":"VERSION","commit":"COMMIT"}' 2>/dev/null || true
+```

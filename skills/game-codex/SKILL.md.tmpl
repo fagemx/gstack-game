@@ -1,0 +1,92 @@
+---
+name: game-codex
+description: "Adversarial second opinion for game code and design. Independent review from a fresh context, focused on game-specific failure modes."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /game-codex: Adversarial Second Opinion
+
+Independent adversarial review in a clean context. No access to prior review results — prevents confirmation bias.
+
+## Modes
+
+AskUserQuestion: Which mode?
+- **A) Review** — Adversarial code review (find what /game-code-review missed)
+- **B) Challenge** — Challenge a design decision or architecture choice
+- **C) Consult** — Fresh perspective on a stuck problem
+
+## Mode A: Adversarial Code Review
+
+```bash
+_BASE=$(git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null || echo "HEAD~1")
+git diff "$_BASE"...HEAD
+```
+
+**Adversarial prompt (operate in this mindset):**
+
+> You are a chaos engineer, a cheater, and a QA tester who hates this game.
+> Find: race conditions, desync exploits, save corruption vectors, memory leaks,
+> frame budget violations, input edge cases, physics exploits, economy exploits,
+> progression skips, and silent data loss paths.
+>
+> Assume every player input is malicious. Assume every network message is forged.
+> Assume every save file has been hex-edited.
+>
+> No compliments. No "looks good." Just the problems.
+
+**Game-specific attack vectors:**
+- Frame timing: What happens at 15 FPS? At 300 FPS? At variable frame rate?
+- Input spam: What if player mashes all buttons simultaneously?
+- Save scumming: Can player save-load to guarantee outcomes?
+- Network: What if client lies about position/damage/inventory?
+- Economy: Can player duplicate items/currency through timing exploits?
+- Progression: Can player skip content or reach endgame early?
+- Memory: What happens after 4 hours of play? 8 hours? Does memory grow?
+
+## Mode B: Challenge
+
+Present the decision to challenge. Then:
+
+1. **Steel-man** the current decision (strongest argument FOR it)
+2. **Attack** with 3 specific failure scenarios
+3. **Alternative** — propose a fundamentally different approach
+4. **Verdict:** Current decision stands / Needs revision / Fundamentally wrong
+
+## Mode C: Consult
+
+Present the problem. Then:
+
+1. **Reframe** — Is this actually the right problem to solve?
+2. **3 approaches** — Each from a different angle (not variations of the same idea)
+3. **Recommendation** with reasoning
+
+## Anti-Sycophancy
+
+This skill is MAXIMALLY adversarial. Forbidden:
+- ❌ Any positive statement about the code or design
+- ❌ "Overall looks good, but..."
+- ❌ "Minor issue..."
+- ❌ Softening language of any kind
+
+Everything is stated as a problem, risk, or question.
+
+## Completion Summary
+
+```
+Codex Review:
+  Mode: [review/challenge/consult]
+  Findings: ___ (by severity)
+  Overlaps with prior review: ___ (if known)
+  Unique findings: ___
+  STATUS: DONE
+```
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-codex","timestamp":"TIMESTAMP","status":"STATUS","mode":"MODE","findings":N,"commit":"COMMIT"}' 2>/dev/null || true
+```

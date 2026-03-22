@@ -24,12 +24,12 @@ This is NOT just a few extra skills on top of gstack. It is a **standalone repla
 
 | Skill | Command | Purpose | Status |
 |-------|---------|---------|--------|
-| game-review | `/game-review` | GDD 審查：core loop, progression, retention, economy, player motivation | 🔨 |
-| balance-review | `/balance-review` | 數值平衡：難度曲線、經濟系統、付費壓力、玩家分層 | 🔨 |
-| player-experience | `/player-experience` | 玩家體驗模擬：互動式第一人稱走查（取代 guardian 的 PlayerSimulatorAgent） | 🔨 |
-| pitch-review | `/pitch-review` | 遊戲企劃提案審查：市場定位、差異化、可行性 | 🔨 |
-| asset-review | `/asset-review` | 美術/音效/動畫管線審查：風格一致性、效能預算、素材規格 | ❌ |
-| playtest | `/playtest` | 測試協議設計：測試計畫、觀察指標、玩家招募、數據收集 | ❌ |
+| game-review | `/game-review` | GDD 審查：core loop, progression, retention, economy, player motivation | ✅ (549L, 80%) |
+| balance-review | `/balance-review` | 數值平衡：難度曲線、經濟系統、付費壓力、玩家分層 | ✅ (625L, 70%) |
+| player-experience | `/player-experience` | 玩家體驗模擬：互動式第一人稱走查（取代 guardian 的 PlayerSimulatorAgent） | ✅ (443L, 75%) |
+| pitch-review | `/pitch-review` | 遊戲企劃提案審查：市場定位、差異化、可行性 | ✅ (575L, 70%) |
+| asset-review | `/asset-review` | 美術/音效/動畫管線審查：風格一致性、效能預算、素材規格 | 🔨 (117L, 35%) |
+| playtest | `/playtest` | 測試協議設計：測試計畫、觀察指標、玩家招募、數據收集 | 🔨 (165L, 40%) |
 
 ### Migrated from gstack (rewritten for game context)
 
@@ -37,19 +37,19 @@ These skills exist in gstack for web/SaaS. gstack-game forks and rewrites them w
 
 | gstack original | gstack-game version | What changes | Status |
 |-----------------|---------------------|--------------|--------|
-| `/office-hours` | `/game-ideation` | 遊戲概念發想。用 core loop / fantasy / target session 取代 SaaS 的 demand evidence / status quo。問題框架改為「這個遊戲為什麼好玩？」而非「用戶為什麼需要這個？」 | ❌ |
-| `/plan-ceo-review` | `/game-direction` | 遊戲方向審查。市場定位、IP 策略、平台選擇、競品分析。用 DAU/MAU/ARPDAU 取代 MRR/churn。 | ❌ |
-| `/plan-eng-review` | `/game-eng-review` | 遊戲技術架構。引擎選型、網路架構、資料同步、物理引擎、渲染管線。保留 gstack 的互動式 4-section 結構。 | ❌ |
-| `/plan-design-review` | `/game-ux-review` | 遊戲 UI/UX 審查。HUD、選單流程、商店介面、新手引導 UI、控制器/觸控適配。 | ❌ |
-| `/review` | `/game-code-review` | PR code review（遊戲語境）。檢查 frame budget、記憶體分配模式、序列化、狀態同步。 | ❌ |
-| `/investigate` | `/game-debug` | 遊戲 debug。分析 crash dump、效能瓶頸、物理穿透、網路延遲。 | ❌ |
-| `/ship` | `/game-ship` | 遊戲發布流程。build → test → changelog → PR → deploy。含平台特定步驟（Steam/App Store/Google Play）。 | ❌ |
-| `/qa` | `/game-qa` | 遊戲 QA。分 functional（功能）、visual（視覺）、performance（效能）、compatibility（相容性）四類。Web 遊戲用 /browse，原生遊戲用 checklist。 | ❌ |
-| `/design-review` | `/game-visual-qa` | 視覺 QA。美術風格一致性、UI 對齊、動畫流暢度、螢幕適配。 | ❌ |
-| `/retro` | `/game-retro` | 開發週回顧。含 milestone tracking、feature completion rate、bug density trend。 | ❌ |
-| `/codex` | `/game-codex` | Codex 第二意見（遊戲語境）。對抗性 review 聚焦遊戲特有問題（race condition in netcode, frame spike, memory leak in asset loading）。 | ❌ |
-| `/careful` + `/guard` | `/careful` + `/guard` | 安全模式。直接沿用，不需改。 | ❌ |
-| `/document-release` | `/game-docs` | 發布文件更新。含 patch notes 格式（玩家看得懂的 changelog）。 | ❌ |
+| `/office-hours` | `/game-ideation` | 遊戲概念發想。用 core loop / fantasy / target session 取代 SaaS 的 demand evidence / status quo。問題框架改為「這個遊戲為什麼好玩？」而非「用戶為什麼需要這個？」 | ✅ (344L, 65%) |
+| `/plan-ceo-review` | `/game-direction` | 遊戲方向審查。市場定位、IP 策略、平台選擇、競品分析。用 DAU/MAU/ARPDAU 取代 MRR/churn。 | ✅ (391L, 55%) |
+| `/plan-eng-review` | `/game-eng-review` | 遊戲技術架構。引擎選型、網路架構、資料同步、物理引擎、渲染管線。保留 gstack 的互動式 4-section 結構。 | ✅ (481L, 60%) |
+| `/plan-design-review` | `/game-ux-review` | 遊戲 UI/UX 審查。HUD、選單流程、商店介面、新手引導 UI、控制器/觸控適配。 | ✅ (525L, 60%) |
+| `/review` | `/game-code-review` | PR code review（遊戲語境）。檢查 frame budget、記憶體分配模式、序列化、狀態同步。 | ✅ (361L, 75%) |
+| `/investigate` | `/game-debug` | 遊戲 debug。分析 crash dump、效能瓶頸、物理穿透、網路延遲。 | 🔨 (115L, 40%) |
+| `/ship` | `/game-ship` | 遊戲發布流程。build → test → changelog → PR → deploy。含平台特定步驟（Steam/App Store/Google Play）。 | ✅ (448L, 65%) |
+| `/qa` | `/game-qa` | 遊戲 QA。分 functional（功能）、visual（視覺）、performance（效能）、compatibility（相容性）四類。Web 遊戲用 /browse，原生遊戲用 checklist。 | ✅ (536L, 65%) |
+| `/design-review` | `/game-visual-qa` | 視覺 QA。美術風格一致性、UI 對齊、動畫流暢度、螢幕適配。 | 🔨 (129L, 35%) |
+| `/retro` | `/game-retro` | 開發週回顧。含 milestone tracking、feature completion rate、bug density trend。 | 🔨 (129L, 40%) |
+| `/codex` | `/game-codex` | Codex 第二意見（遊戲語境）。對抗性 review 聚焦遊戲特有問題（race condition in netcode, frame spike, memory leak in asset loading）。 | 🔨 (92L, 40%) |
+| `/careful` + `/guard` | `/careful` + `/guard` | 安全模式。直接沿用，不需改。 | ✅ (118L) |
+| `/document-release` | `/game-docs` | 發布文件更新。含 patch notes 格式（玩家看得懂的 changelog）。 | 🔨 (109L, 40%) |
 
 ### Complete Workflow (target)
 

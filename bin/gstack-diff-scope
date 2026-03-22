@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+# gstack-game diff-scope — categorize what changed in the diff for game projects
+# Usage: source <(gstack-diff-scope main)  → sets SCOPE_*=true/false
+# Or:    gstack-diff-scope main            → prints SCOPE_*=... lines
+set -euo pipefail
+
+BASE="${1:-main}"
+
+# Get changed file list
+FILES=$(git diff "${BASE}...HEAD" --name-only 2>/dev/null || git diff "${BASE}" --name-only 2>/dev/null || echo "")
+
+if [ -z "$FILES" ]; then
+  echo "SCOPE_GAMEPLAY=false"
+  echo "SCOPE_ENGINE=false"
+  echo "SCOPE_UI=false"
+  echo "SCOPE_AI=false"
+  echo "SCOPE_NETWORK=false"
+  echo "SCOPE_SHADERS=false"
+  echo "SCOPE_ASSETS=false"
+  echo "SCOPE_DATA=false"
+  echo "SCOPE_TESTS=false"
+  echo "SCOPE_DOCS=false"
+  echo "SCOPE_CONFIG=false"
+  exit 0
+fi
+
+GAMEPLAY=false
+ENGINE=false
+UI=false
+AI=false
+NETWORK=false
+SHADERS=false
+ASSETS=false
+DATA=false
+TESTS=false
+DOCS=false
+CONFIG=false
+
+while IFS= read -r f; do
+  case "$f" in
+    # Gameplay: game logic, mechanics, systems
+    src/gameplay/*|game/gameplay/*|scripts/gameplay/*|src/systems/*) GAMEPLAY=true ;;
+    *controller*|*character*|*combat*|*inventory*|*quest*|*ability*) GAMEPLAY=true ;;
+
+    # Engine / Core: framework, core systems
+    src/core/*|src/engine/*|game/core/*|addons/*/src/*) ENGINE=true ;;
+    *singleton*|*autoload*|*manager*.gd|*manager*.cs|*manager*.cpp) ENGINE=true ;;
+
+    # UI: interface, HUD, menus
+    src/ui/*|game/ui/*|scenes/ui/*|UI/*|ui/*) UI=true ;;
+    *.tscn|*.uxml|*.uss) UI=true ;;
+
+    # AI: game AI, behavior trees, state machines
+    src/ai/*|game/ai/*|scripts/ai/*) AI=true ;;
+    *behavior_tree*|*state_machine*|*bt_*|*fsm_*) AI=true ;;
+
+    # Network: multiplayer, replication
+    src/network*|src/net/*|game/network*|scripts/network*) NETWORK=true ;;
+    *replication*|*rpc*|*netcode*|*sync*) NETWORK=true ;;
+
+    # Shaders: visual effects, rendering
+    *.shader|*.gdshader|*.hlsl|*.glsl|*.cginc|*.vert|*.frag|*.compute) SHADERS=true ;;
+    *.shadergraph|*.usf|*.ush) SHADERS=true ;;
+
+    # Assets: art, audio, animations
+    *.png|*.jpg|*.jpeg|*.webp|*.svg|*.psd|*.tga|*.bmp|*.exr) ASSETS=true ;;
+    *.wav|*.ogg|*.mp3|*.flac|*.opus|*.aiff) ASSETS=true ;;
+    *.fbx|*.gltf|*.glb|*.obj|*.blend|*.dae) ASSETS=true ;;
+    *.anim|*.animation|*.tres|*.aab) ASSETS=true ;;
+    assets/*|art/*|audio/*|models/*|textures/*|sprites/*|animations/*) ASSETS=true ;;
+
+    # Data: balance tables, configs, levels
+    *.json|*.csv|*.tsv|*.xml) DATA=true ;;
+    data/*|balance/*|levels/*|maps/*|design/balance/*) DATA=true ;;
+    *loot_table*|*drop_rate*|*difficulty*|*curve*|*economy*) DATA=true ;;
+
+    # Tests
+    *.test.*|*.spec.*|*_test.*|*_spec.*) TESTS=true ;;
+    test/*|tests/*|spec/*|__tests__/*) TESTS=true ;;
+
+    # Docs
+    *.md|docs/*|design/gdd/*) DOCS=true ;;
+
+    # Config: project settings, build config, CI
+    *.cfg|*.ini|*.toml|*.yml|*.yaml) CONFIG=true ;;
+    project.godot|ProjectSettings/*|*.uproject) CONFIG=true ;;
+    package.json|package-lock.json|bun.lockb|Cargo.toml|*.csproj|*.sln) CONFIG=true ;;
+    .github/*|.gitlab-ci*|Makefile|CMakeLists.txt) CONFIG=true ;;
+    export_presets.cfg|*.keystore|*.plist) CONFIG=true ;;
+  esac
+done <<< "$FILES"
+
+echo "SCOPE_GAMEPLAY=$GAMEPLAY"
+echo "SCOPE_ENGINE=$ENGINE"
+echo "SCOPE_UI=$UI"
+echo "SCOPE_AI=$AI"
+echo "SCOPE_NETWORK=$NETWORK"
+echo "SCOPE_SHADERS=$SHADERS"
+echo "SCOPE_ASSETS=$ASSETS"
+echo "SCOPE_DATA=$DATA"
+echo "SCOPE_TESTS=$TESTS"
+echo "SCOPE_DOCS=$DOCS"
+echo "SCOPE_CONFIG=$CONFIG"

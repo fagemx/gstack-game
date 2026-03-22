@@ -1,0 +1,117 @@
+---
+name: asset-review
+description: "Game asset pipeline review. Checks art style consistency, performance budgets, naming conventions, file formats, and asset specifications."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /asset-review: Asset Pipeline Review
+
+Review game assets for style consistency, performance budgets, and pipeline health.
+
+## Step 0: Asset Context
+
+AskUserQuestion: What are we reviewing?
+- A) Full asset audit (all assets)
+- B) New assets (recent additions)
+- C) Specific category (textures / models / audio / UI / VFX)
+- D) Performance budget check
+
+Establish: Target platform, memory budget, art style reference.
+
+## Section 1: Naming & Organization (weight: 10%)
+
+- Consistent naming convention? (`snake_case`, `PascalCase`, prefix by type?)
+- Folder structure logical? (by type? by scene? by feature?)
+- No duplicate assets with different names?
+- Source files (PSD, Blend, FBX) stored separately from game-ready assets?
+
+## Section 2: Format & Specification (weight: 20%)
+
+**Textures:**
+- Format appropriate? (PNG for UI, compressed for 3D, WebP for web)
+- Power-of-two dimensions? (required for some platforms/engines)
+- Mipmaps generated?
+- Alpha channel needed or wasted space?
+
+**Models (if applicable):**
+- Poly count within budget? (mobile: 1-10K, PC: 10-100K per object)
+- Clean topology? (no degenerate triangles, no flipped normals)
+- UV mapped efficiently? (no overlapping UVs unless intentional)
+
+**Audio:**
+- Format appropriate? (OGG/MP3 for music, WAV for short SFX)
+- Sample rate appropriate? (44.1kHz for music, 22.05kHz often fine for SFX)
+- Loudness normalized? (LUFS target defined?)
+- Loop points clean? (no click/pop at loop boundary)
+
+**UI/2D:**
+- Resolution appropriate for target display?
+- 9-slice/9-patch prepared for scalable elements?
+- Consistent export settings across all UI assets?
+
+## Section 3: Performance Budget (weight: 30%)
+
+```
+Budget Check:
+  Total texture memory:   ___MB / ___MB budget
+  Total mesh memory:      ___MB / ___MB budget
+  Audio memory:           ___MB / ___MB budget
+  Build size:             ___MB / ___MB target
+
+  Over budget? [YES/NO]
+  Largest assets: [list top 5 by size]
+```
+
+## Section 4: Style Consistency (weight: 25%)
+
+- All assets from same style family?
+- Color palette adherence?
+- Detail level consistent? (one asset hyper-detailed, another flat = mismatch)
+- Lighting baked consistently?
+- Scale consistent? (1 unit = 1 meter across all assets?)
+
+⚠️ AI confidence on style judgment: 35% — this section needs human art director review.
+
+## Section 5: Pipeline Health (weight: 15%)
+
+- Import settings consistent across similar assets?
+- Automation in place? (texture compression, atlas generation, sprite packing)
+- Asset dependencies mapped? (which assets depend on which?)
+- Unused assets identified? (assets in project but not referenced)
+
+## AUTO/ASK/ESCALATE
+
+- **AUTO:** Flag naming violations, oversized assets, missing mipmaps
+- **ASK:** Style consistency judgment, budget allocation priorities
+- **ESCALATE:** Build size >2x budget, art style fundamentally inconsistent, missing critical assets
+
+## Anti-Sycophancy
+
+Forbidden:
+- ❌ "Beautiful assets"
+- ❌ "High-quality art"
+- ❌ "Professional look"
+
+Instead: "5 textures exceed 2048x2048 on a mobile target. Total texture memory 180MB vs 64MB budget. Top offender: `bg_forest_panorama.png` at 4096x4096 (32MB)."
+
+## Completion Summary
+
+```
+Asset Review:
+  Assets checked: ___
+  Naming issues: ___
+  Spec violations: ___
+  Budget status: [under/at/over] (___MB / ___MB)
+  Style concerns: ___ (⚠️ needs art director confirmation)
+  STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
+```
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"asset-review","timestamp":"TIMESTAMP","status":"STATUS","assets_checked":N,"issues":N,"commit":"COMMIT"}' 2>/dev/null || true
+```

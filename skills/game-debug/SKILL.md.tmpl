@@ -1,0 +1,115 @@
+---
+name: game-debug
+description: "Game debugging and root cause analysis. Analyzes crash dumps, performance bottlenecks, physics glitches, network desync, and gameplay bugs through structured hypothesis testing."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /game-debug: Game Bug Investigation
+
+Structured root cause analysis for game-specific bugs. Uses hypothesis testing with a 3-strike escalation rule.
+
+## Step 0: Symptom Collection
+
+Gather before investigating:
+1. **Bug description** — What happens? What should happen instead?
+2. **Repro steps** — Exact sequence. "Sometimes crashes" is not a repro.
+3. **Environment** — Platform, OS, hardware, build version, save file
+4. **Evidence** — Screenshot, video, crash log, stack trace, save file
+5. **Frequency** — Always? Random? After specific action? Time-based?
+
+```bash
+# Check for crash logs, core dumps, recent errors
+find . -name "*.crash" -o -name "*.dmp" -o -name "crash*.log" -o -name "*.stacktrace" 2>/dev/null | head -10
+git log --oneline -10
+```
+
+## Step 1: Bug Classification
+
+Classify BEFORE investigating:
+
+| Category | Examples | Typical Cause |
+|----------|---------|---------------|
+| **Crash** | Segfault, null ref, stack overflow | Memory, uninitialized state |
+| **Visual** | Z-fighting, texture pop, animation glitch | Rendering order, LOD, state machine |
+| **Physics** | Clipping, tunneling, floating, jitter | Timestep, collision layers, scale |
+| **Network** | Desync, rubber-banding, ghost players | Prediction, authority, tick rate |
+| **Performance** | Frame drop, hitch, memory growth | Allocation, shader, draw calls |
+| **Gameplay** | Wrong damage, stuck progression, softlock | Logic error, state corruption, edge case |
+| **Audio** | Missing sound, wrong trigger, volume spike | Event binding, priority, streaming |
+| **Save/Data** | Corrupted save, lost progress, wrong state | Serialization, migration, race condition |
+
+## Step 2: Hypothesis Testing (3-Strike Rule)
+
+For each hypothesis:
+1. State the hypothesis clearly
+2. Describe what evidence would confirm or refute it
+3. Test it (add temp log, assertion, breakpoint, repro attempt)
+4. Record result: CONFIRMED / REFUTED / INCONCLUSIVE
+
+**Strike 1 fails** → Record, try hypothesis 2
+**Strike 2 fails** → Record, try hypothesis 3
+**Strike 3 fails** → **STOP. ESCALATE.** Do not keep guessing.
+
+Escalation report:
+- What was tried
+- What was ruled out
+- What data is needed to continue
+
+## Step 3: Root Cause Isolation
+
+When hypothesis confirmed:
+- Trace the data flow from symptom back to root cause
+- Identify the EARLIEST point where state diverges from expected
+- Distinguish between: trigger (what activates the bug) vs root cause (why it's possible)
+
+## Step 4: Fix Implementation
+
+- **Minimal fix** — Change as few lines as possible
+- **Regression test** — Write a test that fails before fix, passes after
+- **Related check** — Same bug pattern elsewhere? (grep for similar code)
+- **Save compatibility** — Does the fix affect existing save files?
+
+## Red Flags (Immediate Slowdown)
+
+- 🔴 "Let me just quickly fix this" → No root cause identified yet
+- 🔴 Proposing fix before tracing data flow → Guessing
+- 🔴 Each fix creates a new bug → Wrong abstraction level
+- 🔴 "Works on my machine" → Environment-specific, need more data
+
+## AUTO/ASK/ESCALATE
+
+- **AUTO:** Add diagnostic logging, run existing tests, check known bug patterns
+- **ASK:** Fix approach when multiple options exist, scope of related fixes (>5 files)
+- **ESCALATE:** 3 hypotheses failed, data loss risk, requires engine/framework bug report
+
+## Anti-Sycophancy
+
+Forbidden:
+- ❌ "Easy fix"
+- ❌ "Simple bug"
+- ❌ "This should work"
+
+Instead: State what you know, what you don't know, and what you need.
+
+## Completion Summary
+
+```
+Bug Investigation:
+  Category: [crash/visual/physics/network/performance/gameplay/audio/save]
+  Hypotheses tested: ___ (max 3 before escalation)
+  Root cause: [identified / not found]
+  Fix: [implemented / proposed / needs discussion]
+  Regression test: [written / not applicable / TODO]
+  Related occurrences: ___ found
+  STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
+```
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-debug","timestamp":"TIMESTAMP","status":"STATUS","category":"CATEGORY","hypotheses_tested":N,"root_cause_found":BOOL,"commit":"COMMIT"}' 2>/dev/null || true
+```

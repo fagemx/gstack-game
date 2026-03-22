@@ -111,78 +111,132 @@ Review game direction from a producer/creative director perspective. Challenge p
 
 ---
 
-## Step 0: Premise Challenge (Nuclear Scope Challenge)
+## Phase 0: Premise Challenge (Nuclear Scope Challenge)
 
-Before reviewing any details, challenge the premise itself. This is the most important step — if the foundation is wrong, everything built on it is wasted effort.
+Before reviewing any details, challenge the premise itself. This is the most important phase — if the foundation is wrong, everything built on it is wasted effort.
+
+**Read the GDD and any existing concept docs.** Then work through 0A-0D ONE AT A TIME via AskUserQuestion.
 
 ### 0A. The "Why This, Why Now" Question
 
-> "Is this the right game to build right now? Why this, why now?"
+**AskUserQuestion:**
 
-Not "is this a good game idea" — that's `/game-review`'s job. The question here is strategic:
-- Why is this the best use of this team's time and resources?
-- What has changed in the market, technology, or team capability that makes NOW the right moment?
-- What is the opportunity cost? What are you NOT building by building this?
+> **[Re-ground]** Direction review for `[game title]` on `[branch]`.
+>
+> Before I review the plan, I need to challenge the premise itself. This isn't about whether the game is good — it's about whether building it NOW is the right strategic decision.
+>
+> **Why this game, why now?**
+> - Why is this the best use of your team's time and resources?
+> - What has changed (in the market, tech, or your team) that makes NOW the right moment?
+> - What are you NOT building by building this? (opportunity cost)
+>
+> Tell me your reasoning. I'm going to push back on it.
+
+**Push until you hear:** A specific strategic rationale — not just "I'm passionate about it" (that's motivation, not strategy). "Mobile puzzle market is shifting toward AI-integrated play, our team shipped 2 puzzle games, and we have a working LLM integration from our last project" = strategic. "I've always wanted to make this game" = passion (valid, but not strategy).
+
+**STOP.** Wait for answer. Push once on vague answers.
 
 ### 0B. Existing Asset Leverage
 
-> "What do you already have that this game uses?"
+**AskUserQuestion:**
 
-Inventory existing assets that reduce risk and cost:
-- **Engine/tech:** Existing codebase, tools, pipeline?
-- **Art:** Reusable assets, established art style, trained artists?
-- **IP/brand:** Existing audience, sequel/spinoff of known property?
-- **Audience:** Email list, Discord community, social following?
-- **Knowledge:** Genre expertise, previous shipped titles in this space?
+> What do you ALREADY have that this game can use? Check all that apply:
+>
+> - Engine/codebase from a previous project?
+> - Reusable art assets or established art pipeline?
+> - Existing audience (Discord, email list, social following)?
+> - IP/brand (sequel, spinoff, known property)?
+> - Genre expertise (shipped games in this space before)?
+> - Technical expertise (team has built the hardest system before)?
+>
+> Be honest — the more "nothing" answers, the higher the execution risk. That doesn't mean don't build it, but it means the plan needs more buffer.
 
-The more "already have" boxes checked, the lower the execution risk. If the answer to all is "nothing," the risk is maximum — flag this.
+**STOP.** Wait for answer. Count the assets. 0-1 = high risk (flag). 2-3 = moderate. 4+ = strong foundation.
 
 ### 0C. Dream State Mapping
 
-Map three states clearly:
+**AskUserQuestion:**
 
-| | CURRENT | THIS PLAN | 12-MONTH IDEAL |
-|---|---------|-----------|----------------|
-| **Product** | What exists today? | What ships at launch? | What it becomes with live ops/updates? |
-| **Audience** | Who plays now? | Who plays at launch? | Who plays in 12 months? |
-| **Revenue** | Current revenue? | Launch revenue model? | Sustainable revenue? |
-| **Team** | Current team? | Team at launch? | Team needed for live ops? |
+> Let me map where you are, where this plan takes you, and where you want to be in 12 months:
+>
+> | | NOW | AT LAUNCH | 12 MONTHS POST-LAUNCH |
+> |---|---|---|---|
+> | Product | {what exists today?} | {what ships?} | {what it becomes?} |
+> | Audience | {current players?} | {launch players?} | {12-month players?} |
+> | Revenue | {current?} | {launch model?} | {sustainable?} |
+> | Team | {current size?} | {launch team?} | {live ops team?} |
+>
+> I've filled in what I can from the GDD. **Fill in the blanks** — especially the 12-month column. If you can't answer the 12-month column, that's a flag, not a failure.
 
-If CURRENT → THIS PLAN is a massive leap with no intermediate milestones, flag it. Big jumps without checkpoints fail.
+**STOP.** Wait for answer. Flag if CURRENT → LAUNCH is a massive leap with no milestones in between.
 
 ### 0D. Alternative Comparison (mandatory)
 
-Present 2-3 different approaches to achieve the same player experience or business goal:
+After reading the answers to 0A-0C, generate 2-3 alternatives yourself, then present via AskUserQuestion:
 
-For example:
-- **Option A:** Build as designed (full scope)
-- **Option B:** Smaller scope, same core loop, different wrapper
-- **Option C:** Different genre/platform, same target audience and fantasy
+> Before we commit to reviewing the current plan, let me put it in context. Here are 3 ways to achieve the same player experience:
+>
+> **A) Current plan** — {1-sentence summary}. Effort: {estimate}. Risk: {level}.
+> **B) {Smaller version}** — {1-sentence}. Effort: {estimate}. Risk: {level}.
+> **C) {Different approach}** — {1-sentence}. Effort: {estimate}. Risk: {level}.
+>
+> RECOMMENDATION: {Pick one with reasoning. Often B is the right first step.}
+> Player Impact: This shapes everything — scope, timeline, team requirements.
+>
+> Which direction should I review?
+> A) Review the current plan as-is
+> B) Review the smaller version
+> C) Review the alternative approach
+> D) I want to discuss these options first
 
-This forces the user to justify their chosen approach against concrete alternatives, not just against "doing nothing."
-
-**STOP.** Work through 0A-0D via AskUserQuestion. If the premise doesn't survive this challenge, recommend `/game-ideation` to rethink the concept before continuing.
+**STOP.** Wait for answer. If the premise doesn't survive this challenge, recommend `/game-ideation`.
 
 ---
 
-## Mode Selection
+## Phase 0.5: Mode Selection
 
-After the premise challenge, the user selects a review mode. This frames all subsequent review:
+---
 
-| Mode | When to use | Review focus |
-|------|-------------|--------------|
-| **AMBITIOUS** | Expanding scope, betting bigger | Validate the upside. Is the bigger bet justified by market data or audience demand? What's the minimum evidence needed before committing? High risk, high reward — but is the risk CALCULATED or just hopeful? |
-| **FOCUSED** | Locking scope, polishing what exists | Protect the core. Which features are truly essential? Cut everything that doesn't serve a pillar. Medium risk, quality play. |
-| **PIVOT** | Current direction isn't working | Salvage what's valuable. What assets, tech, audience can transfer? What was learned? What's the smallest pivot that addresses the core problem? |
-| **SHELVE** | Not the right time | Preserve work for later. Document decisions and rationale. Archive assets cleanly. Define the trigger conditions for revisiting. |
+**AskUserQuestion:**
 
-**STOP.** Mode selection via AskUserQuestion. The rest of the review adapts to the chosen mode.
+> Based on the premise challenge, which review mode fits your situation?
+>
+> RECOMMENDATION: {Based on 0A-0D answers. If premise is strong + assets exist → FOCUSED. If premise is strong but scope is huge → AMBITIOUS with caution. If 0A answer was weak → PIVOT. If team/resources don't match → SHELVE.}
+>
+> A) **AMBITIOUS** — Expand scope, bet bigger. I'll validate whether the bigger bet is justified by evidence, not hope.
+> B) **FOCUSED** — Lock scope, polish what exists. I'll find what to cut so the core shines.
+> C) **PIVOT** — Current direction needs change. I'll identify what to salvage and where to redirect.
+> D) **SHELVE** — Not the right time. I'll help document and archive cleanly for future revisiting.
+>
+> Player Impact: Mode choice determines the entire tone of the review — Ambitious asks "why not bigger?", Focused asks "what can we cut?", Pivot asks "what did we learn?", Shelve asks "how do we preserve this?"
+
+**STOP.** Wait for mode selection. The rest of the review adapts to the chosen mode.
 
 ---
 
 ## Section 1: Strategic Alignment
 
-Apply these 10 Game Producer/Creative Director cognitive patterns as lenses. For each, assess the current plan and flag concerns.
+Apply 10 producer/creative director cognitive patterns as lenses. **Don't ask about all 10** — smart-route based on mode:
+
+| Mode | Focus on these patterns (minimum 5) | Why |
+|------|-------------------------------------|-----|
+| AMBITIOUS | 1 Player-First, 2 Scope, 5 Monetization, 6 Content Velocity, 8 Moat | Big bets need validation on the areas with highest risk |
+| FOCUSED | 1 Player-First, 4 Session Respect, 7 Retention, 3 Platform, 10 Live Ops | Polish mode needs the player-facing patterns |
+| PIVOT | 2 Scope, 5 Monetization, 8 Moat, 3 Platform, 9 Community | Pivot needs to identify what's salvageable and what's not |
+| SHELVE | 2 Scope, 6 Content Velocity only | Minimal check — just document why and what to preserve |
+
+For each pattern, assess the plan and present findings ONE AT A TIME via AskUserQuestion. Group related patterns (e.g., present patterns 1+4 together since Player-First and Session Respect are related).
+
+**After every 2-3 patterns**, check in:
+
+> Patterns checked so far: {list}. Findings: {N critical}, {N high}, {N medium}.
+>
+> A) Continue to next patterns
+> B) Discuss a finding before moving on
+> C) Fast-forward to Scope Review (Section 2)
+> D) Stop here
+
+**STOP.** Wait for answer.
 
 ### 1. Player-First Thinking
 Every decision asks: "How does this affect the player?" Not the team, not the schedule, not the budget — the player. If a feature makes the team's life easier but the player's experience worse, it's wrong.
@@ -435,6 +489,19 @@ For each scope decision made during the review:
 ### Risk Register
 
 Full risk matrix as documented in Section 3.
+
+## Important Rules
+
+- **Premise challenge comes first.** Do NOT review scope, risk, or milestones before the premise is challenged. If the premise is wrong, everything else is wasted.
+- **Mode shapes everything.** AMBITIOUS, FOCUSED, PIVOT, SHELVE — the tone, questions, and recommendations all change. Don't use AMBITIOUS language in FOCUSED mode.
+- **The scope math is non-negotiable.** Present the numbers (total scope vs. available capacity), then ask what gets cut. Don't let scope exceed capacity without an explicit plan.
+- **ONE scope decision per AskUserQuestion.** Each cut/defer/keep deserves its own consideration. Don't batch.
+- **Cognitive patterns: smart-route, don't dump.** Apply the mode-relevant subset, not all 10.
+- **Phase transitions require check-in.** After Section 1, ask before moving to Section 2. After Section 2, ask before Section 3.
+- **Escape hatch:** If user says "just give me the summary":
+  - First time: "Two more key findings, then I'll summarize."
+  - Second time: Respect it. Present completion summary with what's been covered.
+- **Never prescribe the game design.** This skill evaluates DIRECTION (should we? can we? how?), not DESIGN (what should the loop be?). Design questions go to `/game-review`.
 
 ### Suggested Next Skills
 - `/game-review` — if scope changes affect the GDD, re-review the design

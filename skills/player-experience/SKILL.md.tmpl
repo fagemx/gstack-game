@@ -1,0 +1,46 @@
+---
+name: player-experience
+description: "Interactive first-person player experience walkthrough. Simulates playing the game minute-by-minute, identifying friction, confusion, and delight moments."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+# /player-experience: Player Experience Walkthrough
+
+TODO: Full implementation. This skill simulates being a player, interactively.
+
+### How it works
+Unlike other review skills that analyze documents, this one **role-plays as a player**:
+
+1. Read the GDD / game design spec
+2. Ask: "What kind of player should I be?" (casual first-timer, returning D7, hardcore min-maxer)
+3. Walk through the game minute-by-minute, narrating what the player sees, feels, thinks
+4. At each decision point, AskUserQuestion: "As this player, I would... [options]"
+5. Flag friction points, confusion moments, delight moments
+6. Produce a Player Journey Map (ASCII timeline)
+
+### Player Personas
+- **Casual newcomer**: First mobile game session on commute. 3 minutes of attention.
+- **Interested returner**: Liked it yesterday, opening for second time. Looking for depth.
+- **Dedicated player**: Day 7, invested. Looking for long-term goals.
+- **Hardcore optimizer**: Day 30+. Min-maxing, testing limits, looking for exploits.
+
+### Output: Player Journey Map
+```
+Time    Action              Emotion         Flag
+0:00    Open app            Curious
+0:05    See tutorial        Neutral         ⚠ Text too long
+0:15    First action        Engaged         ✓ Aha moment
+0:45    First fail          Frustrated      ⚠ No recovery hint
+1:00    Retry + succeed     Satisfied       ✓ Competence
+2:00    Hit content wall    Bored           🔴 Churn risk
+```
+
+## Review Log
+
+```bash
+~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"player-experience","timestamp":"TIMESTAMP","status":"STATUS","unresolved":N,"critical_gaps":N,"mode":"MODE","commit":"COMMIT"}' 2>/dev/null || true
+```

@@ -86,24 +86,53 @@ This is NOT a design review. It does not judge whether mechanics are "good." It 
 
 ---
 
-## Step 0: Source Material & Persona Selection
+## Phase 0: Read, Orient & Persona Selection
 
-### 0A. Read the GDD or design spec
-Read the entire design document. Extract:
-- Core loop description
-- FTUE / onboarding flow
-- Progression systems
-- Monetization touchpoints
-- Session structure (intended length, stopping points)
-- Platform and input method
+### 0A. Read the GDD
 
-If any of these are missing, note them as blind spots — the walkthrough will hit "unknown" moments where the design doesn't specify what happens.
+Read the entire design document. Extract these 6 elements and present what you found:
+
+**AskUserQuestion:**
+
+> **[Re-ground]** Starting player experience walkthrough for `[game title]` on `[branch]`.
+>
+> I've read your GDD. Here's what I'll be working with during the walkthrough:
+>
+> | Element | Status | What I Found |
+> |---------|--------|-------------|
+> | Core loop | ✅/⚠️/❌ | {1-line summary or "not specified"} |
+> | FTUE / onboarding | ✅/⚠️/❌ | {summary} |
+> | Progression systems | ✅/⚠️/❌ | {summary} |
+> | Monetization touchpoints | ✅/⚠️/❌ | {summary} |
+> | Session structure | ✅/⚠️/❌ | {intended length, stopping points} |
+> | Platform & input | ✅/⚠️/❌ | {platform, input method} |
+>
+> **{N} blind spots** — moments during the walkthrough where I'll need to ask "what happens here?" because the GDD doesn't specify.
+>
+> Does this look correct? Anything I'm misunderstanding about your game?
+> A) Correct — proceed to persona selection
+> B) Let me clarify: {user corrects}
+
+**STOP.** Wait for confirmation before selecting a persona.
 
 ### 0B. Persona Selection
 
-AskUserQuestion: "What kind of player should I simulate?"
+**AskUserQuestion:**
 
-Present the following personas. The user picks one (or describes a custom persona).
+> Now I need to know **who** I'm pretending to be. Each persona has different patience, expectations, and behaviors — the same game can score 9/10 for one persona and 3/10 for another.
+>
+> RECOMMENDATION: {Based on GDD state — if FTUE isn't designed yet, recommend Persona 1. If economy exists but untested, recommend Persona 3. If endgame exists, recommend Persona 4.}
+>
+> Pick a persona:
+> A) **Casual Newcomer** — First session, 3 min attention, 1-2 failure tolerance. Best for: testing FTUE and first impression. Player Impact: 9/10 for D1 retention.
+> B) **Interested Returner** — Day 2-3, 10-15 min, looking for depth. Best for: testing session 2 hook. Player Impact: 8/10 for D7 retention.
+> C) **Dedicated Player** — Day 7, 20-30 min, knows the systems. Best for: testing mid-game economy and progression. Player Impact: 8/10 for long-term.
+> D) **Hardcore Optimizer** — Day 30+, min-maxing, testing limits. Best for: finding exploits and balance issues. Player Impact: 7/10.
+> E) **Content Creator** — Evaluating streamability and shareability. Best for: viral potential. Player Impact: 6/10.
+> F) **Returning Player** — Day 90 lapsed, checking what's new. Best for: reactivation UX. Player Impact: 7/10 for live service.
+> G) **Custom** — describe your own player type
+
+**STOP.** Wait for persona selection.
 
 ---
 
@@ -170,9 +199,36 @@ If the user describes a specific player type not covered above, adopt their desc
 
 ## Walkthrough Method
 
-After persona selection, walk through the game experience phase by phase. At each phase, narrate in first person as the selected persona. Use the emotion vocabulary defined below.
+After persona selection, walk through the game experience phase by phase. Narrate in first person as the selected persona. Use the emotion vocabulary defined below.
 
-**Critical rule:** Describe EXACTLY what happens, not what you hope happens. If the design doc doesn't specify what the player sees at a given moment, say "The GDD doesn't specify what happens here — this is a blind spot."
+**Three critical rules:**
+
+1. **Describe EXACTLY what happens, not what you hope happens.** If the GDD doesn't specify, say "The GDD doesn't specify what happens here — this is a blind spot."
+
+2. **At every GDD blind spot, ASK the designer.** Don't just flag it — use AskUserQuestion:
+   > The GDD doesn't specify what happens when {situation}. As [Persona], I'd expect {X}. What's your intent?
+   > A) {option based on the persona's expectation}
+   > B) {alternative}
+   > C) It's not designed yet — mark as blind spot and continue
+
+3. **After each phase, STOP and present findings.** Use AskUserQuestion:
+   > **Phase {N} — {name}: {summary in 1 sentence}**
+   >
+   > Findings: {N} friction points, {N} churn risks, {N} blind spots
+   > Emotion arc: {compressed arc, e.g. "Curious → Engaged → Frustrated → Bored"}
+   > Biggest concern: {1 sentence}
+   >
+   > A) **Continue to Phase {N+1}** — {next phase name}
+   > B) **Dig deeper** — ask me about a specific moment in this phase
+   > C) **Fast-forward** — skip to journey map and score summary
+   > D) **Run a different persona** — I want to compare this phase with another player type
+   > E) **Stop here** — save progress
+
+**STOP.** Wait for answer after every phase.
+
+**Escape hatch:** If user says "just give me the map" or "skip ahead":
+- First time: "Let me finish this phase (2 more minutes of walkthrough), then I'll jump to the summary."
+- Second time: Respect it. Generate journey map and score from what's been covered so far.
 
 ### Phase 1: First Contact (0-30 seconds)
 
@@ -194,6 +250,23 @@ Walk through moment by moment:
 - Title screen with no clear "start" affordance
 - Text wall before first interaction
 
+**After completing Phase 1, present findings via AskUserQuestion.** Include the emotion at each checkpoint moment. Example:
+
+> **Phase 1 — First Contact (0-30s):**
+> As a [Persona], here's what happened:
+> - 0:00 — [what I saw]. Emotion: [X]
+> - 0:05 — [first interactive element]. Emotion: [X]
+> - 0:15 — [first input]. Emotion: [X]
+>
+> {N} red flags found. Biggest: {1-sentence summary}.
+>
+> A) Continue to Onboarding phase
+> B) Ask me about a specific moment
+> C) Fast-forward to journey map
+> D) Stop here
+
+**STOP.** Wait for answer.
+
 ### Phase 2: Onboarding (30 seconds - 5 minutes)
 
 - **Tutorial approach** — Forced sequence? Optional overlay? Contextual hints? No tutorial (learn by doing)?
@@ -213,6 +286,10 @@ Walk through moment by moment:
 - Aha moment absent by 2 minutes (player still doesn't "get it")
 - First failure with no feedback on what went wrong
 - Choice with one obviously correct answer (false choice)
+
+**After completing Phase 2, present findings via AskUserQuestion** — same format as Phase 1 transition.
+
+**STOP.** Wait for answer.
 
 ### Phase 3: First Session (5 - 15 minutes)
 
@@ -234,6 +311,19 @@ Walk through moment by moment:
 - No reward or progression signal in 10 minutes
 - No natural stopping point (player must choose to abandon mid-flow)
 - Dead time >5 seconds where the player has nothing to do or look at
+
+**After completing Phase 3, present findings via AskUserQuestion** — same format. This is the most important transition because it's where the first session ends. Ask specifically:
+
+> Phase 3 complete. The first session ends at [timestamp].
+>
+> **Would this persona open the game again?**
+> My assessment as [Persona]: {yes/no/maybe with specific reason}
+>
+> A) Continue to Return & Depth (Session 2+)
+> B) This is enough — generate journey map for session 1 only
+> C) Run session 1 again with a different persona for comparison
+
+**STOP.** Wait for answer.
 
 ### Phase 4: Return & Depth (Session 2+)
 
@@ -494,6 +584,21 @@ Recommended next steps:
   - [specific action based on findings]
   - Consider running /player-experience again with [different persona] to compare
 ```
+
+## Important Rules
+
+- **This is role-play, not review.** You ARE the player. Narrate in first person. "I see a text wall" not "The player encounters a text wall."
+- **Phase transitions are mandatory.** After EVERY phase, present findings and ask before continuing.
+- **GDD blind spots trigger AskUserQuestion.** Don't silently flag them — ask what the designer intended.
+- **One finding per AskUserQuestion** when a finding is significant enough to discuss. Don't batch 5 findings into one message.
+- **Escape hatch:** Respect on second request. Generate partial journey map from covered phases.
+- **Never suggest fixes.** This skill observes and reports. "The player is confused here" not "you should add a tooltip." Fixes belong in `/game-review` or `/game-ux-review`.
+- **Different personas, different standards.** A casual player quitting at 2-min is CRITICAL. A hardcore player quitting at 2-min is EXPECTED (they need more depth to judge). Calibrate severity to the persona.
+- **Completion status:**
+  - DONE — All applicable phases walked through, journey map + score produced
+  - DONE_WITH_CONCERNS — Walkthrough complete but multiple unhealthy patterns found
+  - BLOCKED — Cannot simulate (no core loop defined, persona has no entry point)
+  - NEEDS_CONTEXT — Too many GDD blind spots to produce meaningful walkthrough
 
 ## Review Log
 

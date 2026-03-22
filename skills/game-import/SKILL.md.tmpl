@@ -10,23 +10,17 @@ user_invocable: true
 
 # /game-import: Import & Standardize Game Design Documents
 
-Convert any game design material into the standard format that all other gstack-game skills expect. This is the **entry point** of the pipeline — run this before `/game-review`, `/player-experience`, `/balance-review`, or any other review skill.
+You are a **game design document specialist**. Your job is to take whatever messy, partial, or scattered game design material the user has and transform it into a clean, audited, standardized GDD that all downstream gstack-game skills can consume.
 
-## Why this skill exists
+**HARD GATE:** Do NOT review, critique, or redesign the game. This skill **imports and audits**. Design critique happens in `/game-review`. If you find problems, note them as gaps — don't fix them.
 
-All gstack-game review skills expect to find design documents as **markdown files in the repo**. But real game designers don't start with a perfect GDD in a git repo. They have:
-- A PDF from Google Docs
-- A Notion export
-- Scribbled notes in a chat log
-- A verbal pitch they haven't written down yet
-- A half-finished GDD missing key sections
-- An existing GDD that uses different terminology
-
-This skill bridges that gap.
+**INTERACTION RULE:** Every decision point uses AskUserQuestion. One question at a time. Never batch. Never assume. Never skip ahead without the user's explicit go-ahead.
 
 ---
 
-## Step 0: Detect Current State
+## Phase 1: Context Gathering
+
+Understand what the user has and what they need.
 
 ```bash
 echo "=== Checking existing docs ==="
@@ -34,7 +28,6 @@ _GDD_FOUND=0
 for f in docs/gdd.md docs/game-design.md docs/GDD.md docs/concept.md *.gdd.md; do
   [ -f "$f" ] && echo "FOUND: $f ($(wc -l < "$f") lines)" && _GDD_FOUND=$((_GDD_FOUND + 1))
 done
-# Also check design/gdd/ if it exists
 [ -d "design/gdd" ] && for f in design/gdd/*.md; do
   [ -f "$f" ] && echo "FOUND: $f ($(wc -l < "$f") lines)" && _GDD_FOUND=$((_GDD_FOUND + 1))
 done
@@ -53,153 +46,300 @@ echo "GDD_FOUND=$_GDD_FOUND"
 echo "SRC_FOUND=$_SRC_FOUND"
 ```
 
-Based on what's found, classify the situation:
+Read `CLAUDE.md` if it exists — check for project context, existing game description, team info.
 
-### Situation A: No design docs at all
-→ AskUserQuestion:
-> No game design documents found in this repo.
+**Now ask the first question.** Via AskUserQuestion:
+
+### If GDD_FOUND=0 and SRC_FOUND=0:
+
+> No game design documents found in this project.
 >
-> How would you like to start?
-> A) **Describe your game verbally** — I'll structure it into a GDD (best for early ideas)
-> B) **Point me to an external file** — paste the file path (PDF, DOCX, TXT, Notion export)
-> C) **Start from scratch with /game-ideation** — structured brainstorming first
-> D) **I have a doc elsewhere** — paste the content directly into chat
+> What do you have?
+> A) **I have a file somewhere** — give me the file path (PDF, DOCX, TXT, Notion export)
+> B) **I'll paste the content** — paste your design notes, pitch, or GDD into chat
+> C) **I'll describe it verbally** — I'll ask you 5 focused questions to capture the core design
+> D) **Nothing yet** — let's start from scratch with `/game-ideation` instead
 
-### Situation B: Found markdown GDD already
-→ Skip to **Step 2: Audit** — check completeness of existing doc.
+### If GDD_FOUND > 0 and SRC_FOUND=0:
 
-### Situation C: Found PDF/DOCX/TXT but no markdown
-→ Proceed to **Step 1: Convert** with the found file.
+> Found existing GDD: `{filename}` ({N} lines).
+>
+> What would you like to do?
+> A) **Audit this GDD** — check completeness against the 8-section standard, identify gaps
+> B) **Replace it** — I have a newer version to import (give me the file or paste it)
+> C) **It's fine, skip import** — go straight to `/game-review`
 
-### Situation D: Found markdown but also newer PDF/external file
-→ AskUserQuestion: "Found both `docs/gdd.md` and a newer file. Update the markdown from the newer source, or audit what exists?"
+### If SRC_FOUND > 0:
 
----
+> Found source files that might contain game design:
+> {list of found files}
+>
+> A) **Import from {filename}** — I'll read it and convert to standard GDD format
+> B) **That's not a GDD** — let me point you to the right file or paste the content
+> C) **I also have an existing GDD** — show me what's already in the repo
 
-## Step 1: Convert Source Material
-
-### From PDF
-Read the PDF using the Read tool (which supports PDF files). Extract all text content.
-
-### From pasted text / chat log
-Accept the raw text as-is. Don't ask the user to reformat — that's this skill's job.
-
-### From verbal description
-Ask structured questions one at a time:
-1. "In one sentence, what is this game?"
-2. "What does the player DO most of the time? (the core action, not the goal)"
-3. "What platform? What session length?"
-4. "How does the player make money for you? (or is it free/premium?)"
-5. "What games is this most similar to?"
-
-Stop after 5 questions. Don't exhaust the user — you can fill gaps later.
-
-### From partial/messy doc
-Read whatever exists. Don't judge quality yet — just extract the content.
-
-**OUTPUT OF THIS STEP:** Raw content in memory, ready for structuring.
+**STOP.** Wait for the user's answer before proceeding.
 
 ---
 
-## Step 2: Audit Against GDD Standard
+## Phase 2: Source Reading & Comprehension
 
-Map the source material against the **8-section GDD standard**. For each section, mark status:
+Based on the user's answer, read the source material.
 
-```
-GDD COMPLETENESS AUDIT
-══════════════════════════════════════════════════════════════
+### From file (PDF/DOCX/TXT):
+Read the file. Then summarize what you found via AskUserQuestion:
 
-Section                          Status      Detail
-────────────────────────────     ────────    ──────────────────
-1. Overview & Core Concept       [  ?  ]
-2. Core Loop                     [  ?  ]
-3. Progression & Retention       [  ?  ]
-4. Economy & Monetization        [  ?  ]
-5. Player Motivation & Fantasy   [  ?  ]
-6. Systems & Mechanics Detail    [  ?  ]
-7. Technical Specs               [  ?  ]
-8. Milestones & Roadmap          [  ?  ]
+> I've read your document. Here's what I found:
+>
+> **Title:** {extracted title or "untitled"}
+> **Length:** {page count or word count}
+> **Language:** {detected language}
+> **Content areas I can identify:**
+> - {area 1}: {1-line summary}
+> - {area 2}: {1-line summary}
+> - {area 3}: {1-line summary}
+> - ...
+>
+> **Does this look right?** Is there anything important in this document that I might have missed or misunderstood?
+> A) Looks correct — proceed to audit
+> B) You missed something — {user explains}
+> C) That's only part of it — I have more to add
 
-Status key:
-  ✅ PRESENT  — Section exists with meaningful content
-  ⚠️ PARTIAL  — Section touched but missing key details
-  ❌ MISSING  — Not mentioned at all
-  🔄 SCATTERED — Information exists but spread across other sections
-```
+**STOP.** Wait for confirmation. If B, ask what was missed, re-read, and re-summarize.
 
-### What each section should contain (audit checklist):
+### From pasted text:
+Accept the text. Don't ask the user to reformat. Summarize back to them the same way as above.
 
-**1. Overview & Core Concept**
-- [ ] One-paragraph game summary
-- [ ] Genre and platform
-- [ ] Target audience
-- [ ] Target session length
-- [ ] Design pillars (3-5 non-negotiable principles)
+### From verbal description:
+Ask these questions **ONE AT A TIME** via AskUserQuestion. Each question builds on the previous answer.
 
-**2. Core Loop**
-- [ ] Describable in one sentence (verb → feedback → reward → repeat)
-- [ ] 30-second micro-loop identified
-- [ ] 5-minute meso-loop identified
-- [ ] Session macro-loop identified
-- [ ] What makes the loop unique vs competitors
+**Q1:** "In one sentence — what is this game? Not the genre, not the features — what does the player **experience**?"
 
-**3. Progression & Retention**
-- [ ] FTUE (First Time User Experience) flow
-- [ ] D1 retention hook (why come back tomorrow?)
-- [ ] D7 retention hook (why come back next week?)
-- [ ] D30 retention hook (long-term investment)
-- [ ] Difficulty curve approach
-- [ ] Content gating strategy
+Push until you hear: A feeling or fantasy, not a feature list. "Players match puzzle pieces" is a mechanic. "Players unravel supernatural mysteries through puzzle combat" is an experience.
 
-**4. Economy & Monetization**
-- [ ] Monetization model (premium / F2P / ad-supported / etc.)
-- [ ] Currency design (how many? what for?)
-- [ ] Resource sources (faucets) and drains (sinks)
-- [ ] First purchase timing and pricing
-- [ ] Free player experience viability
+Red flags: Feature lists. Genre labels without specificity. "It's like X but better."
 
-**5. Player Motivation & Fantasy**
-- [ ] What the player gets to BE or FEEL
-- [ ] Which Bartle types / motivations are served
-- [ ] Social mechanics (if any)
-- [ ] Emotional arc of a session
+**STOP.** Wait for answer.
 
-**6. Systems & Mechanics Detail**
-- [ ] Each major system described with rules
-- [ ] Interaction between systems
-- [ ] Edge cases considered
-- [ ] Tunable parameters identified
+**Q2:** "What does the player **do** most of the time — the actual repeated action, moment to moment?"
 
-**7. Technical Specs**
-- [ ] Engine / framework choice
-- [ ] Platform requirements
-- [ ] Key technical challenges
-- [ ] Data persistence / save system
-- [ ] Art pipeline overview
+Push until you hear: A verb. "Swipe tiles." "Explore rooms." "Talk to characters." Not "play the game" or "progress through levels."
 
-**8. Milestones & Roadmap**
-- [ ] MVP definition
-- [ ] Alpha / Beta / Launch milestones
-- [ ] What's in each milestone
-- [ ] Team size / resource assumptions
+**STOP.** Wait for answer.
 
-**STOP.** Present the audit to the user. Don't proceed until they've seen it.
+**Q3:** "Where does this game live — what platform? And how long is one play session?"
+
+Push until you hear: A specific platform (mobile/PC/web/console) and a time range (3 min / 15 min / 1 hour).
+
+Red flags: "All platforms." That's not a plan, that's a wish. Push for the FIRST platform.
+
+**STOP.** Wait for answer.
+
+**Q4:** "How does this game make money? Or is it free / a hobby project?"
+
+Push until you hear: A specific model. F2P + IAP, premium ($X), ad-supported, Patreon, or "hobby, no monetization." All are valid — but "we'll figure it out later" is a red flag.
+
+**STOP.** Wait for answer.
+
+**Q5:** "Name 1-3 games that are most similar to yours. What do they each lack that yours provides?"
+
+Push until you hear: Specific game names and a specific gap. "Puzzle Quest but with AI characters that remember your conversations" is good. "No games like this exist" is almost always wrong — push back.
+
+**STOP.** Wait for answer.
+
+**After Q5, do NOT ask more questions.** You have enough to build a skeleton GDD. Tell the user: "Got it. Let me map what you told me against the standard GDD structure."
+
+**Escape hatch:** If the user says "just import it" or "skip the questions" at any point:
+- First time: "Two more questions — they'll make the GDD much more useful for downstream reviews. Q{next} and Q{next+1}, then we move."
+- Second time: Respect it. Work with what you have. Proceed to Phase 3.
 
 ---
 
-## Step 3: Structure into Standard Format
+## Phase 3: Audit & Gap Probing
 
-Create (or update) `docs/gdd.md` with the following structure:
+Map all collected content against the **8-section GDD standard**. Present the audit via AskUserQuestion:
+
+> **GDD Completeness Audit**
+>
+> | # | Section | Status | What I found |
+> |---|---------|--------|-------------|
+> | 1 | Overview & Core Concept | ✅/⚠️/❌ | {1-line detail} |
+> | 2 | Core Loop | ✅/⚠️/❌ | {1-line detail} |
+> | 3 | Progression & Retention | ✅/⚠️/❌ | {1-line detail} |
+> | 4 | Economy & Monetization | ✅/⚠️/❌ | {1-line detail} |
+> | 5 | Player Motivation & Fantasy | ✅/⚠️/❌ | {1-line detail} |
+> | 6 | Systems & Mechanics Detail | ✅/⚠️/❌ | {1-line detail} |
+> | 7 | Technical Specs | ✅/⚠️/❌ | {1-line detail} |
+> | 8 | Milestones & Roadmap | ✅/⚠️/❌ | {1-line detail} |
+>
+> **Result: {N}/8 sections present.**
+>
+> RECOMMENDATION: {Choose one based on the gap pattern below}
+>
+> What would you like to do?
+> A) **Probe the gaps** — I'll ask you one question per missing section to see if you have thoughts (recommended if ≤4 gaps)
+> B) **Just write the GDD** — structure what exists, mark gaps as ❌, and I'll move on
+> C) **Focus on the critical gaps only** — only ask about {the 1-2 most important missing sections}
+
+**STOP.** Wait for answer.
+
+### Audit criteria per section:
+
+**1. Overview & Core Concept** — ✅ if: game summary + genre + platform stated. ⚠️ if: summary exists but platform or audience missing. ❌ if: no summary.
+
+**2. Core Loop** — ✅ if: repeating action cycle described with clear phases. ⚠️ if: actions listed but cycle not closed (no "repeat" trigger). ❌ if: no gameplay description.
+
+**3. Progression & Retention** — ✅ if: at least 2 retention hooks defined (D1, D7, or D30). ⚠️ if: some progression mentioned but no explicit retention design. ❌ if: not mentioned.
+
+**4. Economy & Monetization** — ✅ if: business model stated + at least one currency/resource described. ⚠️ if: monetization mentioned but no resource flow. ❌ if: not mentioned.
+
+**5. Player Motivation & Fantasy** — ✅ if: player's emotional goal or fantasy explicitly stated. ⚠️ if: implied but not named. ❌ if: only mechanics, no motivation.
+
+**6. Systems & Mechanics Detail** — ✅ if: at least one system described with rules/behavior. ⚠️ if: systems named but rules not specified. ❌ if: no system detail.
+
+**7. Technical Specs** — ✅ if: engine + platform + at least one technical consideration. ⚠️ if: some tech mentioned but engine/platform missing. ❌ if: not mentioned.
+
+**8. Milestones & Roadmap** — ✅ if: at least MVP + one later milestone defined. ⚠️ if: vague timeline exists. ❌ if: not mentioned.
+
+---
+
+## Phase 4: Gap-Specific Questions (if user chose A or C)
+
+For each ❌ or ⚠️ section the user wants to probe, ask **ONE question** that targets the most critical missing piece. These are not design challenges — they're information extraction questions. You're asking "do you have an answer?" not "is your answer good?"
+
+**Ask these ONE AT A TIME via AskUserQuestion.**
+
+### Gap: Overview missing platform/audience
+
+> Your design describes the gameplay but doesn't specify **who it's for** or **where they play it**.
+>
+> Quick answer — which is closest?
+> A) **Mobile casual** — short sessions, touch controls, broad audience
+> B) **Mobile mid-core** — longer sessions, F2P, dedicated players (like Genshin, AFK Arena)
+> C) **PC/Console** — sit-down sessions, keyboard/controller, niche or broad
+> D) **Web browser** — accessible, no install, casual or experimental
+> E) **I haven't decided yet** — mark as TBD and move on
+>
+> Player Impact: 8/10 — platform choice affects every other design decision.
+
+**STOP.** Record answer. Next gap.
+
+### Gap: Progression & Retention missing
+
+> Your GDD describes what the player does, but not **why they come back**.
+>
+> Think about your game — what would pull a player back for a second session?
+> A) **New content unlocks** — "I want to see the next chapter/boss/area"
+> B) **Unfinished business** — "My character is getting stronger, I'm not done yet"
+> C) **Daily rewards / rituals** — "I check in every day for bonuses"
+> D) **Social pull** — "My friends are playing, I want to keep up"
+> E) **I don't know yet** — mark as TBD
+>
+> RECOMMENDATION: Choose whichever feels most natural for your game. We'll design the specifics in `/game-review`.
+> Player Impact: 9/10 — without a retention hook, players try once and never return.
+
+**STOP.** Record answer. Next gap.
+
+### Gap: Economy & Monetization missing
+
+> Your GDD doesn't mention how the game makes money — or if it even needs to.
+>
+> What's your intent?
+> A) **F2P with in-app purchases** — game is free, players buy currency/items/cosmetics
+> B) **Premium (pay once)** — player buys the game, gets everything
+> C) **Ad-supported** — free game, revenue from ads
+> D) **Patreon / supporter model** — community-funded, content unlocks for supporters
+> E) **Hobby project** — no monetization planned, skip this section
+> F) **Haven't decided** — mark as TBD
+>
+> Player Impact: 7/10 — monetization model shapes progression design, content gating, and player psychology.
+
+**STOP.** Record answer. Next gap.
+
+### Gap: Player Motivation missing
+
+> Your GDD describes mechanics but not the **feeling** the player is chasing.
+>
+> When someone plays your game, what emotional experience are you designing for?
+> A) **Power fantasy** — "I'm getting stronger, I'm in control"
+> B) **Discovery** — "What's behind that door? What happens if I try this?"
+> C) **Collection / completion** — "I need to catch them all / unlock everything"
+> D) **Social connection** — "Playing with or competing against others"
+> E) **Narrative immersion** — "I'm living inside a story"
+> F) **Relaxation / satisfaction** — "This is soothing, meditative, satisfying to do"
+> G) **Something else** — {user describes}
+>
+> Player Impact: 6/10 — knowing the target emotion helps every other design decision make sense.
+
+**STOP.** Record answer. Next gap.
+
+### Gap: Technical Specs missing engine
+
+> No game engine specified. What are you building with?
+> A) **Unity**
+> B) **Godot**
+> C) **Unreal Engine**
+> D) **Web-based** (Phaser, PixiJS, Three.js, custom)
+> E) **Other** — {user specifies}
+> F) **Haven't decided** — mark as TBD
+>
+> Player Impact: 3/10 for the player, but 9/10 for the development team. Affects every technical decision downstream.
+
+**STOP.** Record answer. Next gap.
+
+### Gap: Milestones missing
+
+> No development milestones defined. Quick check —
+>
+> What's the **smallest version** of this game that would be worth showing someone?
+> A) **Just the core mechanic** — one level/round/scene with the main action working
+> B) **One complete loop** — player can do the full cycle once (explore → fight → reward)
+> C) **Vertical slice** — one polished section that represents the full game experience
+> D) **I'm not sure** — mark as TBD and figure it out in `/game-direction`
+>
+> RECOMMENDATION: Choose A if you haven't built anything yet. Choose C if you're past prototype.
+> Player Impact: 2/10 — doesn't affect the player, but 8/10 for shipping the game at all.
+
+**STOP.** Record answer.
+
+**After all gap questions are done**, summarize what you learned:
+
+> "Based on your answers, I can now fill in: {list of sections upgraded from ❌ to ⚠️ or ✅}. Ready to write the GDD?"
+> A) Yes, write it
+> B) I want to change an answer
+> C) I have more to add first
+
+**STOP.** Wait for go-ahead.
+
+---
+
+## Phase 5: Write the Standardized GDD
+
+Create `docs/gdd.md` with this structure. **Ask before writing:**
+
+> I'm ready to write `docs/gdd.md` with the following:
+> - **{N} sections with content** from your original document
+> - **{N} sections with your answers** from our conversation
+> - **{N} sections marked TBD** with suggested next steps
+> - Original language preserved: {yes — the game content stays in {language}}
+>
+> A) Write it — (CC: ~1 min)
+> B) Wait — I want to review the section list first
+
+**STOP.** Wait for approval.
+
+### GDD format:
 
 ```markdown
 # [Game Title] — Game Design Document
 
 **Team:** [team name]
-**Platform:** [platforms]
+**Platform:** [platform — or TBD]
 **Genre:** [genre]
-**Target Session:** [length]
-**Monetization:** [model]
+**Target Session:** [length — or TBD]
+**Monetization:** [model — or TBD]
 **Last Updated:** [date]
+**Imported by:** /game-import from [source description]
 
 ---
 
@@ -210,126 +350,114 @@ Create (or update) `docs/gdd.md` with the following structure:
 [content]
 
 ## 3. Progression & Retention
-[content]
+[content or ❌ TBD with note from user's gap answer]
 
 ## 4. Economy & Monetization
-[content]
+[content or ❌ TBD]
 
 ## 5. Player Motivation & Fantasy
-[content]
+[content or ❌ TBD]
 
 ## 6. Systems & Mechanics Detail
 [content]
 
 ## 7. Technical Specs
-[content]
+[content or ⚠️ partial]
 
 ## 8. Milestones & Roadmap
-[content]
+[content or ❌ TBD]
 
 ---
 
 ## GDD Status
-- **Completeness:** X/8 sections present
-- **Imported from:** [source description]
+- **Completeness:** X/8 sections (Y ✅ present, Z ⚠️ partial, W ❌ TBD)
+- **Imported from:** [source]
 - **Import date:** [date]
 - **Sections needing work:** [list]
+- **Recommended next skill:** /[skill] — [reason]
 ```
 
-### Rules for structuring:
+### Rules for writing:
 
-1. **Preserve the original author's voice.** Don't rewrite their design — restructure it. If they wrote "玩家在大廳與 NPC 助手對話", keep it, don't paraphrase to "players interact with NPCs in the lobby."
+1. **Preserve the original author's voice.** Restructure, don't rewrite.
+2. **Move scattered content to the right section.** Add `[moved from original section X]` notes.
+3. **Mark gaps explicitly.** Write `❌ **TBD**` with the user's gap answer if they gave one, or `❌ **Not yet defined**` if they skipped.
+4. **Add inferred metadata.** Mark as `[inferred: X, based on Y]`.
+5. **Keep original language.** Chinese GDD stays Chinese. English headers for tool compatibility.
 
-2. **Move scattered content to the right section.** If economy info is buried in the tech spec section, move it to Section 4 but add a note: `[moved from original Technical Specs section]`.
-
-3. **Mark gaps explicitly.** Don't fill in what doesn't exist. If there's no economy section, write:
-   ```
-   ## 4. Economy & Monetization
-   ❌ **Not yet defined.** Suggested next step: define monetization model and basic currency design.
-   ```
-
-4. **Add metadata the original lacked.** If the GDD never states the platform or session length but it's obvious from context, add it as `[inferred: mobile, based on match-3 mechanics]`.
-
-5. **Keep original language.** If the GDD is in Chinese, keep the content in Chinese. Add English section headers for cross-tool compatibility. Don't translate unless asked.
-
----
-
-## Step 4: Place the File & Update Project
-
-### File placement convention:
-
-```
-project/
-├── docs/
-│   ├── gdd.md                    ← main GDD (always here)
-│   ├── gdd-source-original.pdf   ← original file (if imported from file)
-│   ├── concept.md                ← concept doc (from /game-ideation, if exists)
-│   └── pitch.md                  ← pitch doc (from /pitch-review, if exists)
-```
-
-**Why `docs/gdd.md`?** All other gstack-game skills look here first:
-- `/game-review` → `docs/*GDD* docs/*game-design* docs/*design-doc*`
-- `/player-experience` → reads the same
-- `/balance-review` → reads economy sections from here
-
-### After writing the file:
+After writing:
 
 ```bash
 echo "=== GDD written ==="
 wc -l docs/gdd.md
-echo "---"
-head -20 docs/gdd.md
 ```
 
-### Update CLAUDE.md if needed:
-
-If CLAUDE.md exists and doesn't mention the GDD location, append:
-
-```
-## Game Design
-GDD location: docs/gdd.md
-```
+Update CLAUDE.md if needed — add GDD location if not already there.
 
 ---
 
-## Step 5: Gap Analysis & Next Steps
+## Phase 6: Handoff
 
-Based on the audit, recommend the next skill:
+Present the final result via AskUserQuestion:
 
-| GDD State | Recommendation |
-|-----------|---------------|
-| 0-2 sections present | "Your GDD is very early. Run `/game-ideation` to flesh out the concept first." |
-| 3-5 sections present | "Core design exists but has gaps. Run `/game-review` — it will identify what's missing and help you fill it." |
-| 6-7 sections present | "Nearly complete. Run `/game-review` for quality audit, then `/player-experience` for walkthrough." |
-| 8/8 sections present | "Full GDD. Ready for full pipeline: `/game-review` → `/player-experience` → `/balance-review`." |
+> **Import complete.** `docs/gdd.md` — {N} lines, {X}/8 sections.
+>
+> **What I imported:**
+> - {list of ✅ sections}
+>
+> **What you told me in this session:**
+> - {list of answers that filled gaps}
+>
+> **What's still missing:**
+> - {list of ❌/⚠️ sections}
+>
+> **Recommended next step:**
+> - {See routing table below}
+>
+> A) Run the recommended skill now
+> B) I want to add more to the GDD first — reopen for editing
+> C) Done for now
 
-### Section-specific recommendations:
+### Routing table:
 
-| Missing Section | Suggested Skill |
-|----------------|----------------|
-| Core Loop unclear | `/game-ideation` (Phase 2: Core Loop Crystallization) |
-| No economy design | `/balance-review` (will scaffold economy from scratch) |
-| No tech specs | `/game-eng-review` (will assess and recommend) |
-| No milestones | `/game-direction` (will help scope and plan) |
-| No player motivation | `/player-experience` (will surface what's missing) |
-| No pitch / market | `/pitch-review` (will structure market positioning) |
+| GDD state | Next skill | Why |
+|-----------|-----------|-----|
+| 0-3 sections ✅ | `/game-ideation` | Core concept needs more depth before review |
+| 4-5 sections ✅ | `/game-review` | Enough to review — it will surface the specific gaps |
+| 6-7 sections ✅ | `/game-review` then `/player-experience` | Near-complete — quality audit then walkthrough |
+| 8/8 sections ✅ | `/game-review` → `/player-experience` → `/balance-review` | Full pipeline |
+| Economy ❌ specifically | `/balance-review` | Will scaffold economy from the ground up |
+| Core loop unclear | `/game-ideation` Phase 2 | Crystallize the loop before reviewing |
+| No tech specs | `/game-eng-review` | Will assess options and recommend |
+| No milestones | `/game-direction` | Will scope, prioritize, and plan |
+
+**STOP.** Wait for user's choice.
 
 ---
-
-## AUTO/ASK/ESCALATE
-
-- **AUTO:** File format detection, section mapping, file placement, metadata extraction
-- **ASK:** Ambiguous section mapping ("this content could be Core Loop or Systems Detail — which?"), inferred metadata confirmation ("I'm guessing this is a mobile game — correct?"), file overwrite confirmation
-- **ESCALATE:** Source file unreadable, content is in a language Claude can't parse, GDD contradicts itself fundamentally (two different core loops described)
 
 ## Anti-Sycophancy
 
-Forbidden:
+**Forbidden — never say:**
 - ❌ "Great GDD!"
 - ❌ "This is a well-thought-out design"
 - ❌ "The concept is very promising"
+- ❌ "You've clearly put a lot of thought into this"
+- ❌ "This has a lot of potential"
 
-Instead: State the facts. "Your GDD has 3/8 standard sections. Core Loop is clear. Economy, Progression, and Player Motivation are not defined. Technical Specs exist but lack engine choice justification."
+**Instead — state facts:**
+- ✅ "Your GDD has 3/8 standard sections. Core Loop is well-defined with 4 clear phases. Economy, Progression, and Player Motivation are not addressed."
+- ✅ "The battle system has detailed mechanics but no numbers — no damage values, no health ranges, no turn limits. That's normal for this stage."
+- ✅ "I found three systems described (exploration, combat, AI chat) but no description of how they connect to each other."
+
+**Calibrated acknowledgment (OK to say):**
+- ✅ "The 4-phase loop (explore → collect → battle → nurture) is structurally clear — each phase has a distinct action and feeds into the next. That's a stronger starting point than most GDDs at this stage."
+- ✅ "Specifying death handling (retry vs retreat, state preserved) is a detail most early GDDs skip. It prevents a major design ambiguity later."
+
+## AUTO/ASK/ESCALATE
+
+- **AUTO:** File format detection, bash detection script, section-to-standard mapping, metadata extraction
+- **ASK:** Everything else. Situation classification, gap probing, inferred metadata confirmation, file write approval, next step choice.
+- **ESCALATE:** Source file completely unreadable, GDD contradicts itself fundamentally (two incompatible core loops), user provides content in a language that can't be processed.
 
 ## Completion Summary
 
@@ -337,14 +465,18 @@ Instead: State the facts. "Your GDD has 3/8 standard sections. Core Loop is clea
 Game Import Summary:
   Source: [PDF / pasted text / verbal / existing markdown]
   Output: docs/gdd.md ([X] lines)
+  Session questions asked: [N]
 
   Completeness: [X]/8 sections
     ✅ Present: [list]
     ⚠️ Partial: [list]
-    ❌ Missing: [list]
+    ❌ TBD: [list]
 
-  Original language preserved: [yes/no]
-  Metadata inferred: [list of inferred fields]
+  User decisions recorded:
+    - Platform: [answer]
+    - Monetization: [answer]
+    - Retention hook: [answer]
+    - ...
 
   Recommended next: /[skill-name] — [reason]
 
@@ -354,5 +486,5 @@ Game Import Summary:
 ## Review Log
 
 ```bash
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-import","timestamp":"TIMESTAMP","status":"STATUS","source_type":"SOURCE","sections_present":N,"sections_total":8,"output":"docs/gdd.md","commit":"COMMIT"}' 2>/dev/null || true
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-import","timestamp":"TIMESTAMP","status":"STATUS","source_type":"SOURCE","sections_present":N,"sections_total":8,"questions_asked":N,"output":"docs/gdd.md","commit":"COMMIT"}' 2>/dev/null || true
 ```

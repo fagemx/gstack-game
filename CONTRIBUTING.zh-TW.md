@@ -4,149 +4,197 @@
 
 gstack-game 需要的是**領域專家**，不只是程式設計師。
 
-工程骨架（template engine、preamble injection、評分框架）已經穩固。缺的是**遊戲產業經驗**——那些只有真正做過遊戲的人才知道的評分權重、benchmark 數字、逼問問題和審查標準。
+工程骨架已經穩固。缺的是**遊戲產業經驗**——那些只有真正做過遊戲的人才知道的 benchmark 數字、常見陷阱、和審查標準。
 
 如果你做過遊戲、設計過經濟系統、帶過 QA 團隊、或做過美術管理——你的知識正是這個專案需要的。
 
 ---
 
-## 怎麼貢獻
+## 三種貢獻方式
 
-### 1. 找到符合你專長的 skill
+### ⚡ 5 分鐘：開 Issue（不需要 clone repo）
 
-| 你的背景 | 可以改善的 Skill | 需要什麼 |
-|----------|-----------------|---------|
-| **遊戲設計師**（5 年以上） | `/game-review`, `/game-ideation`, `/player-experience` | 評分權重、逼問問題、審查標準 |
-| **遊戲製作人 / 創意總監** | `/game-direction`, `/game-retro` | 認知模式、scope 決策、milestone 標準 |
-| **數值 / 系統策劃** | `/balance-review` | 難度曲線 benchmark、Sink/Faucet 比率、保底門檻 |
-| **遊戲程式**（Unity/Godot/Unreal） | `/game-code-review`, `/game-eng-review`, `/game-debug` | 引擎特定審查點、frame budget 模式、常見陷阱 |
-| **UX 研究員 / UI 設計師** | `/game-ux-review`, `/player-experience`, `/playtest` | Persona 參數、可用性 benchmark、測試協議 |
-| **QA 主管** | `/game-qa`, `/game-visual-qa` | Bug 嚴重度定義、分類權重、平台特定 checklist |
-| **技術美術** | `/asset-review`, `/game-visual-qa` | 效能預算、命名規範、風格一致性標準 |
-| **專案管理 / PM** | `/game-ship`, `/game-docs` | 平台 submission checklist、patch notes 寫法 |
-| **行銷 / 發行** | `/pitch-review` | LTV/CPI benchmark、市場數據、UA 策略 |
+**適合：** 看到一個數字不對、想到一個 Claude 常犯的錯、有一個逼問問題要加。
 
-### 2. 讀現有的 skill
+直接在 GitHub 開 Issue，選對應的模板填寫：
 
-每個 skill 在 `skills/<name>/SKILL.md.tmpl`。先讀懂現有結構。
+- **[回報錯誤的 Benchmark](../../issues/new?template=benchmark.yml)** — 某個數字過時或不正確
+- **[新增 Gotcha](../../issues/new?template=gotcha.yml)** — Claude 在某個任務上會犯的錯
+- **[新增逼問問題](../../issues/new?template=forcing-question.yml)** — 審查時應該問但沒問的問題
+- **[校準評分](../../issues/new?template=scoring.yml)** — 某個評分標準的權重或門檻需要調整
 
-### 3. 改善領域內容
+填完的 Issue 會被直接轉成 PR。你不需要懂 git、不需要 clone repo、不需要跑 build。
 
-編輯 `.tmpl` 檔案（不要直接改 `SKILL.md`——它是自動生成的）。
-
-**「改善」的意思：**
-
-| 改善類型 | 範例 |
-|---------|------|
-| **校準評分權重** | 「手遊 F2P 的 Core Loop 應該是 30% 不是 25%——loop 就是整個遊戲」 |
-| **加逼問問題** | 「缺少：『兩個玩家同時 exploit 這個機制會發生什麼？』」 |
-| **修正錯誤 benchmark** | 「D1 留存 40% 是 premium 的好成績，F2P hyper-casual 應該 50%+」 |
-| **加遊戲類型變體** | 「這個 section 假設 F2P 手遊，要加 premium PC 的模式」 |
-| **加引擎特定檢查** | 「Unity：檢查 Update 裡的 FindObjectOfType——每幀 O(n) 掃描」 |
-| **改善反諂媚** | 「加入禁止清單：『操控感很好』——沒指出輸入延遲毫秒數就是空話」 |
-
-### 4. Build 和測試
-
-```bash
-bun run build    # 從你改的 .tmpl 重新生成 SKILL.md
-bun test         # 確認沒壞（11 個驗證測試）
-```
-
-### 5. 提 PR
-
-- 標題：`improve(skill-name): 改了什麼`
-- 內文：解釋**為什麼**——引用你的經驗、做過的遊戲、產業數據
-- 標注專業：`[遊戲設計師, 8 年, 出過 3 款 F2P 手遊]`
+**範例：** 見 [docs/contribution-examples/](#貢獻範例)
 
 ---
 
-## 現在最需要專家協助的地方
+### 🔧 30 分鐘：改 references/ 文件（需要 clone repo）
 
-### 關鍵（skill 能用但評分可能不對）
+**適合：** 想要一次改好幾個地方、加一整段新內容、或深入修改某個 section。
 
-**`/game-review` — GDD Health Score 權重**
-- 現在：Core Loop 25% | Progression 20% | Economy 20% | Motivation 15% | Risk 10% | Cross-check 10%
-- 問題：不同遊戲類型要不要不同權重？手遊 F2P vs 主機買斷 vs 競技 PvP？
-- 需要：審過 10+ 份 GDD 的遊戲設計師
-
-**`/balance-review` — 經濟健康度門檻**
-- 現在：Faucet/Sink 比率 0.9-1.1 = 健康，Gini < 0.3（合作），< 0.5（競技）
-- 問題：放置類遊戲的通膨是設計不是 bug，這些數字怎麼調？
-- 需要：調過 live 遊戲經濟的數值策劃
-
-**`/game-code-review` — Frame budget 門檻**
-- 現在：60 FPS = 16.6ms，通用的記憶體分配警告
-- 問題：每個引擎的 hot path 模式不同。Unity GC 陷阱？Godot GDScript 瓶頸？Unreal 的坑？
-- 需要：有 profiling 經驗的資深遊戲程式
-
-### 重要（結構好，內容需要加深）
-
-**`/player-experience` — Persona 行為參數**
-- 「Casual 玩家失敗 2 次就離開」——這是真的嗎？有 playtest 數據佐證嗎？
-- 需要：有觀察數據的 UX 研究員
-
-**`/game-ideation` — 逼問問題**
-- 現在有 6 個問題。有沒有致命盲點是這 6 題沒抓到的？
-- 需要：greenlight 過/砍過專案的遊戲總監
-
-**`/game-direction` — 製作人認知模式**
-- 現在有 10 個。缺 IP 策略？本地化？年齡分級？Live ops 經濟？
-- 需要：出過 3+ 款遊戲的製作人
-
-**`/pitch-review` — 市場 benchmark**
-- LTV/CPI 數字幾個月就過時。需要的是找到當前數據的框架，不是數字本身。
-- 需要：有 Sensor Tower / AppMagic 使用經驗的發行或行銷
-
-### Skeleton skill（需要大量內容）
-
-| Skill | 品質 | 缺什麼 |
-|-------|------|--------|
-| `/asset-review`（35%） | 只有命名和預算結構 | 風格一致性標準、引擎 import 設定、texture/mesh 品質 benchmark |
-| `/game-visual-qa`（35%） | 基本 checklist | 視覺品質量化門檻、動畫 timing 標準 |
-| `/playtest`（40%） | 協議結構 | 驗證過的觀察指標、訪談題庫、統計顯著性指引 |
-| `/game-debug`（40%） | 3-strike 結構 | 遊戲特定 bug 模式庫（物理穿透、desync、存檔損壞） |
-| `/game-retro`（40%） | 指標結構 | 健康 velocity 範圍、bug 密度 benchmark |
-| `/game-codex`（40%） | 對抗性框架 | 遊戲 exploit 分類、作弊向量目錄、經濟濫用模式 |
-| `/game-docs`（40%） | Patch notes 格式 | 玩家溝通最佳實踐、平衡調整說明模板 |
-
----
-
-## 跨 Skill 改善（影響多個 skill）
-
-### 遊戲類型適配
-
-大多數 skill 假設一體適用。現實不是：
-
-| 遊戲類型 | 哪些不同 |
-|---------|---------|
-| **F2P 手遊** | 經濟 + 付費壓力最關鍵，session = 3 分鐘 |
-| **買斷 PC/主機** | 經濟 section 可選，核心循環深度 + 敘事更重要 |
-| **競技 PvP** | 平衡 section 是一切，需要配對 + 反作弊 |
-| **敘事遊戲** | 節奏 + 分支 + 情感弧線，進度 = 故事進度 |
-| **桌遊** | 實體元件預算、規則清晰度、場次時長、不需要 code review |
-| **VR** | 舒適度評級、暈眩防止、互動範式 |
-
-**如果你深入了解某一類型，幫我們加上正確的模式選擇。**
-
-### 反諂媚擴充
-
-每個 skill 都有「禁止用語」清單。我們需要更多領域特定的例子。
-
-**如果你注意到 AI 在你的領域會給出什麼空洞讚美，加到禁止清單裡。**
-
----
-
-## 開發設定
+每個 skill 的領域知識都在 `skills/<name>/references/` 目錄——**全部是純 markdown**，不需要懂 skill 架構。
 
 ```bash
 git clone https://github.com/fagemx/gstack-game.git
 cd gstack-game
-bun run build
-bun test
 ```
 
-改 `.tmpl` 檔案，不改 `.md` 檔案。改完跑 `bun run build`。
+#### 你的專長對應哪些檔案
+
+| 你的背景 | 改哪些檔案 |
+|---------|-----------|
+| **數值策劃** | `skills/balance-review/references/` — gotchas.md, scoring.md, economy-model.md, progression.md |
+| **遊戲設計師** | `skills/game-review/references/` — core-loop.md, progression.md, motivation.md, gotchas.md |
+| **UX 研究員** | `skills/player-experience/references/` — personas.md, emotion-vocabulary.md, walkthrough-phases.md |
+| **行銷 / 發行** | `skills/pitch-review/references/` — market-positioning.md, business-case.md, gotchas.md |
+| **遊戲程式** | `skills/game-code-review/SKILL.md.tmpl`, `skills/game-eng-review/SKILL.md.tmpl` |
+| **QA 主管** | `skills/game-qa/SKILL.md.tmpl` |
+
+#### 改完後
+
+```bash
+bun run build    # 重新生成 SKILL.md（如果你改了 references/，這步其實不需要）
+bun test         # 確認沒壞
+```
+
+提 PR：
+- 標題：`improve(balance-review): 更新 F2P 經濟 benchmark`
+- 內文：解釋**為什麼**——引用你的經驗或數據來源
+- 標注專業：`[數值策劃, 6 年, 出過 2 款 F2P 手遊]`
+
+---
+
+### 🏗️ 進階：寫 Skill Template（需要理解架構）
+
+**適合：** 想要新增 skill、或大幅重構現有 skill。
+
+先讀這些文件理解架構：
+- `CLAUDE.md` — 開發者手冊
+- `docs/skill-writing-patterns.md` — 7+4 個寫作模式
+- `docs/skill-writing-doctrine-nox.md` — 8 個核心原則
+- `skills/skill-review/references/refactor-patterns.md` — 重構方法
+
+關鍵規則：
+- 改 `.tmpl` 檔案，不直接改 `.md`
+- 超過 300 行的 skill 要拆 `references/`
+- 所有 references 在互動開始前一次讀完（方案 1，零中斷）
+- 改完跑 `bun run build` + `bun test`
+
+---
+
+## 貢獻範例
+
+### 範例 1：加一條 Gotcha（5 分鐘）
+
+**場景：** 你是數值策劃，發現 `/balance-review` 在分析放置類遊戲時會把通膨當成 bug。
+
+**開 Issue：**
+
+> **Skill:** /balance-review
+> **檔案:** references/gotchas.md
+> **類型:** 新增 Gotcha
+>
+> **內容：**
+> Claude 做放置類遊戲的經濟分析時，會把通膨率 > 1.2 標記為紅旗。但放置類遊戲的通膨是設計——幣值每小時成長 10-50% 是正常的，玩家的期待就是「數字一直變大」。正確的做法是看「通膨速度是否匹配 prestige 重置頻率」，不是看絕對通膨率。
+>
+> **根據什麼：** 做過 2 款放置類遊戲（累計 500 萬下載），調過半年的 live 經濟。
+>
+> **建議加在哪裡：** references/gotchas.md 的 Claude-Specific Gotchas 區塊第 8 點
+
+**結果：** 維護者把這段加到 `skills/balance-review/references/gotchas.md`。
+
+---
+
+### 範例 2：修正 Benchmark 數字（5 分鐘）
+
+**場景：** 你是發行，發現 `/pitch-review` 的 CPI benchmark 是 2024 年的數字。
+
+**開 Issue：**
+
+> **Skill:** /pitch-review
+> **檔案:** references/scoring.md
+> **類型:** 修正 Benchmark
+>
+> **目前的值：** LTV/CPI > 1.5 = viable
+> **應該改成：** 這個門檻太寬鬆。2026 年 iOS 的 casual game CPI 已經到 $3-5（ATT 之後持續漲），LTV/CPI > 2.0 才算 viable，1.5-2.0 是 risky。
+>
+> **數據來源：** Sensor Tower 2026 Q1 report, 我們自己的 4 款遊戲 UA 數據
+
+---
+
+### 範例 3：加一個逼問問題（5 分鐘）
+
+**場景：** 你是遊戲總監，覺得 `/game-review` 缺少一個關鍵問題。
+
+**開 Issue：**
+
+> **Skill:** /game-review
+> **檔案:** references/core-loop.md
+> **類型:** 新增逼問問題
+>
+> **問題：** 「把你的遊戲的音效全部關掉，只看畫面。核心循環還有趣嗎？再把畫面關掉只聽音效。還有趣嗎？如果兩個都不行，你的 game feel 靠的不是設計，是包裝。」
+>
+> **為什麼重要：** 我 greenlight 過 20+ 個案子。最常見的假陽性就是「Demo 看起來很酷但玩起來空洞」——拆開感官包裝後核心循環其實沒有 juice。
+>
+> **建議加在哪裡：** Section 1 的 Forcing Questions，作為 Q5
+
+---
+
+### 範例 4：改 references/ 文件（30 分鐘）
+
+**場景：** 你是 UX 研究員，覺得 `/player-experience` 的 Casual Newcomer persona 不夠準確。
+
+**直接改檔案：** `skills/player-experience/references/personas.md`
+
+```diff
+ ### Persona 1: Casual Newcomer (FTUE Focus)
+ - **Context:** First mobile game session on commute.
+-  3 minutes of attention before deciding if it's worth keeping.
++  90 seconds of attention before deciding if it's worth keeping.
++  (Source: 我們的 playtest 數據顯示 50% 的 casual 玩家在 90 秒內決定留或刪，不是 3 分鐘。
++  3 分鐘是「已經感興趣的人」的數字。)
+ - **Frustration tolerance:** 1-2 failures before quitting.
++  (Note: 如果第一次失敗沒有任何回饋（為什麼失敗、怎麼改善），
++  tolerance 降為 0 — 直接離開，不會嘗試第二次。)
+```
+
+提 PR，附上 playtest 數據來源。
+
+---
+
+## 現在最需要的貢獻
+
+### 🔴 關鍵（會影響評分準確度）
+
+| Skill | 需要什麼 | 需要誰 |
+|-------|---------|--------|
+| `/balance-review` | 放置類 / idle 遊戲的經濟模型適配 | 做過放置類遊戲的數值策劃 |
+| `/game-review` | GDD 權重在不同遊戲類型之間的校準 | 審過 10+ 份 GDD 的設計師 |
+| `/game-code-review` | Unity / Godot / Unreal 各自的 hot path 陷阱 | 有 profiling 經驗的遊戲程式 |
+| `/pitch-review` | 2026 年的 LTV/CPI/UA benchmark | 有 Sensor Tower 或 data.ai 使用經驗的發行 |
+
+### 🟡 重要（有內容但需要加深）
+
+| Skill | 需要什麼 | 需要誰 |
+|-------|---------|--------|
+| `/player-experience` | Persona 行為參數的 playtest 驗證 | 有觀察數據的 UX 研究員 |
+| `/game-ideation` | 更多逼問問題（現有 6 個有沒有盲點） | greenlight 過/砍過專案的遊戲總監 |
+| `/game-direction` | IP 策略、本地化、年齡分級的認知模式 | 出過 3+ 款遊戲的製作人 |
+
+### ⚪ Skeleton Skills（需要大量內容）
+
+| Skill | 目前 | 缺什麼 |
+|-------|------|--------|
+| `/asset-review` | 117L, 35% | 風格一致性標準、texture/mesh 品質 benchmark |
+| `/game-visual-qa` | 129L, 35% | 視覺品質量化門檻、動畫 timing |
+| `/playtest` | 165L, 40% | 觀察指標、訪談題庫、統計顯著性 |
+| `/game-debug` | 115L, 40% | 遊戲特定 bug 模式庫（物理穿透、desync、存檔損壞） |
+
+---
 
 ## 有問題？
 
-開 issue。標注 skill 名稱和你的專業領域。
+開 Issue，標注 skill 名稱和你的專業領域。
+
+不確定你的貢獻放哪裡？開 Issue 說「我想貢獻 XX 經驗，不確定放哪個 skill」——我們會幫你找到對的位置。

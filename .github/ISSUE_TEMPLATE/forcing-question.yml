@@ -1,0 +1,58 @@
+name: "❓ 新增逼問問題"
+description: "審查時應該問但沒問的關鍵問題"
+title: "question(SKILL_NAME): 簡短描述"
+labels: ["forcing-question", "domain-knowledge"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: 哪個 Skill
+      options:
+        - /game-review
+        - /balance-review
+        - /player-experience
+        - /pitch-review
+        - /game-direction
+        - /game-ideation
+        - /game-eng-review
+        - /game-code-review
+        - /game-qa
+        - 不確定
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: 問題（逐字）
+      description: 寫出你會在審查時問的確切問題
+      placeholder: |
+        例：「把你的遊戲的音效全部關掉，只看畫面。核心循環還有趣嗎？再把畫面關掉只聽音效。還有趣嗎？」
+    validations:
+      required: true
+
+  - type: textarea
+    id: push
+    attributes:
+      label: 如果回答模糊，怎麼追問
+      description: 當設計師給出空洞答案時，你怎麼逼出真正的回答
+      placeholder: |
+        例：如果設計師說「當然有趣啊，操控感很好」，追問：「操控感 = 什麼？輸入延遲幾 ms？
+        有沒有 screen shake？擊中回饋是什麼？說出具體數字。」
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: 為什麼這個問題重要
+      placeholder: |
+        例：我 greenlight 過 20+ 案子。最常見的假陽性就是「Demo 看起來很酷但玩起來空洞」。
+    validations:
+      required: true
+
+  - type: input
+    id: section
+    attributes:
+      label: 建議放在哪個 Section
+      placeholder: "Section 1: Core Loop 的 Forcing Questions"

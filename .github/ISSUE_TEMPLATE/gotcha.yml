@@ -1,0 +1,68 @@
+name: "🎯 新增 Gotcha"
+description: "Claude 在某個任務上會犯的錯——你知道正確做法是什麼"
+title: "gotcha(SKILL_NAME): 簡短描述"
+labels: ["gotcha", "domain-knowledge"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: 哪個 Skill
+      options:
+        - /game-review
+        - /balance-review
+        - /player-experience
+        - /pitch-review
+        - /game-code-review
+        - /game-eng-review
+        - /game-direction
+        - /game-ideation
+        - /game-qa
+        - /game-ux-review
+        - /game-ship
+        - /game-import
+        - /asset-review
+        - /playtest
+        - /game-debug
+        - /game-retro
+        - /game-visual-qa
+        - /game-codex
+        - /game-docs
+        - 不確定
+    validations:
+      required: true
+
+  - type: textarea
+    id: wrong
+    attributes:
+      label: Claude 會怎麼做（錯的）
+      description: 描述 Claude 在這個任務上常犯的錯
+      placeholder: |
+        例：Claude 分析放置類遊戲的經濟時，會把通膨率 > 1.2 標記為紅旗。
+    validations:
+      required: true
+
+  - type: textarea
+    id: right
+    attributes:
+      label: 正確做法是什麼
+      description: 你知道的正確做法
+      placeholder: |
+        例：放置類遊戲的通膨是設計。正確的做法是看「通膨速度是否匹配 prestige 重置頻率」。
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 你怎麼知道的（經驗 / 數據）
+      placeholder: |
+        例：做過 2 款放置類遊戲，調過半年的 live 經濟。
+    validations:
+      required: true
+
+  - type: input
+    id: file
+    attributes:
+      label: 建議加在哪個檔案
+      description: 如果你知道的話（不確定也沒關係）
+      placeholder: "references/gotchas.md"

@@ -1,0 +1,64 @@
+name: "⚖️ 校準評分"
+description: "某個評分標準的權重或門檻需要調整"
+title: "scoring(SKILL_NAME): 簡短描述"
+labels: ["scoring", "domain-knowledge"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: 哪個 Skill
+      options:
+        - /game-review
+        - /balance-review
+        - /player-experience
+        - /pitch-review
+        - /game-code-review
+        - /game-eng-review
+        - /game-qa
+        - /game-ux-review
+        - 不確定
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: 目前的評分標準
+      description: 貼出現有的權重、門檻或公式
+      placeholder: |
+        例：Section 1 Core Loop 權重 = 25%（所有模式統一）
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 什麼問題
+      placeholder: |
+        例：F2P 手遊的 Core Loop 應該是 30% 不是 25%。在手遊裡 loop 就是整個遊戲，
+        如果 loop 不好，經濟和留存都沒用。但 PC 敘事遊戲的 Core Loop 可能只有 15%——
+        玩家是為了故事來的。
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: 建議改成什麼
+      description: 給出具體的新權重或門檻
+      placeholder: |
+        例：
+        Mobile/F2P: Core Loop 30%, Progression 25%, Economy 25%, Motivation 10%, Risk 5%, Cross 5%
+        PC/Narrative: Core Loop 15%, Progression 15%, Economy 5%, Motivation 30%, Risk 10%, Cross 25%
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 根據什麼
+      placeholder: |
+        例：基於我做過的 5 款手遊的 GDD review 經驗。Core Loop 差的手遊 D1 < 20%，
+        但 Core Loop 差的敘事 PC 遊戲只要故事好還是能有 60%+ 好評。
+    validations:
+      required: true

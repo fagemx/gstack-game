@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: "💬 不確定怎麼貢獻？"
+    url: https://github.com/fagemx/gstack-game/issues/new
+    about: "開一個 Issue 說你的專業領域和想貢獻什麼，我們會幫你找到對的位置。"

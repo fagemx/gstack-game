@@ -1,0 +1,57 @@
+name: "📊 修正 Benchmark"
+description: "某個數字過時或不正確——你知道正確的數字"
+title: "benchmark(SKILL_NAME): 簡短描述"
+labels: ["benchmark", "domain-knowledge"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: 哪個 Skill
+      options:
+        - /game-review
+        - /balance-review
+        - /player-experience
+        - /pitch-review
+        - /game-code-review
+        - /game-eng-review
+        - /game-qa
+        - /game-ux-review
+        - /game-ship
+        - 不確定
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: 目前的值
+      placeholder: |
+        例：D1 retention > 40% = good（在 references/scoring.md 或 SKILL.md.tmpl 裡）
+    validations:
+      required: true
+
+  - type: textarea
+    id: correct
+    attributes:
+      label: 應該改成什麼
+      placeholder: |
+        例：2026 年 F2P casual mobile 的 D1 應該是 35-45% = average，> 50% = good。
+        買斷遊戲和 F2P 要分開。
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: 數據來源
+      description: 公開報告、你的遊戲的數據、業界共識都可以
+      placeholder: |
+        例：Sensor Tower 2026 Q1 report / 我們自己的 4 款遊戲 UA 數據 / GameDiscoverCo newsletter
+    validations:
+      required: true
+
+  - type: input
+    id: file
+    attributes:
+      label: 在哪個檔案
+      placeholder: "references/scoring.md 或 references/progression.md"

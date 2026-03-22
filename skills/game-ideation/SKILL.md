@@ -107,20 +107,36 @@ Structure raw game ideas into a validated concept through interactive questionin
 
 ---
 
-## Step 0: Concept Maturity Assessment
+## Phase 0: Context & Maturity Assessment
 
-Before anything else, determine where the user is. Ask directly:
+Read existing concept docs (if the bash check found any). Read `CLAUDE.md` for project context.
 
-| Level | Description | What they need |
-|-------|-------------|----------------|
-| 0 | "I want to make a game" (no specific idea) | Full creative discovery → start at Phase 1 |
-| 1 | One-line pitch ("It's X meets Y") | Validate and deepen → start at Phase 2 |
-| 2 | Written concept doc or GDD draft | Challenge and stress-test → start at Phase 3 |
-| 3 | Paper prototype or greybox | Refine based on observed play → start at Phase 4 |
-| 4 | Playable prototype | Focus on what's working/broken → start at Phase 5 |
-| 5 | Has playtest feedback | Interpret data, plan iteration → start at Phase 5 |
+**AskUserQuestion:**
 
-**STOP.** Determine level via AskUserQuestion before proceeding.
+> **[Re-ground]** Starting game concept brainstorming for `[project]` on `[branch]`.
+>
+> **[Simplify]** Before we start — I need to know where you are so I don't waste your time asking things you've already figured out. Think of it like a doctor's visit: "Have you had this symptom before?" saves us both time.
+>
+> {If existing concept found: "I found an existing concept doc: `{filename}` ({N} lines). I'll read it to understand where you left off."}
+>
+> Where are you with this game idea?
+> A) **"I want to make a game"** — no specific idea yet → I'll help you discover one (full creative session)
+> B) **"I have a one-line pitch"** — like "It's X meets Y" → I'll help deepen and validate it
+> C) **"I have a written concept or GDD draft"** — → I'll challenge and stress-test it
+> D) **"I have a prototype"** — paper, greybox, or playable → I'll focus on what's working and what's broken
+> E) **"I have playtest feedback"** — real players tried it → I'll help interpret data and plan iteration
+>
+> RECOMMENDATION: Be honest about where you ACTUALLY are, not where you wish you were. Starting from the right level saves hours.
+
+**STOP.** Wait for answer. This determines which phases to run:
+
+| Answer | Maturity Level | Start at | Forcing Q routing |
+|--------|---------------|----------|-------------------|
+| A | 0 | Phase 1 (Fantasy) | Q1 Fun Reality, Q3 Session Test, Q5 Scope |
+| B | 1 | Phase 2 (Core Loop) | Q2 Comp Honesty, Q3 Session Test, Q4 Repeatability |
+| C | 2 | Phase 3 (Twist + Challenge) | Q2 Comp Honesty, Q5 Scope, Q6 Observation |
+| D | 3-4 | Phase 5 (Validation) | Q1 Fun Reality, Q4 Repeatability, Q6 Observation |
+| E | 5 | Phase 5 (Validation) | Q4 Repeatability, Q6 Observation |
 
 ---
 
@@ -146,7 +162,24 @@ Use MDA backward — start from Aesthetics, not Mechanics:
 - "You described what the player DOES. What do they FEEL while doing it? Those are different things."
 - "Minecraft's fantasy isn't 'place blocks.' It's 'I built this entire world and it's MINE.' What's yours?"
 
-**STOP.** One AskUserQuestion per topic. Extract the core fantasy before moving on.
+**STOP.** One AskUserQuestion per topic. Keep pushing until the fantasy is a FEELING, not a feature list.
+
+**After Fantasy is extracted, confirm before moving on via AskUserQuestion:**
+
+> **Here's what I heard as your core fantasy:**
+>
+> *"{The fantasy statement, in the user's own words refined into one sentence}"*
+>
+> MDA mapping:
+> - Aesthetic target: {which of the 8 MDA aesthetics}
+> - Implied dynamics: {what player behaviors this feeling requires}
+>
+> Is this right? This will anchor every design decision from here on.
+> A) Yes — move to Core Loop
+> B) Not quite — {user refines}
+> C) I changed my mind — let me start over
+
+**STOP.** Wait for confirmation. The fantasy is the foundation. Don't build on a shaky one.
 
 ---
 
@@ -181,7 +214,24 @@ Structure three levels:
 - What is the "hook" that makes them think about the game when not playing?
 - Critical: there must be a reason to STOP (respect the player's time) AND a reason to RETURN (retention).
 
-**STOP.** Work through each loop level via AskUserQuestion. If the user can't describe the micro-loop in 15 seconds, the concept needs more work.
+**STOP.** Work through each loop level ONE AT A TIME via AskUserQuestion. If the user can't describe the micro-loop in 15 seconds, the concept needs more work.
+
+**After all three loops are defined, confirm via AskUserQuestion:**
+
+> **Core Loop summary:**
+>
+> - **Micro (30s):** {verb → feedback}
+> - **Meso (5min):** {goal → reward cycle}
+> - **Macro (session):** {session arc → return hook}
+>
+> **The Verb Test:** Is "{verb}" intrinsically fun with zero rewards?
+> My assessment: {yes — because X / no — because it depends on Y}
+>
+> A) Loops are right — move to Differentiation
+> B) Adjust the loops — {user refines}
+> C) The verb isn't fun enough — explore a different core action
+
+**STOP.** Wait for confirmation.
 
 ---
 
@@ -206,6 +256,26 @@ If the user cannot name 3 comparable games, they either don't know the genre wel
 
 **STOP.** One AskUserQuestion. The twist must be articulated in one sentence.
 
+**After Twist is defined, present the concept so far via AskUserQuestion:**
+
+> **Concept checkpoint — here's where we are:**
+>
+> - **Fantasy:** {one sentence}
+> - **Core Loop:** {verb → feedback → reward → repeat}
+> - **Twist:** {one sentence differentiation}
+> - **Closest comp:** {game name} — yours is different because {twist}
+>
+> This is already enough to talk about the game in an elevator. The question is: do we explore alternative directions, or lock this in?
+>
+> A) **Lock it in** — this is the concept, move to validation planning (Phase 5)
+> B) **Explore alternatives** — generate 2-3 different takes using structured techniques (Phase 4)
+> C) **Something's off** — I want to go back and adjust {Fantasy / Loop / Twist}
+>
+> RECOMMENDATION: Choose A if the concept feels alive and specific. Choose B if you feel uncertain or want to see what else is possible.
+> Player Impact: This decision determines whether you build ONE thing deeply or explore before committing.
+
+**STOP.** Wait for answer. Skip Phase 4 if user chooses A.
+
 ---
 
 ## Phase 4: Concept Generation Techniques
@@ -227,7 +297,39 @@ Start from the desired player emotion. Work backward:
 1. Target aesthetic → 2. Required dynamics → 3. Enabling mechanics
 This is the most rigorous approach but requires clarity on the fantasy (Phase 1).
 
-**STOP.** Let the user choose a technique or combine elements. Generate 2-3 concepts using the chosen technique. Present each with: Working Title / Elevator Pitch / Core Verb / Core Fantasy / Unique Hook / Biggest Risk.
+**AskUserQuestion:**
+
+> Which approach appeals to you?
+> A) **Verb-First** — start with a satisfying action, build outward
+> B) **Mashup** — combine two unexpected things for creative tension
+> C) **Experience-First (MDA)** — start from the emotion, work backward to mechanics
+> D) **Show me all three** — generate one concept per technique and I'll compare
+
+**STOP.** Wait for choice.
+
+Then generate 2-3 concepts using the chosen technique(s). Present each via AskUserQuestion:
+
+> **Concept {N}: {Working Title}**
+>
+> - **Elevator Pitch:** {2 sentences}
+> - **Core Verb:** {the primary action}
+> - **Fantasy:** {what the player feels}
+> - **Twist:** {unique hook}
+> - **Biggest Risk:** {the thing most likely to kill this}
+> - **Effort:** ~{X} person-months for smallest fun version
+>
+> {Present all concepts, then:}
+>
+> Which direction?
+> A) Concept 1: {title}
+> B) Concept 2: {title}
+> C) Concept 3: {title}
+> D) Combine elements from multiple
+> E) None of these — back to the drawing board
+>
+> RECOMMENDATION: Choose {X} because {reason tied to the user's stated fantasy}
+
+**STOP.** Wait for selection. Then proceed to Phase 5 with the chosen concept.
 
 ---
 
@@ -279,39 +381,78 @@ The gap between "this is cool" and "I must play this" is where most games die.
 
 ---
 
-## Forcing Questions (apply throughout all phases)
+## Forcing Questions
 
-These 6 questions must be asked at appropriate points during the session. Do not skip them. Do not soften them.
+These 6 questions are asked **ONE AT A TIME** via AskUserQuestion at appropriate points during the session. Do not skip them. Do not soften them. Do not batch.
 
-### 1. Fun Reality
-> "Describe the fun in this game. Is it something you've SEEN in playtesting, or something you've IMAGINED will happen?"
+**Smart routing — don't ask all 6 every time.** Route based on maturity level (determined in Phase 0):
 
-Imagined fun is a hypothesis. Only observed fun is evidence. Label which one it is.
+| Maturity | Ask these (minimum 3) | Why |
+|----------|----------------------|-----|
+| Level 0-1 (idea/pitch) | Q1, Q3, Q5 | Validate the fun exists, concept is communicable, scope is honest |
+| Level 2 (concept doc) | Q2, Q3, Q5 | Test differentiation, clarity, and scope realism |
+| Level 3-4 (prototype) | Q1, Q4, Q6 | Has the fun been SEEN? Does it hold on repeat? Has anyone PLAYED it? |
+| Level 5 (playtest data) | Q4, Q6 | Focus on what the data says about retention and real behavior |
 
-### 2. Comp Honesty
-> "Name 3 games most like this. What does each lack that you will provide?"
+**Ask the routed questions at natural points** — don't save them all for the end. Q2 (Comp Honesty) fits during Phase 3. Q5 (Scope) fits during Phase 5. Q6 (Observation) fits at the end.
 
-If the answer is "nothing is like this," the user either doesn't know the genre or is in denial about competitors. Both are problems.
+### Q1: Fun Reality
 
-### 3. Session Test
-> "Can you explain one complete play session in 30 seconds?"
+**Ask:** "Describe the fun in this game. Is it something you've **SEEN** in playtesting, or something you've **IMAGINED** will happen?"
 
-If not, the concept is too complex or not yet crystallized. Time them.
+Push until you hear: An honest label — "imagined" or "observed." Imagined fun is a hypothesis. Only observed fun is evidence.
+Red flags: "Everyone I've shown the idea to says it sounds fun." — That's interest, not demand. Push: "Has anyone actually PLAYED it and had fun? Or just heard about it?"
 
-### 4. Repeatability
-> "1st play vs. 100th play — what's different? If nothing, what's the retention plan?"
+**STOP.** Wait for answer.
 
-Games that feel the same on play 100 as play 1 have no long-term retention unless the verb is extraordinarily satisfying (Tetris-level).
+### Q2: Comp Honesty
 
-### 5. Scope Honesty
-> "Full vision = how many person-months? Smallest fun version = how many?"
+**Ask:** "Name 3 games most like yours. What does each lack that yours provides?"
 
-If the ratio is more than 10:1, the full vision is a fantasy, not a plan. Start with the smallest fun version.
+Push until you hear: 3 specific game names with specific gaps. Not "my game is totally unique" (denial) and not "it's like Genshin but better" (delusional).
+Red flags: "Nothing is like this" — either they don't know the genre (→ play competitors first) or the concept is genuinely novel (probe harder: "if a player searches the App Store for your game, what would they search for?").
 
-### 6. Player Observation
-> "Have you watched anyone play this? Not a guided demo — just handed them the controls and watched."
+**STOP.** Wait for answer.
 
-Guided demos produce false confidence. Only unguided observation reveals real UX problems.
+### Q3: Session Test
+
+**Ask:** "Explain one complete play session in 30 seconds. I'm timing you."
+
+Push until you hear: A clear sequence a non-gamer could follow. If they need a paragraph, the concept isn't crystallized.
+Red flags: "Well, it depends on the mode..." — Push: "Pick the PRIMARY mode. The one 80% of sessions look like."
+
+**STOP.** Wait for answer.
+
+### Q4: Repeatability
+
+**Ask:** "1st play vs. 100th play — what's different? If nothing changes, what's the retention plan?"
+
+Push until you hear: A specific difference (new strategies, new content, deeper mastery, social dynamics). "Bigger numbers" is not a difference — that's a treadmill.
+Red flags: "The core loop is just fun enough to keep playing." — Only Tetris-level verbs sustain this. Push: "Is your verb as satisfying as clearing a Tetris line? If not, what ELSE brings them back?"
+
+**STOP.** Wait for answer.
+
+### Q5: Scope Honesty
+
+**Ask:** "Full vision = how many person-months? Smallest fun version = how many?"
+
+Push until you hear: Two numbers. If the ratio is >10:1, the full vision is a fantasy. Start with the smallest.
+Red flags: "I haven't thought about scope yet." — That's fine for Level 0. Flag it and move on. For Level 2+, push: "You have a concept doc but no scope estimate. That means you don't know if you can build it."
+
+**STOP.** Wait for answer.
+
+### Q6: Player Observation
+
+**Ask:** "Have you watched anyone play this? Not a guided demo — just handed them the controls and watched what happened."
+
+Push until you hear: A specific observation. "They got confused at the inventory screen." "They ignored the tutorial and died immediately." "They played for 40 minutes without looking up."
+Red flags: "We did a demo for investors." — Demos are theater. "We sent a survey." — Surveys lie. Only silent observation reveals truth.
+
+**STOP.** Wait for answer.
+
+**Escape hatch:** If the user pushes back on forcing questions ("just help me brainstorm"):
+- First time: "These questions ARE the brainstorming. The concept gets sharper with each answer. Two more, then we move on."
+- Second time: Respect it. Note which questions were skipped in the Completion Summary. Proceed to output.
 
 ---
 
@@ -395,6 +536,16 @@ Game Ideation Session:
 - `/game-direction` — if concept is solid, evaluate strategic direction and scope
 - `/pitch-review` — if ready for external validation, review the pitch
 - `/player-experience` — if prototype exists, run a simulated player walkthrough
+
+## Important Rules
+
+- **This is brainstorming, not implementation.** Output is a Concept One-Pager, never code. Not even scaffolding.
+- **Questions ONE AT A TIME.** Never batch forcing questions. Never batch phase questions.
+- **Phase transitions require confirmation.** After each phase, present what was decided and get explicit go-ahead before continuing.
+- **The Fantasy is the anchor.** Every subsequent decision (loop, twist, scope) must trace back to the Fantasy. If it doesn't serve the fantasy, challenge it.
+- **Pushing back IS the value.** If the user says something vague and you accept it, you've failed. Push for specifics. The concept gets sharper with each push.
+- **Escape hatch:** Respect on second request. Note skipped questions. Produce output from what exists.
+- **End with the assignment.** Every session must produce one concrete action for the user to take NEXT — not "go build it" but "play these 3 competitor games and write down what frustrates you" or "build a paper prototype of the core loop and test it with 3 people."
 
 ## Review Log
 

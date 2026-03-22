@@ -30,17 +30,27 @@ This skill bridges that gap.
 
 ```bash
 echo "=== Checking existing docs ==="
-for f in docs/gdd.md docs/game-design.md docs/GDD.md docs/concept.md design/gdd/*.md *.gdd.md; do
-  [ -f "$f" ] && echo "FOUND: $f ($(wc -l < "$f") lines)"
+_GDD_FOUND=0
+for f in docs/gdd.md docs/game-design.md docs/GDD.md docs/concept.md *.gdd.md; do
+  [ -f "$f" ] && echo "FOUND: $f ($(wc -l < "$f") lines)" && _GDD_FOUND=$((_GDD_FOUND + 1))
 done
+# Also check design/gdd/ if it exists
+[ -d "design/gdd" ] && for f in design/gdd/*.md; do
+  [ -f "$f" ] && echo "FOUND: $f ($(wc -l < "$f") lines)" && _GDD_FOUND=$((_GDD_FOUND + 1))
+done
+[ "$_GDD_FOUND" -eq 0 ] && echo "No GDD markdown files found in repo"
 echo "---"
-ls docs/*.md 2>/dev/null || echo "No docs/ directory or no .md files"
-echo "---"
-echo "=== Checking for source files ==="
+echo "=== Checking for importable source files ==="
+_SRC_FOUND=0
 for ext in pdf docx txt rtf html; do
-  found=$(find . -maxdepth 3 -name "*.${ext}" -not -path "./.claude/*" -not -path "./node_modules/*" 2>/dev/null | head -5)
-  [ -n "$found" ] && echo "Found .$ext files:" && echo "$found"
+  while IFS= read -r f; do
+    [ -n "$f" ] && echo "SOURCE: $f" && _SRC_FOUND=$((_SRC_FOUND + 1))
+  done < <(find . -maxdepth 3 -name "*.${ext}" -not -path "./.claude/*" -not -path "./node_modules/*" 2>/dev/null | head -5)
 done
+[ "$_SRC_FOUND" -eq 0 ] && echo "No importable source files found"
+echo "---"
+echo "GDD_FOUND=$_GDD_FOUND"
+echo "SRC_FOUND=$_SRC_FOUND"
 ```
 
 Based on what's found, classify the situation:

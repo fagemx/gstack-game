@@ -10,16 +10,17 @@ user_invocable: true
 
 ```bash
 _GD_VERSION="0.1.0"
-# Reuse gstack infrastructure
-_GD_BIN=$(~/.claude/skills/gstack/bin/gstack-update-check 2>/dev/null && echo "global" || echo "local")
-if [ "$_GD_BIN" = "local" ]; then
-  _GD_BIN_PATH=".claude/skills/gstack/bin"
-else
-  _GD_BIN_PATH="~/.claude/skills/gstack/bin"
-fi
+# Find gstack-game bin directory (installed in project or standalone)
+_GG_BIN=""
+for _p in ".claude/skills/game-review/../../../gstack-game/bin" ".claude/skills/game-review/../../bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
+  [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
+done
+# Fallback: search common locations
+[ -z "$_GG_BIN" ] && [ -f ".claude/skills/gstack-game/bin/gstack-config" ] && _GG_BIN=".claude/skills/gstack-game/bin"
+[ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
 mkdir -p ~/.gstack/sessions
 touch ~/.gstack/sessions/"$PPID"
-_PROACTIVE=$($_GD_BIN_PATH/gstack-config get proactive 2>/dev/null || echo "true")
+_PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _TEL_START=$(date +%s)
 _SESSION_ID="$-$(date +%s)"
@@ -30,7 +31,7 @@ echo "PROACTIVE: $_PROACTIVE"
 echo "GD_VERSION: $_GD_VERSION"
 ```
 
-If `PROACTIVE` is `"false"`, do not proactively suggest gstack or gstack-game skills.
+If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
 ## AskUserQuestion Format (Game Design)
 
@@ -52,7 +53,7 @@ If `PROACTIVE` is `"false"`, do not proactively suggest gstack or gstack-game sk
 
 ## Completion Status Protocol
 
-Same as gstack: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
+DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
 Escalation after 3 failed attempts.
 
 ## Telemetry (run last)
@@ -60,7 +61,7 @@ Escalation after 3 failed attempts.
 ```bash
 _TEL_END=$(date +%s)
 _TEL_DUR=$(( _TEL_END - _TEL_START ))
-~/.claude/skills/gstack/bin/gstack-telemetry-log \
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-telemetry-log" \
   --skill "pitch-review" --duration "$_TEL_DUR" --outcome "OUTCOME" \
   --used-browse "false" --session-id "$_SESSION_ID" 2>/dev/null &
 ```
@@ -98,5 +99,5 @@ TODO: Full implementation. Sections to build:
 ## Review Log
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"pitch-review","timestamp":"TIMESTAMP","status":"STATUS","unresolved":N,"critical_gaps":N,"mode":"MODE","commit":"COMMIT"}' 2>/dev/null || true
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"pitch-review","timestamp":"TIMESTAMP","status":"STATUS","unresolved":N,"critical_gaps":N,"mode":"MODE","commit":"COMMIT"}' 2>/dev/null || true
 ```

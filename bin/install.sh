@@ -1,22 +1,21 @@
 #!/bin/bash
 # gstack-game installer
-# Copies game design skills into the target project's .claude/skills/
+# Copies game design skills + bin utilities into the target project's .claude/skills/
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 TARGET="${1:-.}"
 
-# Check gstack is installed
-if [ ! -d "$TARGET/.claude/skills/gstack" ] && [ ! -d "$TARGET/.claude/skills/plan-eng-review" ]; then
-  echo "⚠️  gstack not found in $TARGET/.claude/skills/"
-  echo "   gstack-game depends on gstack infrastructure (review log, telemetry, config)."
-  echo "   Install gstack first, then re-run this installer."
-  exit 1
-fi
+mkdir -p "$TARGET/.claude/skills/gstack-game/bin"
 
-# Copy skills (skip 'shared' — it's internal)
-echo "Installing gstack-game skills to $TARGET/.claude/skills/ ..."
+# Copy bin utilities
+echo "Installing gstack-game to $TARGET/.claude/skills/ ..."
+cp "$SCRIPT_DIR"/bin/gstack-* "$TARGET/.claude/skills/gstack-game/bin/" 2>/dev/null
+chmod +x "$TARGET/.claude/skills/gstack-game/bin/"* 2>/dev/null
+echo "  ✓ bin/ utilities"
+
+# Copy skills (skip 'shared' — it's baked into SKILL.md via template engine)
 for skill_dir in "$SCRIPT_DIR/skills"/*/; do
   skill_name=$(basename "$skill_dir")
   [ "$skill_name" = "shared" ] && continue
@@ -28,3 +27,4 @@ done
 
 echo ""
 echo "Done. Restart Claude Code to discover new skills."
+echo "Available: /game-review  /balance-review  /player-experience  /pitch-review"

@@ -7,8 +7,9 @@ A collection of Claude Code skills for game design review workflows, built on th
 **Relationship to gstack:**
 - gstack = web/SaaS product development workflow (eng review, design review, QA, ship)
 - gstack-game = game design & development workflow (GDD review, balance review, player experience)
-- They install side-by-side in `.claude/skills/`. No conflicts.
-- gstack-game skills reuse gstack's infrastructure (AskUserQuestion patterns, review log, dashboard, telemetry) but contain game-specific domain knowledge.
+- **Fully independent.** gstack-game has its own bin/ utilities (forked from gstack). No dependency on gstack installation.
+- They CAN install side-by-side in `.claude/skills/` for teams doing both web and game dev. No conflicts.
+- Design patterns borrowed from gstack (template engine, preamble injection), but code is standalone.
 
 ## Skills
 
@@ -76,8 +77,14 @@ bun scripts/gen-skill-docs.ts --dry-run # check for drift
 ```
 gstack-game/
 ├── CLAUDE.md                       ← this file
-├── gstack-compat.json              ← tracks gstack version compatibility
-├── bin/install.sh                  ← installs skills to a project
+├── gstack-compat.json              ← records which gstack version bin/ was forked from
+├── bin/
+│   ├── install.sh                  ← installs skills to a project
+│   ├── gstack-config               ← config read/write (forked)
+│   ├── gstack-review-log           ← review result logging (forked)
+│   ├── gstack-review-read          ← review dashboard data (forked)
+│   ├── gstack-telemetry-log        ← usage telemetry (forked)
+│   └── gstack-slug                 ← repo slug detection (forked)
 ├── scripts/gen-skill-docs.ts       ← template engine (Pattern #2)
 ├── skills/
 │   ├── shared/preamble.md          ← shared fragment (Pattern #3)
@@ -103,6 +110,6 @@ gstack-game/
 4. Run `bun scripts/gen-skill-docs.ts`
 5. Update `bin/install.sh` if needed
 
-## Tracking gstack upstream
+## Relationship to gstack upstream
 
-`gstack-compat.json` tracks which gstack version the skills are tested against. gstack-game depends on gstack's `bin/` utilities (gstack-review-log, gstack-telemetry-log, gstack-config). If gstack changes these, gstack-game skills may need updates.
+`gstack-compat.json` records which gstack version the bin/ utilities were forked from. gstack-game is fully standalone — it ships its own copies of gstack-config, gstack-review-log, gstack-telemetry-log, gstack-review-read, and gstack-slug in `bin/`. These can be updated independently from gstack.

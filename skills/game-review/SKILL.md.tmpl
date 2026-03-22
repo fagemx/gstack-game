@@ -131,5 +131,5 @@ For each core feature, one realistic way it fails with real players.
 ## Review Log
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"game-review","timestamp":"TIMESTAMP","status":"STATUS","unresolved":N,"critical_gaps":N,"mode":"MODE","commit":"COMMIT"}' 2>/dev/null || true
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-review","timestamp":"TIMESTAMP","status":"STATUS","unresolved":N,"critical_gaps":N,"mode":"MODE","commit":"COMMIT"}' 2>/dev/null || true
 ```

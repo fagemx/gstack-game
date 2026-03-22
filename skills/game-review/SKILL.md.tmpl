@@ -47,33 +47,62 @@ Review a game design document interactively. Work through each section one issue
 
 ---
 
-## Step 0: Genre, Context & Mode Selection
+## Phase 0: Read & Orient
 
-Before reviewing, establish these four anchors. If ANY are missing from the GDD, ask the user before proceeding — they frame every subsequent judgment.
-
-1. **Genre & platform** — What kind of game, where does it run?
-2. **Target session length** — 2 min mobile? 30 min PC? 4 hour tabletop?
-3. **Monetization model** — Premium, F2P, ad-supported, subscription, cosmetic-only?
-4. **Target audience** — Casual, mid-core, hardcore? Age range? Existing genre fans or new audience?
-5. **Design pillars** — 3-5 non-negotiable creative principles. If none stated, flag as ESCALATE: "No pillars defined — review cannot validate design coherence without them."
-
-### Mode Selection
-
-After establishing context, ask the user to select a review mode. Each mode adjusts section weights and emphasis.
-
-**AskUserQuestion:**
+Read the GDD. Then extract the 5 context anchors. Present what you found (and what's missing) via AskUserQuestion:
 
 > **[Re-ground]** Reviewing `[GDD name]` for `[game title]` on `[branch]`.
 >
-> **[Simplify]** Different types of games have different priorities. A mobile gacha game lives or dies on its economy; a narrative PC game lives or dies on pacing. Choose the mode that matches your game so the review focuses on what matters most.
+> Here's what I found in your GDD:
 >
-> **RECOMMENDATION:** Choose the mode matching your primary platform and genre. If unsure, Mode A for mobile, Mode B for PC/console.
+> | Context Anchor | Status | What I Found |
+> |---|---|---|
+> | Genre & Platform | ✅/❌ | {found or "not stated"} |
+> | Target Session Length | ✅/❌ | {found or "not stated"} |
+> | Monetization Model | ✅/❌ | {found or "not stated"} |
+> | Target Audience | ✅/❌ | {found or "not stated"} |
+> | Design Pillars | ✅/❌ | {found or "not stated — I need these to validate design coherence"} |
 >
-> - **A) Mobile / Casual** — Heavy weight on retention hooks (D1/D7/D30), economy balance, session length fit, monetization ethics. Core loop must complete in <2 min. Player Impact: 9/10 if F2P.
-> - **B) PC / Console** — Heavy weight on core loop depth, progression mastery curve, narrative integration, session arc. Economy is secondary unless live-service. Player Impact: 9/10 if premium.
-> - **C) Multiplayer / Competitive** — Heavy weight on balance fairness, matchmaking, counterplay, ranked progression, anti-cheat surface. Economy evaluated for pay-to-win risk. Player Impact: 9/10 if PvP-centric.
-> - **D) Narrative** — Heavy weight on pacing, branching coherence, emotional arc, ludonarrative consonance, choice consequence. Economy and retention secondary. Player Impact: 9/10 if story-driven.
-> - **E) Tabletop / Physical** — Heavy weight on rules clarity, component ergonomics, session length predictability, player count scaling, setup/teardown time. No digital economy concerns. Player Impact: 9/10 if physical game.
+> {For each ❌, provide a best-guess with [inferred] tag if possible.}
+>
+> **Are these correct?** Any I should update before we start the review?
+> A) Correct — proceed to mode selection
+> B) Fix these: {user corrects}
+
+**STOP.** Wait for confirmation. If any anchor is missing and can't be inferred, ask ONE question per missing anchor. Do NOT batch.
+
+Example for missing platform:
+> Your GDD doesn't specify the target platform. This matters because it changes which sections I prioritize.
+>
+> A) **Mobile** — I'll weight retention and economy heavily
+> B) **PC / Console** — I'll weight core loop depth and narrative
+> C) **Web** — I'll weight accessibility and session flexibility
+> D) **Multiple / undecided** — I'll use balanced weights
+>
+> RECOMMENDATION: Choose based on where your FIRST players will be. You can add platforms later.
+> Player Impact: 8/10 — platform shapes every other design decision.
+
+**STOP.** Wait for answer. Repeat for each missing anchor ONE AT A TIME.
+
+### Mode Selection
+
+After ALL anchors are established, ask the user to select a review mode:
+
+**AskUserQuestion:**
+
+> Now I know the context. Let me calibrate the review.
+>
+> Different games have different priorities — a mobile gacha lives or dies on its economy; a narrative PC game lives or dies on pacing. Choose the mode so I focus on what matters most for YOUR game.
+>
+> RECOMMENDATION: {Choose based on the platform/genre anchors just confirmed. State why.}
+>
+> - **A) Mobile / Casual** — Heavy weight on retention hooks (D1/D7/D30), economy balance, session fit, monetization ethics. Core loop must complete in <2 min. Player Impact: 9/10 if F2P.
+> - **B) PC / Console** — Heavy weight on core loop depth, mastery curve, narrative integration, session arc. Economy secondary unless live-service. Player Impact: 9/10 if premium.
+> - **C) Multiplayer / Competitive** — Heavy weight on balance fairness, matchmaking, counterplay, anti-cheat surface. Economy evaluated for P2W risk. Player Impact: 9/10 if PvP-centric.
+> - **D) Narrative** — Heavy weight on pacing, branching, emotional arc, ludonarrative consonance. Economy and retention secondary. Player Impact: 9/10 if story-driven.
+> - **E) Tabletop / Physical** — Heavy weight on rules clarity, component ergonomics, session length, player count scaling. No digital economy. Player Impact: 9/10 if physical game.
+
+**STOP.** Wait for mode selection before starting any section review.
 
 ### Mode Weight Adjustments
 
@@ -85,6 +114,38 @@ After establishing context, ask the user to select a review mode. Each mode adju
 | 4. Player Motivation | 10% | 15% | 15% | 30% | 20% |
 | 5. Risk Assessment | 5% | 10% | 10% | 10% | 10% |
 | 6. Cross-Consistency | 10% | 15% | 15% | 25% | 20% |
+
+---
+
+## Review Pacing
+
+**After completing EACH section**, present the section score and ask before continuing:
+
+> **Section {N} — {name}: {score}/10**
+> {1-sentence summary of the biggest finding}
+>
+> A) **Continue to Section {N+1}** — {next section name}
+> B) **Go back** — I want to address an issue from this section first
+> C) **Fast-forward** — skip to the score summary (I've seen enough)
+> D) **Stop here** — save progress, I'll come back later
+
+**STOP.** Wait for answer.
+
+If user chooses C (fast-forward): Complete remaining sections with AUTO-only analysis (flag issues but don't ask), then present the full score summary. Mark review as `DONE_WITH_CONCERNS — fast-forwarded from Section {N}`.
+
+If user chooses D (stop): Present partial score, list what hasn't been reviewed, and note which sections to pick up next time.
+
+### Forcing Question Smart Routing
+
+Each section says "must ask at least 2" forcing questions. But don't always ask the same ones. Route based on the GDD's state:
+
+| GDD State | Focus Forcing Questions On |
+|-----------|---------------------------|
+| GDD is early (many ⚠️/❌ from import) | Foundational questions — "Can you describe the core loop?" "Who comes back tomorrow?" |
+| GDD is detailed but untested | Validation questions — "Have you watched someone play?" "What breaks at 2x scale?" |
+| GDD is post-playtest revision | Depth questions — "What did playtesters do that surprised you?" "What did you change since last review?" |
+
+Determine state from `docs/gdd.md`'s GDD Status section (written by `/game-import`) or by reading the GDD's depth.
 
 ---
 
@@ -122,12 +183,36 @@ Design must flow BACKWARD from Aesthetics:
 
 **Section 1 Score: ___/10**
 
-### Forcing Questions (must ask at least 2)
+### Forcing Questions
 
-1. "Describe the core loop in exactly one sentence using the format: **verb → feedback → reward → repeat.**" — If the designer cannot do this, the loop is not clear enough.
-2. "What is the 30-second micro-loop? Is it intrinsically fun with ZERO rewards?" — Strip away progression, currency, unlocks. Is the raw action satisfying? Tetris line clears feel good with no XP. If the micro-loop requires extrinsic reward to be engaging, it is a treadmill, not a game.
-3. "What does the player do on the 100th repetition that they didn't do on the 1st?" — Tests for depth. If the answer is "nothing different, just bigger numbers," depth score is 0.
-4. "What happens in the 5 seconds after the player fails?" — Tests fail state design. Good: Spelunky shows the ghost of your run. Bad: "Game Over, return to menu."
+Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route based on GDD state:
+
+**If GDD is early / core loop unclear — ask Q1 first:**
+
+**Q1:** "Describe the core loop in exactly one sentence using the format: **verb → feedback → reward → repeat.**"
+
+Push until you hear: A single sentence with a clear verb. Not a paragraph. Not a feature list.
+Red flags: "It depends on the mode." "There are multiple loops." — Push: "Which one is the PRIMARY 30-second loop a player does 100 times per session?"
+
+**STOP.** Wait for answer.
+
+**If GDD has a defined loop — ask Q2:**
+
+**Q2:** "What is the 30-second micro-loop? Is it intrinsically fun with ZERO rewards?"
+
+Push until you hear: The designer either confirms the raw action is satisfying (like Tetris line clears with no XP) or admits it depends on extrinsic reward. If the latter: "That's a treadmill, not a game. The micro-loop must be fun on its own."
+
+**STOP.** Wait for answer.
+
+**If GDD is detailed / post-playtest — ask Q3 or Q4:**
+
+**Q3:** "What does the player do on the 100th repetition that they didn't do on the 1st?"
+Tests depth. If "nothing different, just bigger numbers" → depth = 0.
+
+**Q4:** "What happens in the 5 seconds after the player fails?"
+Tests fail state design. Good: Spelunky shows the ghost of your run. Bad: "Game Over, return to menu."
+
+**STOP after each.** Minimum 2 questions per section. Skip any whose answer is already clear from the GDD.
 
 ### Action Classification
 
@@ -182,11 +267,34 @@ Check for **sawtooth difficulty curve**: tension builds → milestone release �
 | D30 retention | 5%+ (F2P), 20%+ (premium) | 3-5% / 10-20% | <3% / <10% |
 | Session length vs target | Within ±20% | Within ±50% | >2x or <0.5x target |
 
-### Forcing Questions (must ask at least 2)
+### Forcing Questions
 
-1. "A player finishes their first session and closes the app. Name the SPECIFIC thing that makes them open it again tomorrow." — Not "they'll want to see what happens next" (vague), but "they have 3 unclaimed daily rewards and their base is still upgrading" (specific).
-2. "Where does the player most likely quit FOREVER? What is the specific plan to prevent that?" — Every game has a churn cliff. If the GDD doesn't know where it is, it hasn't thought about retention.
-3. "Does challenge scale with SKILL or with TIME PLAYED?" — Skill gates (get better to progress) create mastery satisfaction. Time gates (grind more to progress) create obligation. The GDD should know which it's using and why.
+Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route:
+
+**If GDD has no retention hooks — ask Q1 first:**
+
+**Q1:** "A player finishes their first session and closes the app. Name the SPECIFIC thing that makes them open it again tomorrow."
+
+Push until you hear: A concrete mechanism. "They have 3 unclaimed daily rewards and their base is still upgrading" = specific. "They'll want to see what happens next" = vague (push: "What SPECIFICALLY happens next that they know about but haven't experienced yet?").
+Red flags: "The gameplay is fun enough to come back." — That's hope, not design.
+
+**STOP.** Wait for answer.
+
+**If GDD has retention but no churn analysis — ask Q2:**
+
+**Q2:** "Where does the player most likely quit FOREVER? What is the specific plan to prevent that?"
+
+Push until you hear: A named moment + a specific intervention. "After the 3rd boss when difficulty spikes — we add an adaptive difficulty hint system" = good. "We'll tune it in playtest" = vague (push once, then flag as ASK).
+
+**STOP.** Wait for answer.
+
+**If GDD is detailed — ask Q3:**
+
+**Q3:** "Does challenge scale with SKILL or with TIME PLAYED?"
+
+Skill gates = mastery satisfaction. Time gates = obligation. The GDD should know which and why.
+
+**STOP after each.** Minimum 2, skip if already answered in GDD.
 
 ### Action Classification
 
@@ -252,11 +360,33 @@ Check which reinforcement schedules the economy uses:
 - Reward schedule not documented → economy runs on accident, not design
 - "Surprise mechanics" language used to obscure loot box mechanics → ethical flag
 
-### Forcing Questions (must ask at least 2)
+### Forcing Questions
 
-1. "A player has been playing for 30 days without spending money. Describe their exact resource state — how much currency do they have, what can they buy, what are they locked out of?" — If the designer can't answer this, the economy isn't designed, it's hoped.
-2. "What breaks first if players earn 2x the intended currency rate?" — Tests whether the economy has safety valves. If "nothing, they'd just progress faster," then sinks are missing.
-3. "What is the FIRST thing a player is asked to spend real money on, and have they had their aha moment yet?" — Monetizing before delight is extractive.
+Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route:
+
+**If economy is undefined — ask Q3 first (simplest, most revealing):**
+
+**Q3:** "What is the FIRST thing a player is asked to spend real money on, and have they had their 'aha moment' yet?"
+
+Push until you hear: A specific item/offer AND its timing relative to the player's first delight moment. Monetizing before delight is extractive. If the designer says "we haven't decided monetization yet" — that's fine, note it and skip to Q1.
+
+**STOP.** Wait for answer.
+
+**If economy exists but no stress test — ask Q2:**
+
+**Q2:** "What breaks first if players earn 2x the intended currency rate?"
+
+Push until you hear: A specific failure point. "Nothing, they'd just progress faster" means sinks are missing. Good answer: "Upgrade costs would be trivialized by Day 7, we'd need to add a prestige sink."
+
+**STOP.** Wait for answer.
+
+**If economy is detailed — ask Q1:**
+
+**Q1:** "A player has been playing for 30 days without spending money. Describe their exact resource state."
+
+Push until you hear: Specific numbers or ranges. If the designer can't answer, the economy isn't designed, it's hoped.
+
+**STOP after each.** Minimum 2 for Mode A (Mobile/F2P). Minimum 1 for other modes (can skip if premium with no in-game economy).
 
 ### Action Classification
 
@@ -330,11 +460,33 @@ Do the mechanics reinforce the narrative, or contradict it?
 
 **Section 4 Score: ___/10**
 
-### Forcing Questions (must ask at least 2)
+### Forcing Questions
 
-1. "Which Bartle type does this game serve WORST, and what happens when that player type tries your game?" — Forces the designer to think about who the game ISN'T for, which clarifies who it IS for.
-2. "Name a specific moment in the game where the player feels powerful. Now name a moment where they feel vulnerable. How far apart are these moments?" — Tests emotional range. Games with no vulnerability have no tension. Games with no power have no satisfaction.
-3. "If the game's story says X, do the mechanics also say X? Give a specific example." — Ludonarrative consonance test. If the designer can't give an example, the mechanics and narrative are probably disconnected.
+Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route:
+
+**If player motivation is undefined — ask Q1 (most accessible):**
+
+**Q1:** "Which Bartle type does this game serve WORST, and what happens when that player type tries your game?"
+
+Push until you hear: A named type AND a specific bad experience. "Explorers — there's no hidden content, they'd get bored after seeing all the levels" = good. "We serve all types" = red flag (push: "Every game serves some types better than others. Which type would give your game a 5/10 review?").
+
+**STOP.** Wait for answer.
+
+**If motivation is defined but emotional design is vague — ask Q2:**
+
+**Q2:** "Name a specific moment where the player feels powerful. Now name one where they feel vulnerable. How many minutes apart are they?"
+
+Push until you hear: Two concrete moments with a time gap. Games with no vulnerability have no tension. Games with no power have no satisfaction. If the moments are >20 min apart, the emotional pacing may be too slow.
+
+**STOP.** Wait for answer.
+
+**If GDD has narrative — ask Q3 (Mode D priority):**
+
+**Q3:** "The game's story says {X}. Do the mechanics also say {X}? Give me one specific example."
+
+Push until you hear: A concrete mechanic-narrative alignment. If the designer can't think of one, the mechanics and narrative are likely disconnected. That's not fatal, but it should be intentional.
+
+**STOP after each.** Minimum 2 for Mode D (Narrative). Minimum 1 for other modes.
 
 ### Action Classification
 
@@ -404,11 +556,33 @@ Where is the most likely point where players quit and never return?
 
 **Section 5 Score: ___/10**
 
-### Forcing Questions (must ask at least 2)
+### Forcing Questions
 
-1. "List every piece of content needed to ship. If your list contains '...' or 'etc.' or 'and more,' it's an Ocean, not a Lake." — Tests scope realism.
-2. "What is the ONE feature you would cut if you had to ship 3 months early? What breaks without it?" — Tests understanding of feature dependencies and priorities.
-3. "Name one mechanic that contradicts a design pillar. If you can't find one, you haven't looked hard enough." — Forces honest pillar-violation audit.
+Ask via AskUserQuestion, **ONE AT A TIME**. Smart-route:
+
+**Always ask Q1 (scope is the #1 indie game killer):**
+
+**Q1:** "List every piece of content needed to ship. If your list contains '...' or 'etc.' or 'and more,' it's an Ocean, not a Lake."
+
+Push until you hear: A finite list. "5 levels, 3 boss types, 12 enemy variants, 1 hub area" = Lake. "Procedurally generated with endless variations..." = Ocean (push: "What is the MINIMUM content set for a shippable version?").
+
+**STOP.** Wait for answer.
+
+**If scope seems large — ask Q2:**
+
+**Q2:** "What is the ONE feature you would cut if you had to ship 3 months early? What breaks without it?"
+
+Push until you hear: A named feature AND an honest impact assessment. "The crafting system — combat still works without it, but long-term engagement drops" = good. "Nothing can be cut" = red flag (every game has a cut list; if you can't name one, you haven't prioritized).
+
+**STOP.** Wait for answer.
+
+**If design pillars exist — ask Q3:**
+
+**Q3:** "Name one mechanic that contradicts a design pillar. If you can't find one, you haven't looked hard enough."
+
+Push until you hear: An honest contradiction. Every real GDD has at least one tension between ideals and implementation. If the designer finds none, either the pillars are too vague or the self-assessment isn't honest.
+
+**STOP after each.** Minimum 2. Q1 is always asked.
 
 ### Action Classification
 
@@ -541,6 +715,22 @@ For each core feature identified in Section 1, write one realistic failure scena
 ```
 
 ---
+
+## Important Rules
+
+- **Questions ONE AT A TIME.** Never batch multiple forcing questions into one AskUserQuestion.
+- **Section transitions are mandatory.** After each section, present the score and ask before continuing.
+- **Smart-skip forcing questions** whose answers are already clear from the GDD. Don't ask what's already written.
+- **Push once, then push again.** If the designer gives a vague answer, push for specifics. If still vague after two pushes, flag as ASK and move on. Don't push a third time.
+- **Escape hatch:** If user says "just give me the score" or "skip ahead":
+  - First time: "Two more questions in this section, then I'll fast-forward." Ask 2, then switch to AUTO-only for remaining sections.
+  - Second time: Respect it. Complete remaining sections with AUTO-only analysis, present full score summary.
+- **Never suggest code or implementation.** This skill reviews design documents, not code. If a design issue implies a technical solution, note "this will need technical review in `/game-eng-review`" — don't specify HOW.
+- **Completion status:**
+  - DONE — All 6 sections reviewed, GDD Health Score ≥ 6.0
+  - DONE_WITH_CONCERNS — Reviewed but score 4.0-5.9 or fast-forwarded
+  - BLOCKED — ESCALATE items prevented completion (no core loop, no pillars)
+  - NEEDS_CONTEXT — Critical context missing, user chose to stop
 
 ## Review Log
 

@@ -135,6 +135,45 @@ Before reviewing, establish these anchors. If ANY are missing, ask the user befo
 
 ---
 
+## Review Pacing & Smart Routing
+
+8 sections is a lot. **Smart-route based on game context** — not every game needs every section.
+
+| Context | Priority sections | Skip/light sections |
+|---------|-------------------|---------------------|
+| Single-player, no networking | 1,2,4,5,6,7,8 | Section 3 (Networking) → SKIP |
+| Mobile game | 1,2,5,6 (heavy), 4,7,8 | Section 3 → SKIP unless multiplayer |
+| Multiplayer/online | 1,2,3 (heavy), 4,7,8 | Sections 5,6 → lighter |
+| Prototype stage | 1,2 (heavy) | Sections 3-8 → structural check only |
+| Near shipping | 5,6,7 (heavy) | Sections 1-3 → verify, don't redesign |
+
+After Step 0 context is established, present the routing via AskUserQuestion:
+
+> Based on your game ({game type}, {platform}, {stage}), I'll focus on:
+> **Heavy review:** {section list}
+> **Light check:** {section list}
+> **Skip:** {section list} — {reason}
+>
+> A) Agree — proceed with this plan
+> B) Adjust — I want to add/remove sections
+> C) Full review — do all 8 sections (longer, more thorough)
+
+**STOP.** Wait for answer.
+
+**After completing EACH section**, present the score and ask:
+
+> **Section {N} — {name}: {score}/10**
+> Key finding: {1-sentence summary}
+>
+> A) Continue to Section {N+1}
+> B) Discuss this finding further
+> C) Fast-forward to score summary
+> D) Stop here
+
+**STOP.** Wait after every section.
+
+---
+
 ## Section 1: Engine & Framework (引擎選型) — Weight: 15%
 
 ### Evaluation Criteria
@@ -157,11 +196,22 @@ Before reviewing, establish these anchors. If ANY are missing, ask the user befo
 - Engine requires workarounds for a core game mechanic (e.g., tile-based game on an engine with no native tilemap)
 - No build pipeline established yet — "we'll figure out builds later"
 
-### Forcing Questions (must ask at least 2)
+### Forcing Questions
 
-1. "What is the ONE thing this engine does better than alternatives for YOUR specific game?" — If the answer is generic ("it's popular"), the choice may not be well-reasoned.
-2. "What is the engine's biggest limitation for your game, and what is your specific workaround?" — Every engine has weaknesses. If the team can't name one, they haven't evaluated deeply enough.
-3. "Have you built and tested on your lowest-spec target device?" — Early platform validation prevents late-stage surprises.
+Ask via AskUserQuestion, **ONE AT A TIME:**
+
+**Q1:** "What is the ONE thing this engine does better than alternatives for YOUR specific game?"
+
+Push until you hear: A specific technical capability tied to a specific game requirement. "Unity is popular" = generic. "Unity's 2D tilemap system natively supports the isometric grid our GDD describes, and our artist already has a Unity tile workflow" = specific.
+Red flags: "We've always used it." — Push: "Familiarity is valid, but has the team evaluated whether it's the RIGHT tool for THIS game's specific needs?"
+
+**STOP.** Wait for answer.
+
+**Q2:** "What is the engine's biggest limitation for your game, and what's your workaround?"
+
+Push until you hear: A named limitation AND a concrete plan. Every engine has weaknesses. If the team can't name one, they haven't evaluated deeply enough.
+
+**STOP.** Wait for answer.
 
 ### Action Classification
 
@@ -214,11 +264,22 @@ If the architecture doc does not include a frame budget: **-2 points.** Without 
 - No target hardware defined — "it should run on most PCs" is not a spec
 - GC-heavy language (C#, JS) with no allocation strategy for hot paths
 
-### Forcing Questions (must ask at least 2)
+### Forcing Questions
 
-1. "What is your worst-case scene in terms of rendering cost, and have you profiled it?" — The prettiest scene is often the most expensive. If it hasn't been profiled, performance is unknown.
-2. "What happens when frame rate drops below target on your minimum spec device?" — Tests for graceful degradation strategy (dynamic resolution? reduce particles? skip LOD levels?).
-3. "How many draw calls in your heaviest scene, and what is your batching strategy?" — Draw calls are the #1 mobile performance bottleneck.
+Ask via AskUserQuestion, **ONE AT A TIME:**
+
+**Q1:** "What is your worst-case scene in terms of rendering cost, and have you profiled it?"
+
+Push until you hear: A named scene AND profiling data (or admission that it hasn't been profiled). "The boss fight with 50 particle effects" = named. "We haven't profiled yet" = honest (flag for action).
+Red flags: "It runs fine on my machine." — Push: "Your machine is not your minimum spec target. Have you tested on the lowest hardware you're targeting?"
+
+**STOP.** Wait for answer.
+
+**Q2:** "What happens when frame rate drops below target on your minimum spec device?"
+
+Push until you hear: A graceful degradation strategy. Dynamic resolution? Particle reduction? LOD adjustment? If the answer is "it shouldn't drop" — that's hope, not engineering.
+
+**STOP.** Wait for answer.
 
 ### Action Classification
 
@@ -532,6 +593,19 @@ For each identified tech debt item:
 ```
 
 ---
+
+## Important Rules
+
+- **Architecture, not code.** This skill reviews DECISIONS (engine choice, network model, save strategy), not code quality. Code review is `/game-code-review`.
+- **Section transitions are mandatory.** After each section: score + key finding + ask before continuing.
+- **Smart routing is mandatory.** Not every game needs 8 sections. Skip networking for single-player. Skip asset pipeline for prototypes. Confirm the routing with the user.
+- **Forcing questions: ONE AT A TIME with push patterns.** For sections not explicitly rewritten above, follow the same pattern: Ask → Push until you hear a specific answer → Red flag vague responses → STOP.
+- **Cross-validate with GDD.** Every architecture decision should trace back to a game design requirement. "We use ECS" must answer "because the GDD describes 200-unit battles." If no GDD exists, flag the gap.
+- **Escape hatch:** If user says "just give me the score" or has limited time:
+  - First time: "Two more key sections, then I'll summarize."
+  - Second time: Respect it. Complete remaining sections AUTO-only, present score summary.
+- **"We'll optimize later" is a red flag, not an answer.** Optimization is architectural. If the frame budget isn't set now, it won't be set later — it'll be discovered as a crisis.
+- **Never prescribe specific technology.** "You need a job system" = review. "Use Unity DOTS with Burst compiler" = consulting. This skill reviews, not consults.
 
 ## Review Log
 

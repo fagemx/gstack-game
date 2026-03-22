@@ -1,8 +1,23 @@
-# Claude Code local settings (user-specific permissions)
-.claude/settings.local.json
+# Environment
+.env
+.env.local
+.env.*
+!.env.example
 
 # Dependencies
 node_modules/
+
+# Bun
+bun.lock
+*.bun-build
+
+# Claude Code local settings
+.claude/settings.local.json
+.claude/skills/
+.context/
+
+# gstack local state
+.gstack/
 
 # OS files
 .DS_Store
@@ -15,8 +30,9 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Bun
-bun.lockb
-
-# Telemetry (local only)
+# Logs & telemetry (local only)
+*.log
 *.jsonl
+
+# Temp
+/tmp/

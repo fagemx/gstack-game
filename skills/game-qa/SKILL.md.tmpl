@@ -461,6 +461,165 @@ Top 3 Score Impacts:
   3. [Category] [Bug]: -___ because [specific reason]
 ```
 
+---
+
+## Phase: Baseline Score
+
+After all sections are tested, calculate the QA Health Score. This is the **baseline** — the state BEFORE any fixes.
+
+```bash
+_BASELINE_FILE="/tmp/game-qa-baseline-${_BRANCH}.json"
+echo '{"timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","score":BASELINE_SCORE,"bugs":{"critical":N,"high":N,"medium":N,"low":N}}' > "$_BASELINE_FILE"
+echo "Baseline saved: $_BASELINE_FILE"
+```
+
+Present the baseline:
+
+> **QA Baseline: ___/100**
+> Critical: ___ | High: ___ | Medium: ___ | Low: ___
+> Release status at baseline: [SHIP / SHIP_WITH_KNOWN / DO_NOT_SHIP]
+>
+> A) **Enter fix loop** — fix what I can, re-test, re-score
+> B) **Report only** — no fixes, just the bug report (like /qa-only)
+> C) **Stop here** — save baseline, fix manually, re-run /game-qa later
+
+**STOP.** Wait for answer.
+
+If B or C: skip to Completion Summary with baseline as final score.
+
+---
+
+## Phase: Triage
+
+Sort all bugs by severity (Critical → High → Medium → Low). For each severity tier, classify:
+
+| Bug | Fixable by agent? | Action |
+|-----|------------------|--------|
+| [bug] | YES — code fix | Enter fix loop |
+| [bug] | YES — config/data change | Enter fix loop |
+| [bug] | NO — needs design decision | Report as ASK |
+| [bug] | NO — needs assets/content | Report as deferred |
+| [bug] | NO — platform/hardware issue | Report as deferred |
+
+Present triage results:
+
+> **Fix loop will address:** ___ bugs (___ critical, ___ high, ___ medium)
+> **Deferred (need human):** ___ bugs
+> **Skipped (low severity, below tier):** ___ bugs
+>
+> Proceed with fix loop?
+> A) Yes — fix all fixable bugs
+> B) Fix critical + high only
+> C) Skip fixes, report only
+
+**STOP.** Wait for answer.
+
+---
+
+## Phase: Fix Loop
+
+For each fixable bug, in severity order (Critical first):
+
+### Step A: Locate Source
+
+```bash
+# Find the relevant source file
+grep -rn "KEYWORD_FROM_BUG" src/ scripts/ game/ 2>/dev/null | head -10
+```
+
+Only modify files directly related to the bug. No refactoring. No "improvements."
+
+### Step B: Fix (minimal change)
+
+Apply the smallest possible fix. One bug = one change.
+
+**Rules:**
+- Fix the bug, nothing else
+- No refactoring adjacent code
+- No "while I'm here" improvements
+- If fix requires changing >3 files → flag as ASK, don't auto-fix
+
+### Step C: Atomic Commit
+
+```bash
+git add <only-changed-files>
+git commit -m "fix(qa): BUG-NNN — short description"
+```
+
+One commit per bug. Never bundle.
+
+### Step D: Re-test
+
+Re-test the specific bug:
+- Does the fix resolve the issue?
+- Does it introduce any visible regression?
+
+### Step E: Classify
+
+| Result | Action |
+|--------|--------|
+| **verified** | Bug fixed, confirmed by re-test. Continue. |
+| **best-effort** | Fix applied but can't fully verify (needs specific device, auth state, etc.). Note limitation. |
+| **reverted** | Fix caused regression or didn't work. `git revert HEAD`. Mark as deferred. |
+
+### Step F: WTF-Likelihood Check (every 5 fixes)
+
+```
+WTF-LIKELIHOOD:
+  Start at 0%
+  Each revert:                +15%
+  Each fix touching >3 files: +5%
+  After fix 15:               +1% per additional fix
+  All remaining Low severity: +10%
+
+  > 20% → STOP. Ask user: "I've made N fixes. M reverted. Continue or stop?"
+  Hard cap: 30 fixes → stop regardless
+```
+
+---
+
+## Phase: Final Re-score
+
+After all fixes (or fix loop stopped):
+
+1. Re-test all sections that had bugs fixed
+2. Calculate final QA Health Score
+3. Compare to baseline
+
+```
+Score Delta:
+  Section           Baseline    Final    Change
+  Functional:       ___/100     ___/100  +___
+  Visual:           ___/100     ___/100  +___
+  Performance:      ___/100     ___/100  +___
+  Audio:            ___/100     ___/100  +___
+  Input:            ___/100     ___/100  +___
+  Compatibility:    ___/100     ___/100  +___
+  Localization:     ___/100     ___/100  +___
+  Progression:      ___/100     ___/100  +___
+  WEIGHTED TOTAL:   ___/100     ___/100  +___
+```
+
+**⚠️ If final score < baseline: WARN prominently.** A fix introduced a regression. List which fixes were made since baseline and which section regressed.
+
+---
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-qa-report-${_DATETIME}.md"
+```
+
+Write the full QA report (Baseline + Fixes Applied + Final Score + Delta + Bug List) to `$_PROJECTS_DIR/{user}-{branch}-qa-report-{datetime}.md`. If prior QA report exists, include `Supersedes: {prior}`.
+
+This artifact is discoverable by:
+- `/game-ship` — checks QA status as release gate
+- `/game-retro` — reads bug counts for sprint metrics
+- `/game-debug` — reads bug details for investigation
+
+---
+
 ### Completion Summary
 
 ```
@@ -484,7 +643,14 @@ Section Results:
   Section 8 — Localization:    ___/100 (or N/A), ___ issues found
   Section 9 — Progression:     ___/100, ___ issues found
 
-WEIGHTED TOTAL: __.__/100
+WEIGHTED TOTAL (baseline): __.__/100
+WEIGHTED TOTAL (final):    __.__/100  (+__.__)
+
+Fix Loop:
+  Bugs fixed (verified): ___
+  Bugs fixed (best-effort): ___
+  Bugs reverted: ___
+  Bugs deferred: ___
 
 Release Recommendation: SHIP / SHIP_WITH_KNOWN_ISSUES / DO_NOT_SHIP / BLOCKED
 Status: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT

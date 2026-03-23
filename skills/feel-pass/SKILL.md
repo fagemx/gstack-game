@@ -299,6 +299,30 @@ Top 3 Feel Blockers:
 - **Audio is not optional.** Check audio at every stage. 40-50% of feel is audio.
 - **Anticipation is not dead time.** Wind-up frames are intentional tension, not wasted frames.
 
+## Baseline → Final Re-score (for re-runs after fixes)
+
+If a prior feel pass exists for the same mechanic (from Artifact Discovery):
+
+1. Read the prior score as **baseline**
+2. Run the current evaluation as normal → **final**
+3. Present delta:
+
+```
+Feel Score Delta:
+  Dimension        Baseline    Final    Change
+  Responsiveness:  _/2         _/2      +_
+  Clarity:         _/2         _/2      +_
+  Impact:          _/2         _/2      +_
+  Rhythm:          _/2         _/2      +_
+  Payoff:          _/2         _/2      +_
+  Dead Time:       _/2         _/2      +_
+  Overload:        _/2         _/2      +_
+  TOTAL:           _/14        _/14     +_
+  Verdict:         [old]   →   [new]
+```
+
+**⚠️ If final < baseline: WARN prominently** — the fix may have broken something else (e.g., adding screen shake fixed impact but introduced overload).
+
 ## Completion Summary
 
 ```
@@ -307,6 +331,7 @@ Top 3 Feel Blockers:
 Mechanic: [name]
 Target feel: [from Phase 0]
 Score: _/14 — [ALIVE/BREATHING/FLAT/MUDDY/DEAD]
+Delta from prior: [+N / first run / N/A]
 
 Top blocker: [the one thing that would improve feel the most]
 

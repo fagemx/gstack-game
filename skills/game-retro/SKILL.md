@@ -227,6 +227,17 @@ Retrospective:
   STATUS: DONE
 ```
 
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-retro-${_DATETIME}.md"
+```
+
+Write to `$_PROJECTS_DIR/{user}-{branch}-retro-{datetime}.md`. Supersedes prior if exists.
+
+Discoverable by: /game-ship
+
 ## Review Log
 
 ```bash

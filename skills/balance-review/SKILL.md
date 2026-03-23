@@ -327,6 +327,27 @@ Next Steps:
 ═══════════════════════════════════════════════════
 ```
 
+## Baseline → Final Re-score (if economy docs were updated during review)
+
+If the user updated economy numbers during this session (fixing issues you flagged):
+
+1. **Baseline** = first pass scores (recorded at each section completion)
+2. **Re-read** the updated sections and re-score ONLY changed sections
+3. **Present delta:**
+
+```
+Score Delta:
+  Section            Baseline    Final    Change
+  Difficulty Curve:  _/10        _/10     +_
+  Economy Model:     _/10        _/10     +_
+  Progression:       _/10        _/10     +_
+  Monetization:      _/10        _/10     +_
+  Character Balance: _/10        _/10     +_
+  WEIGHTED TOTAL:    _._/10      _._/10   +_._
+```
+
+**⚠️ If final < baseline: WARN prominently** — a fix may have introduced a new problem (e.g., adding a sink that's too aggressive, or adjusting a pity threshold that makes another system unbalanced).
+
 ## Save Artifact
 
 ```bash
@@ -335,7 +356,7 @@ SLUG=${SLUG:-$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")}
 mkdir -p ~/.gstack/projects/$SLUG
 ```
 
-Write the Balance Health Report to `~/.gstack/projects/{slug}/{user}-{branch}-balance-report-{datetime}.md`. This artifact is discoverable by downstream skills and future balance reviews.
+Write the Balance Health Report (including baseline → final delta if applicable) to `~/.gstack/projects/{slug}/{user}-{branch}-balance-report-{datetime}.md`. This artifact is discoverable by downstream skills and future balance reviews.
 
 ## Review Log
 

@@ -189,6 +189,17 @@ Asset Review:
   STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
 ```
 
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-asset-review-${_DATETIME}.md"
+```
+
+Write to `$_PROJECTS_DIR/{user}-{branch}-asset-review-{datetime}.md`. Supersedes prior if exists.
+
+Discoverable by: /game-ship, /game-visual-qa
+
 ## Review Log
 
 ```bash

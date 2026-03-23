@@ -341,11 +341,11 @@ Available skills: /game-import, /game-ideation, /game-direction, /game-review,
 | Doc | What it covers |
 |-----|---------------|
 | [Builder Ethos](ETHOS.md) | Game dev philosophy: Boil the Lake, Search Before Building, Player Time is Sacred |
+| [Contributing](CONTRIBUTING.md) | Three ways to contribute (5min Issue / 30min markdown / advanced template) |
 | [Domain Judgment Gaps](docs/domain-judgment-gaps.md) | Expert review checklist — what needs calibration |
-| [Source Quality Assessment](docs/source-quality-assessment.md) | Quality comparison of 3 reference sources |
-| [Development Guide](docs/DEVELOPMENT.md) | Full technical docs, skill map, migration guide |
+| [Development Guide](docs/DEVELOPMENT.md) | Skill map, migration guide, architecture overview |
 | [Changelog](CHANGELOG.md) | Version history |
-| [CLAUDE.md](CLAUDE.md) | Full technical docs and skill map |
+| [CLAUDE.md](CLAUDE.md) | Developer handoff for AI agents working on this repo |
 
 ---
 

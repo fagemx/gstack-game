@@ -4,7 +4,10 @@
 
 [繁體中文](README.zh-TW.md)
 
-22 interactive AI review skills covering the entire game development pipeline — from concept brainstorming to shipping. Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
+22 interactive AI review skills for game development. Strongest in **design review and planning** (GDD audit, economy balance, player experience simulation), with development-phase support (code review, QA, release). Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
+
+> **What this IS:** A structured review and quality assurance system — it helps you judge, score, and improve your game design and code.
+> **What this is NOT:** A game builder or code generator — it doesn't implement features or create assets for you.
 
 gstack is Garry Tan's AI engineering workflow for Web/SaaS. gstack-game ports that same methodology to game dev: game design theory (MDA, SDT, Flow State) replaces SaaS metrics (MRR, churn). Core loop, retention hooks, and Sink/Faucet economy models replace API endpoints and database schemas. The engineering backbone (template engine, preamble injection, anti-sycophancy) maintains gstack-level quality.
 

@@ -1,10 +1,13 @@
 # gstack-game
 
-**遊戲開發完整工作流 Skills for Claude Code**
+**遊戲開發審查工作流 Skills for Claude Code**
 
 [English](README.md)
 
-從概念發想到上架發布的 22 個互動式 AI 審查技能。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
+22 個互動式 AI 審查技能，強項在**設計審查和企劃**（GDD 審計、經濟平衡、玩家體驗模擬），輔以開發階段支援（code review、QA、發布）。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
+
+> **這是什麼：** 結構化的審查和品質保證系統——幫你判斷、評分、改善你的遊戲設計和程式碼。
+> **這不是什麼：** 不是遊戲生成器，不會幫你寫程式碼或做美術素材。
 
 gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-game 把同一套方法論搬到遊戲開發：用遊戲設計理論（MDA、SDT、Flow State）取代 SaaS 指標（MRR、churn），用 core loop、retention hook、Sink/Faucet 經濟模型取代 API endpoint 和 database schema。工程骨架（template engine、preamble injection、反諂媚機制）維持 gstack 同等品質。
 

@@ -3,7 +3,7 @@ name: gstack-game
 version: 0.2.0
 description: |
   Game development workflow skills for Claude Code. 22 interactive review skills
-  covering the full game dev pipeline — concept brainstorming to shipping.
+  for game development — strongest in design review and planning, with dev-phase support.
 
   When you notice the user is at these stages, suggest the appropriate skill:
   - User has a PDF/doc/notes they want to turn into a GDD → suggest /game-import

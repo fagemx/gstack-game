@@ -296,7 +296,7 @@ gstack-game/
 ├── scripts/gen-skill-docs.ts           ← Template engine
 ├── skills/                             ← 27 skills + shared preamble (many with references/)
 ├── test/                               ← Tier 1 validation tests
-└── docs/                               ← Domain judgment docs + skill writing analysis
+└── docs/                               ← Domain judgment gaps, source assessment, dev guide
 ```
 
 ---
@@ -343,8 +343,7 @@ Available skills: /game-import, /game-ideation, /game-direction, /game-review,
 | [Builder Ethos](ETHOS.md) | Game dev philosophy: Boil the Lake, Search Before Building, Player Time is Sacred |
 | [Domain Judgment Gaps](docs/domain-judgment-gaps.md) | Expert review checklist — what needs calibration |
 | [Source Quality Assessment](docs/source-quality-assessment.md) | Quality comparison of 3 reference sources |
-| [Skill Writing Patterns](docs/skill-writing-patterns.md) | How to write good skills (7+4 patterns) |
-| [Backend Gap Analysis](docs/backend-gap-analysis-nox.md) | Why back-half skills need game production work units |
+| [Development Guide](docs/DEVELOPMENT.md) | Full technical docs, skill map, migration guide |
 | [Changelog](CHANGELOG.md) | Version history |
 | [CLAUDE.md](CLAUDE.md) | Full technical docs and skill map |
 

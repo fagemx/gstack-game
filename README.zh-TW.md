@@ -265,8 +265,9 @@ Available skills: /game-import, /game-ideation, /game-direction, /game-review,
 | [Builder Ethos](ETHOS.md) | 遊戲開發哲學：Boil the Lake、Search Before Building、Player Time is Sacred |
 | [領域判斷待補清單](docs/domain-judgment-gaps.md) | 找專家討論用的完整 checklist |
 | [來源品質評估](docs/source-quality-assessment.md) | 三個參考來源的品質對比 |
+| [開發指南](docs/DEVELOPMENT.md) | 完整技術文件、skill map、migration guide |
 | [Changelog](CHANGELOG.md) | 版本變更記錄 |
-| [CLAUDE.md](CLAUDE.md) | 完整技術文件和 skill map |
+| [CLAUDE.md](CLAUDE.md) | 開發者 handoff 文件 |
 
 ---
 

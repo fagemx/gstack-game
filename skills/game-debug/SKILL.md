@@ -152,6 +152,62 @@ When hypothesis confirmed:
 - **Related check** — Same bug pattern elsewhere? (grep for similar code)
 - **Save compatibility** — Does the fix affect existing save files?
 
+## Game-Specific Bug Recipes
+
+Common patterns with known investigation paths. Check these BEFORE open-ended hypothesis testing.
+
+### Physics Tunneling (object passes through wall)
+```
+Suspect: Small/fast object + thin collider + fixed timestep too large
+Check 1: Object velocity × dt > collider thickness? → CCD needed
+Check 2: Collision layers correct? → Layer matrix
+Check 3: Scale correct? (1 unit = 1 meter convention?) → Scale mismatch
+```
+
+### Network Desync (player A sees different state than player B)
+```
+Suspect: Non-deterministic operation + client-side prediction
+Check 1: Random seed synced? → Log both client seeds
+Check 2: Float operations? → Use fixed-point or quantize
+Check 3: Execution order dependent on hash map iteration? → Sort before iterate
+Check 4: Event order? → Log timestamps on both clients, compare
+```
+
+### Save Corruption (progress lost or wrong state on load)
+```
+Suspect: Interrupted write + no atomic save + schema mismatch
+Check 1: Save writes to temp file then renames? (atomic) → Add if missing
+Check 2: Version field in save format? → Check for migration code
+Check 3: Save during state transition? → Ensure save only from stable states
+Check 4: Cross-platform byte order? → Check endianness handling
+```
+
+### Frame Rate Spike (periodic hitch every N seconds)
+```
+Suspect: GC collection + periodic system + loading
+Check 1: Profiler shows GC spike? → Find allocation source in hot path
+Check 2: Timer-based system? (autosave, analytics ping) → Check interval code
+Check 3: Asset streaming? → Check LOD transitions, pool exhaustion
+Check 4: Specific to scene/level? → Check entity count at spike moment
+```
+
+### Softlock (player can't progress, can't die, can't quit)
+```
+Suspect: State machine stuck + missing transition + event not firing
+Check 1: What state is the player in? → Log current state machine state
+Check 2: What input is being accepted? → Log input events
+Check 3: What condition should trigger exit? → Check condition values
+Check 4: Is a required event listener missing/unregistered? → Check event bindings
+```
+
+### Audio Desync (sound plays at wrong time or not at all)
+```
+Suspect: Event timing + audio pool exhaustion + streaming latency
+Check 1: Audio event fires at correct frame? → Log audio trigger vs game event
+Check 2: Audio pool full? → Check concurrent sound count
+Check 3: Streaming vs loaded? → Check audio asset loading state
+```
+
 ## Red Flags (Immediate Slowdown)
 
 - 🔴 "Let me just quickly fix this" → No root cause identified yet

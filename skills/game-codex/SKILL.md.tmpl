@@ -47,6 +47,26 @@ git diff "$_BASE"...HEAD
 - Progression: Can player skip content or reach endgame early?
 - Memory: What happens after 4 hours of play? 8 hours? Does memory grow?
 
+**Game Exploit Taxonomy (check each category):**
+
+| Category | Attack | Example |
+|----------|--------|---------|
+| **Speed exploit** | Manipulate game speed/frame rate | Uncapping FPS makes physics faster, speed run |
+| **Duplication** | Clone items/currency via timing | Open two menus → buy + sell simultaneously → infinite gold |
+| **State corruption** | Force invalid state via input sequence | Die during screen transition → respawn with boss loot + full health |
+| **Progression skip** | Reach content without prerequisites | Clip through wall → skip tutorial → access endgame area |
+| **Economy abuse** | Generate resources faster than intended | Restart level → keep rewards → repeat (no cooldown on farm) |
+| **PvP cheat** | Client-authoritative gameplay advantage | Client reports "I hit you for 999 damage" → server trusts it |
+| **Save manipulation** | Edit save file for advantage | Save before gacha pull → reload if bad result (save scumming) |
+| **Determinism break** | Different outcomes on different machines | Float precision → physics behaves differently → replay desync |
+| **Social exploit** | Abuse multiplayer social systems | Gift → trade → return gift → net positive (circular trade) |
+| **Content leak** | Access unreleased content | Data mine asset files → spoil future content → community outrage |
+
+**For each exploit found, rate:**
+- **Severity:** cosmetic / advantage / game-breaking
+- **Effort:** trivial (any player) / moderate (savvy player) / hard (requires tools)
+- **Detectability:** obvious in logs / detectable with analytics / undetectable
+
 ## Mode B: Challenge
 
 Present the decision to challenge. Then:

@@ -51,6 +51,20 @@ Bug density:     ___ bugs per 1000 LOC changed
 - Story points / features completed vs planned
 - Trend: Accelerating / Stable / Decelerating / Erratic
 
+**Game-Specific Metrics (track these, not just code metrics):**
+```
+Playability score delta:  _/12 → _/12 (from /build-playability-review)
+Feel pass score delta:    _/14 → _/14 (from /feel-pass)
+GDD health score delta:   _/10 → _/10 (from /game-review)
+Design intent survival:   ___% of handoff acceptance criteria met
+Prototype hypothesis:     VALIDATED / INVALIDATED / INCONCLUSIVE / NOT TESTED
+Content pipeline:         ___ assets delivered / ___ planned
+Playtest sessions:        ___ conducted / ___ planned
+Player feedback items:    ___ collected → ___ acted on → ___ deferred
+```
+
+**The Game-Specific Question:** "Did we make the game MORE FUN this sprint, or just more complete?" If velocity is high but playability score didn't move, we shipped features, not experience.
+
 ## Section 2: What Went Well
 
 For each item:
@@ -93,6 +107,18 @@ Confidence: [1-10] that we'll hit the date with planned scope
 ```
 
 If confidence < 7: What scope cuts would bring it to 8+?
+
+**Game Milestone Types (each has different health criteria):**
+
+| Milestone Type | Health = | Risk Signal |
+|---------------|----------|-------------|
+| **First Playable** | Core loop works, someone played it | No playtest happened |
+| **Vertical Slice** | All systems present, 10-min session | Systems don't integrate |
+| **Alpha** | Feature complete, content placeholder OK | Features still being added |
+| **Beta** | Content complete, polish phase | Content still being created |
+| **Gold/RC** | Ship-ready, certification passed | Critical bugs still open |
+
+**Ask:** "Which milestone type is this? Are we measuring the right health criteria for this stage?"
 
 ## AUTO/ASK/ESCALATE
 

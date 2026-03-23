@@ -4,7 +4,7 @@
 
 [繁體中文](README.zh-TW.md)
 
-22 interactive AI review skills for game development. Strongest in **design review and planning** (GDD audit, economy balance, player experience simulation), with development-phase support (code review, QA, release). Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
+27 interactive AI review skills for game development — from concept to shipped build. Covers the **complete game production workflow**: design review, prototype planning, implementation handoff, game feel diagnosis, playability assessment, code review, QA, and release. Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
 
 > **What this IS:** A structured review and quality assurance system — it helps you judge, score, and improve your game design and code.
 > **What this is NOT:** A game builder or code generator — it doesn't implement features or create assets for you.
@@ -37,7 +37,7 @@ gstack is Garry Tan's AI engineering workflow for Web/SaaS. gstack-game ports th
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install gstack-game: run **`git clone <repo-url> ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /game-code-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
+> Install gstack-game: run **`git clone <repo-url> ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /skill-review, /contribute-review, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
 
 ### Option B: Add to your repo so teammates get it
 
@@ -183,9 +183,9 @@ Six commands. Concept to code review. Each step's output feeds the next.
 
 gstack-game is a process, not a collection of tools. Skills are ordered the way a game dev sprint runs:
 
-**Think → Plan → Review → Build → Test → Ship → Reflect**
+**Think → Plan → Review → Slice → Handoff → Build → Feel → Playability → Test → Ship → Reflect**
 
-Each skill feeds the next. `/game-import` converts your PDF into a GDD that `/game-review` reads. `/game-review` flags economy issues that `/balance-review` digs into. All outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
+Each skill feeds the next. `/game-import` converts your PDF into a GDD that `/game-review` reads. `/game-review` flags risks that `/prototype-slice-plan` uses to decide what to build first. `/implementation-handoff` packages the slice for coding. `/feel-pass` checks if the build feels alive. `/build-playability-review` asks "is this worth playing?" before QA. All outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
 
 | Skill | Your specialist | What they do |
 |-------|----------------|--------------|
@@ -198,7 +198,11 @@ Each skill feeds the next. `/game-import` converts your PDF into a GDD that `/ga
 | `/player-experience` | **UX Researcher** | First-person player walkthrough, 6 personas, emotion model, repeat play simulation |
 | `/game-ux-review` | **UI/UX Designer** | HUD readability, menu flow, shop UI, tutorial, controller/touch adaptation, accessibility |
 | `/pitch-review` | **Investor / Publisher Lens** | Market positioning, differentiation, feasibility, business case, Iceberg validation level |
-| `/game-code-review` | **Senior Game Programmer** | Two-pass review: frame budget, memory, state sync, serialization, adversarial pass for large diffs |
+| `/prototype-slice-plan` | **Production Strategist** | Decide what to build FIRST: which slice, what hypothesis to test, what to fake, what failure looks like |
+| `/implementation-handoff` | **Design Translator** | Convert design intent into a build package: gameplay requirements, acceptance criteria, MUST/SHOULD/COULD priority |
+| `/gameplay-implementation-review` | **Senior Game Programmer** | Three-pass review: Pass 0 (design intent survival) + Pass 1 (frame budget, memory, sync) + Pass 2 (code quality). Evolved from /game-code-review |
+| `/feel-pass` | **Game Feel Doctor** | Diagnose why a mechanic feels dead: responsiveness, impact, rhythm, clarity, payoff. 7-dimension /14 scoring. The most game-specific skill. |
+| `/build-playability-review` | **Playability Judge** | "Is this worth playing?" — loop closure, session viability, retention signal, peak moments. 6-dimension /12 scoring |
 | `/game-qa` | **QA Lead** | 8-dimension testing: functional, visual, performance, audio, input, compatibility, localization, progression. Quantified Health Score |
 | `/game-ship` | **Release Engineer** | Build → Test → Changelog → PR → platform submission (Steam/App Store/Google Play/Web) |
 | `/game-debug` | **Debug Specialist** | 3-strike hypothesis testing + root cause analysis. No guessing. |
@@ -286,13 +290,13 @@ gstack-game/
 ├── README.zh-TW.md                     ← 繁體中文版
 ├── ETHOS.md                            ← Game dev philosophy (Boil the Lake, game edition)
 ├── CHANGELOG.md                        ← Version history
-├── VERSION                             ← 0.2.0
+├── VERSION                             ← 0.3.0
 ├── package.json                        ← Build scripts
 ├── bin/                                ← 7 utilities (config, diff-scope, telemetry...)
 ├── scripts/gen-skill-docs.ts           ← Template engine
-├── skills/                             ← 21 skills + shared preamble
+├── skills/                             ← 27 skills + shared preamble (many with references/)
 ├── test/                               ← Tier 1 validation tests
-└── docs/                               ← Domain judgment docs
+└── docs/                               ← Domain judgment docs + skill writing analysis
 ```
 
 ---
@@ -323,9 +327,11 @@ gstack-game includes **opt-in** usage telemetry, disabled by default.
 ## gstack-game
 Available skills: /game-import, /game-ideation, /game-direction, /game-review,
 /game-eng-review, /balance-review, /player-experience, /game-ux-review,
-/pitch-review, /game-code-review, /game-qa, /game-ship, /game-debug,
-/game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review,
-/playtest, /careful, /guard, /unfreeze.
+/pitch-review, /prototype-slice-plan, /implementation-handoff,
+/gameplay-implementation-review, /feel-pass, /build-playability-review,
+/game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs,
+/game-visual-qa, /asset-review, /playtest, /skill-review, /contribute-review,
+/careful, /guard, /unfreeze.
 ```
 
 ---
@@ -337,6 +343,8 @@ Available skills: /game-import, /game-ideation, /game-direction, /game-review,
 | [Builder Ethos](ETHOS.md) | Game dev philosophy: Boil the Lake, Search Before Building, Player Time is Sacred |
 | [Domain Judgment Gaps](docs/domain-judgment-gaps.md) | Expert review checklist — what needs calibration |
 | [Source Quality Assessment](docs/source-quality-assessment.md) | Quality comparison of 3 reference sources |
+| [Skill Writing Patterns](docs/skill-writing-patterns.md) | How to write good skills (7+4 patterns) |
+| [Backend Gap Analysis](docs/backend-gap-analysis-nox.md) | Why back-half skills need game production work units |
 | [Changelog](CHANGELOG.md) | Version history |
 | [CLAUDE.md](CLAUDE.md) | Full technical docs and skill map |
 

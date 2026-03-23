@@ -4,7 +4,7 @@
 
 [English](README.md)
 
-22 個互動式 AI 審查技能，強項在**設計審查和企劃**（GDD 審計、經濟平衡、玩家體驗模擬），輔以開發階段支援（code review、QA、發布）。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
+27 個互動式 AI 審查技能，涵蓋**完整的遊戲製作工作流**：設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
 
 > **這是什麼：** 結構化的審查和品質保證系統——幫你判斷、評分、改善你的遊戲設計和程式碼。
 > **這不是什麼：** 不是遊戲生成器，不會幫你寫程式碼或做美術素材。
@@ -37,7 +37,7 @@ gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-ga
 
 打開 Claude Code，貼上這段。Claude 會自己完成安裝。
 
-> Install gstack-game: run **`git clone <repo-url> ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /game-code-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
+> Install gstack-game: run **`git clone <repo-url> ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /skill-review, /contribute-review, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
 
 ### 方式 B：加到專案讓隊友也能用
 
@@ -139,6 +139,11 @@ gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 spri
 | `/player-experience` | **UX 研究員** | 第一人稱玩家走查，6 種 persona，情緒模型，repeat play simulation |
 | `/game-ux-review` | **UI/UX 設計師** | HUD 可讀性、選單流程、商店 UI、教學、控制器/觸控適配、無障礙 |
 | `/pitch-review` | **投資人 / 發行商視角** | 市場定位、差異化、可行性、商業論證、冰山驗證等級 |
+| `/prototype-slice-plan` | **製作策略師** | 決定先做什麼：哪個切片、驗證什麼假設、什麼可以 fake、失敗長什麼樣 |
+| `/implementation-handoff` | **設計翻譯官** | 把設計意圖轉成 build package：玩法需求、驗收標準、MUST/SHOULD/COULD 優先級 |
+| `/gameplay-implementation-review` | **資深遊戲程式** | 三層審查：Pass 0（設計意圖存活）+ Pass 1（frame budget、記憶體、同步）+ Pass 2（程式品質）。從 /game-code-review 進化 |
+| `/feel-pass` | **遊戲手感醫生** | 診斷機制為什麼感覺死了：回應性、衝擊感、節奏、清晰度、回饋。7 維 /14 評分。最「遊戲特有」的 skill |
+| `/build-playability-review` | **可玩性裁判** | 「這值得玩嗎？」— 循環閉合、session 持續力、留存信號、高潮時刻。6 維 /12 評分 |
 | `/game-code-review` | **資深遊戲程式** | Two-Pass review：frame budget、記憶體、狀態同步、序列化、對抗性審查 |
 | `/game-qa` | **QA Lead** | 8 維度測試：功能/視覺/效能/音效/輸入/相容性/本地化/進度，量化 Health Score |
 | `/game-ship` | **發布工程師** | Build → Test → Changelog → PR → 平台提交（Steam/App Store/Google Play/Web） |

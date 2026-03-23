@@ -285,6 +285,24 @@ Use full phase weights (20/20/25/20/15) or early-phase reweight (30/35/35) per `
 
 ---
 
+## Regression Delta (if prior walkthrough exists for same persona)
+
+If a prior walkthrough artifact was found for the same persona:
+
+```
+Player Experience Delta:
+  Phase              Prior    Current  Change
+  First Contact:     _/10     _/10     +_
+  Onboarding:        _/10     _/10     +_
+  Core Session:      _/10     _/10     +_
+  Return & Depth:    _/10     _/10     +_
+  Long-term:         _/10     _/10     +_
+  WEIGHTED TOTAL:    _._/10   _._/10   +_._
+```
+
+**⚠️ If current < prior: WARN** — changes may have hurt the player experience.
+Note which friction points were resolved and which are new.
+
 ## Completion Summary
 
 ```
@@ -293,6 +311,7 @@ Use full phase weights (20/20/25/20/15) or early-phase reweight (30/35/35) per `
 Persona: [name]
 Game: [name] | Platform: [platform]
 Phases covered: [list]
+Delta from prior: [+N / first run / N/A / different persona]
 
 STATUS: [DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT]
 

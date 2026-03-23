@@ -87,16 +87,23 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ```
 
 
-## UI/UX Context Check
+## Artifact Discovery
 
 ```bash
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+echo "=== Checking for prior artifacts ==="
 GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null | head -1)
 UI_DOC=$(ls -t docs/*ui* docs/*ux* docs/*wireframe* docs/*mockup* 2>/dev/null | head -1)
-[ -n "$GDD" ] && echo "GDD found: $GDD" || echo "No GDD found"
-[ -n "$UI_DOC" ] && echo "UI doc found: $UI_DOC" || echo "No UI doc found"
+PREV_UX=$(ls -t $_PROJECTS_DIR/*-ux-review-*.md 2>/dev/null | head -1)
+PREV_GAME_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$GDD" ] && echo "GDD: $GDD"
+[ -n "$UI_DOC" ] && echo "UI doc: $UI_DOC"
+[ -n "$PREV_UX" ] && echo "Prior UX review: $PREV_UX"
+[ -n "$PREV_GAME_REVIEW" ] && echo "Prior game review: $PREV_GAME_REVIEW"
 echo "Branch: $(git branch --show-current 2>/dev/null)"
 ```
+
+If a prior UX review exists, read it. Note previous scores and findings — check if flagged issues have been addressed.
 
 ---
 
@@ -594,6 +601,39 @@ List deferred work:
 ```
 - [Issue]: Deferred because [reason]. Revisit when [condition].
 ```
+
+---
+
+## Regression Delta (if prior UX review exists)
+
+If a prior UX review artifact was found in Artifact Discovery, compare scores:
+
+```
+UX Score Delta:
+  Section               Prior    Current  Change
+  First Impression:     _/10     _/10     +_
+  HUD:                  _/10     _/10     +_
+  Menu Flow:            _/10     _/10     +_
+  Shop UI:              _/10     _/10     +_
+  Tutorial:             _/10     _/10     +_
+  Input Adaptation:     _/10     _/10     +_
+  Accessibility:        _/10     _/10     +_
+  Consistency:          _/10     _/10     +_
+  WEIGHTED TOTAL:       _._/10   _._/10   +_._
+```
+
+**⚠️ If current < prior: WARN** — a change may have introduced a UX regression.
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-ux-review-${_DATETIME}.md"
+```
+
+Write to `$_PROJECTS_DIR/{user}-{branch}-ux-review-{datetime}.md`. Supersedes prior if exists.
+
+Discoverable by: /game-ship, /game-qa, /game-retro
 
 ---
 

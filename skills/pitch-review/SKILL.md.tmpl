@@ -262,6 +262,25 @@ Recommendation thresholds:
 
 ---
 
+## Regression Delta (if prior pitch review exists)
+
+If a prior pitch review artifact was found in Artifact Discovery, compare:
+
+```
+Pitch Score Delta:
+  Section              Prior    Current  Change
+  Market Positioning:  _/10     _/10     +_
+  Differentiation:     _/10     _/10     +_
+  Feasibility:         _/10     _/10     +_
+  Business Case:       _/10     _/10     +_
+  Pitch Quality:       _/10     _/10     +_
+  WEIGHTED TOTAL:      _._/10   _._/10   +_._
+  Validation Level:    _/5      _/5      +_
+  Recommendation:      [old] →  [new]
+```
+
+**⚠️ If current < prior: WARN** — something degraded since last pitch review.
+
 ## Save Artifact
 
 ```bash

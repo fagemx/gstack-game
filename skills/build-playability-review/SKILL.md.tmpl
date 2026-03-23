@@ -152,6 +152,25 @@ This is the most important output for the team. The score tells you how good the
 - **Hypothesis first.** If a slice plan exists, the #1 question is "was the hypothesis tested?" not "is the build good?"
 - **Minute-by-minute.** Always produce a session timeline. Abstract judgments without timeline evidence are not useful.
 
+## Regression Delta (if prior playability review exists)
+
+If a prior playability artifact was found in Artifact Discovery, compare:
+
+```
+Playability Delta:
+  Dimension          Prior    Current  Change
+  Loop Closure:      _/2      _/2      +_
+  Session Viability: _/2      _/2      +_
+  Onboarding:        _/2      _/2      +_
+  Failure Recovery:  _/2      _/2      +_
+  Retention Signal:  _/2      _/2      +_
+  Peak Moment:       _/2      _/2      +_
+  TOTAL:             _/12     _/12     +_
+  Verdict:           [old] →  [new]
+```
+
+**⚠️ If current < prior: WARN** — the build may have regressed.
+
 ## Completion Summary
 
 ```
@@ -160,6 +179,7 @@ This is the most important output for the team. The score tells you how good the
 Game: [name]
 Build: [version]
 Score: _/12 — [PLAY-READY / ALMOST / NOT YET / TECH DEMO]
+Delta from prior: [+N / first run / N/A]
 Hypothesis: [VALIDATED / INVALIDATED / INCONCLUSIVE]
 
 Top blocker: [one thing]

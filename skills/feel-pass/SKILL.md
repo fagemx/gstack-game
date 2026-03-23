@@ -1,6 +1,6 @@
 ---
 name: feel-pass
-description: "Use when a prototype or playable build exists and you need to know if a mechanic feels alive or dead — responsiveness, impact, rhythm, feedback chains, dead time. Not for GDD review (use /game-review), not for code review (use /game-code-review), not for bug hunting (use /game-debug). Requires a playable build or detailed video of gameplay."
+description: "Use when a prototype or playable build exists and you need to know if a mechanic feels alive or dead — responsiveness, impact, rhythm, feedback chains, dead time. Not for GDD review (use /game-review), not for code review (use /gameplay-implementation-review), not for bug hunting (use /game-debug). Requires a playable build or detailed video of gameplay."
 user_invocable: true
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
@@ -9,7 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.2.0"
+_GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
 for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do

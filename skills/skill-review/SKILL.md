@@ -1,6 +1,6 @@
 ---
 name: skill-review
-description: "Use when you need to assess the quality of a gstack-game skill, decide which skill to improve next, or refactor a skill for progressive disclosure. Run on a single skill or scan all skills. Not for reviewing game designs (use /game-review) or code (use /game-code-review)."
+description: "Use when you need to assess the quality of a gstack-game skill, decide which skill to improve next, or refactor a skill for progressive disclosure. Run on a single skill or scan all skills. Not for reviewing game designs (use /game-review) or code (use /gameplay-implementation-review)."
 user_invocable: true
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
@@ -9,7 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.2.0"
+_GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
 for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do

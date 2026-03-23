@@ -48,7 +48,7 @@ cd gstack-game
 | **遊戲設計師** | `skills/game-review/references/` — core-loop.md, progression.md, motivation.md, gotchas.md |
 | **UX 研究員** | `skills/player-experience/references/` — personas.md, emotion-vocabulary.md, walkthrough-phases.md |
 | **行銷 / 發行** | `skills/pitch-review/references/` — market-positioning.md, business-case.md, gotchas.md |
-| **遊戲程式** | `skills/game-code-review/SKILL.md.tmpl`, `skills/game-eng-review/SKILL.md.tmpl` |
+| **遊戲程式** | `skills/gameplay-implementation-review/SKILL.md.tmpl`, `skills/game-eng-review/SKILL.md.tmpl` |
 | **QA 主管** | `skills/game-qa/SKILL.md.tmpl` |
 
 #### 改完後
@@ -71,8 +71,8 @@ bun test         # 確認沒壞
 
 先讀這些文件理解架構：
 - `CLAUDE.md` — 開發者手冊
-- `docs/skill-writing-patterns.md` — 7+4 個寫作模式
-- `docs/skill-writing-doctrine-nox.md` — 8 個核心原則
+- `docs/DEVELOPMENT.md` — 完整專案概覽、skill map、migration guide
+- `skills/skill-review/references/rubric.md` — 15 維度品質評分標準
 - `skills/skill-review/references/refactor-patterns.md` — 重構方法
 
 關鍵規則：
@@ -171,7 +171,7 @@ bun test         # 確認沒壞
 |-------|---------|--------|
 | `/balance-review` | 放置類 / idle 遊戲的經濟模型適配 | 做過放置類遊戲的數值策劃 |
 | `/game-review` | GDD 權重在不同遊戲類型之間的校準 | 審過 10+ 份 GDD 的設計師 |
-| `/game-code-review` | Unity / Godot / Unreal 各自的 hot path 陷阱 | 有 profiling 經驗的遊戲程式 |
+| `/gameplay-implementation-review` | Unity / Godot / Unreal 各自的 hot path 陷阱 | 有 profiling 經驗的遊戲程式 |
 | `/pitch-review` | 2026 年的 LTV/CPI/UA benchmark | 有 Sensor Tower 或 data.ai 使用經驗的發行 |
 
 ### 🟡 重要（有內容但需要加深）

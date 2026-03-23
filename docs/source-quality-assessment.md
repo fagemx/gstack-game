@@ -68,7 +68,7 @@ gstack 是 meta-skill system，品質體現在：
 
 | 素材 | 品質 | 用途 |
 |------|------|------|
-| Path-scoped rules（11 個） | ⭐⭐⭐⭐ | /game-code-review 的審查維度參考 |
+| Path-scoped rules（11 個） | ⭐⭐⭐⭐ | /gameplay-implementation-review 的審查維度參考 |
 | Team orchestration skills | ⭐⭐⭐⭐ | 多 agent 並行模式參考 |
 | Scope Cut Prioritization | ⭐⭐⭐⭐ | /game-direction 的 scope 決策框架 |
 | Creative Director Decision Framework | ⭐⭐⭐⭐ | /game-direction 的認知模式參考 |
@@ -207,7 +207,7 @@ gstack 是 meta-skill system，品質體現在：
 | Skill | gstack 取 | Game Studios 取 | Guardian 取 |
 |-------|----------|----------------|-------------|
 | `/game-eng-review` | /plan-eng-review 結構 | Path-scoped rules（gameplay/engine/ai/network） | — |
-| `/game-code-review` | /review 的 Two-Pass + AUTO/ASK/ESCALATE | Frame budget / allocation / serialization 審查點 | — |
+| `/gameplay-implementation-review` | /review 的 Two-Pass + AUTO/ASK/ESCALATE | Frame budget / allocation / serialization 審查點 | — |
 | `/game-ship` | /ship 的完整流程 | Release checklist template | — |
 
 ### Wave 3

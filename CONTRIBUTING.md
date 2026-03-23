@@ -48,7 +48,7 @@ cd gstack-game
 | **Game Designer** | `skills/game-review/references/` — core-loop.md, progression.md, motivation.md, gotchas.md |
 | **UX Researcher** | `skills/player-experience/references/` — personas.md, emotion-vocabulary.md, walkthrough-phases.md |
 | **Marketing / Publishing** | `skills/pitch-review/references/` — market-positioning.md, business-case.md, gotchas.md |
-| **Game Programmer** | `skills/game-code-review/SKILL.md.tmpl`, `skills/game-eng-review/SKILL.md.tmpl` |
+| **Game Programmer** | `skills/gameplay-implementation-review/SKILL.md.tmpl`, `skills/game-eng-review/SKILL.md.tmpl` |
 | **QA Lead** | `skills/game-qa/SKILL.md.tmpl` |
 
 #### After Editing
@@ -71,8 +71,8 @@ Submit a PR:
 
 Read these first:
 - `CLAUDE.md` — developer handbook
-- `docs/skill-writing-patterns.md` — 7+4 writing patterns
-- `docs/skill-writing-doctrine-nox.md` — 8 core principles
+- `docs/DEVELOPMENT.md` — full project overview, skill map, migration guide
+- `skills/skill-review/references/rubric.md` — 15-dimension quality rubric
 - `skills/skill-review/references/refactor-patterns.md` — refactoring method
 
 Key rules:
@@ -172,7 +172,7 @@ Submit PR with playtest data source.
 |-------|--------------|-------------|
 | `/balance-review` | Idle/incremental game economy model adaptation | Economy designer who shipped idle games |
 | `/game-review` | GDD weight calibration across game types | Designer who has reviewed 10+ GDDs |
-| `/game-code-review` | Unity / Godot / Unreal hot-path pitfalls | Game programmer with profiling experience |
+| `/gameplay-implementation-review` | Unity / Godot / Unreal hot-path pitfalls | Game programmer with profiling experience |
 | `/pitch-review` | 2026 LTV/CPI/UA benchmarks | Publisher with Sensor Tower or data.ai access |
 
 ### 🟡 Important (content exists but needs depth)

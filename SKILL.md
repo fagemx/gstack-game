@@ -15,7 +15,7 @@ description: |
   - Simulating player experience → suggest /player-experience
   - Reviewing game UI/UX → suggest /game-ux-review
   - Evaluating a game pitch or proposal → suggest /pitch-review
-  - Code review on a game project → suggest /game-code-review
+  - Code review on a game project → suggest /gameplay-implementation-review
   - QA testing a game → suggest /game-qa
   - Ready to ship / create PR for a game → suggest /game-ship
   - Debugging a game bug → suggest /game-debug
@@ -202,7 +202,7 @@ Escalation: 3 failed attempts → STOP. Security/balance uncertainty → STOP. B
 | "What does the player experience?" | `/player-experience` |
 | "Is the UI good?" | `/game-ux-review` |
 | "Will this pitch work?" | `/pitch-review` |
-| "Review this PR/code" | `/game-code-review` |
+| "Review this PR/code" | `/gameplay-implementation-review` |
 | "Test this build" | `/game-qa` |
 | "Ship this" | `/game-ship` |
 | "Why is this broken?" | `/game-debug` |

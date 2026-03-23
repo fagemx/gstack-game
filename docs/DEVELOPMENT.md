@@ -41,7 +41,7 @@ These skills exist in gstack for web/SaaS. gstack-game forks and rewrites them w
 | `/plan-ceo-review` | `/game-direction` | 遊戲方向審查。市場定位、IP 策略、平台選擇、競品分析。用 DAU/MAU/ARPDAU 取代 MRR/churn。 | ✅ (391L, 55%) |
 | `/plan-eng-review` | `/game-eng-review` | 遊戲技術架構。引擎選型、網路架構、資料同步、物理引擎、渲染管線。保留 gstack 的互動式 4-section 結構。 | ✅ (481L, 60%) |
 | `/plan-design-review` | `/game-ux-review` | 遊戲 UI/UX 審查。HUD、選單流程、商店介面、新手引導 UI、控制器/觸控適配。 | ✅ (525L, 60%) |
-| `/review` | `/game-code-review` | PR code review（遊戲語境）。檢查 frame budget、記憶體分配模式、序列化、狀態同步。 | ✅ (361L, 75%) |
+| `/review` | `/gameplay-implementation-review` | PR code review（遊戲語境）。檢查 frame budget、記憶體分配模式、序列化、狀態同步。 | ✅ (361L, 75%) |
 | `/investigate` | `/game-debug` | 遊戲 debug。分析 crash dump、效能瓶頸、物理穿透、網路延遲。 | 🔨 (115L, 40%) |
 | `/ship` | `/game-ship` | 遊戲發布流程。build → test → changelog → PR → deploy。含平台特定步驟（Steam/App Store/Google Play）。 | ✅ (448L, 65%) |
 | `/qa` | `/game-qa` | 遊戲 QA。分 functional（功能）、visual（視覺）、performance（效能）、compatibility（相容性）四類。Web 遊戲用 /browse，原生遊戲用 checklist。 | ✅ (536L, 65%) |
@@ -60,7 +60,7 @@ These skills exist in gstack for web/SaaS. gstack-game forks and rewrites them w
 /balance-review  ←  /player-experience  ←  /game-ux-review
   數值平衡            玩家體驗走查           UI/UX 審查
       ↓
-/playtest        →  實作  →  /game-code-review  →  /game-qa  →  /game-ship
+/playtest        →  實作  →  /gameplay-implementation-review  →  /game-qa  →  /game-ship
   測試協議          寫 code      PR review            QA           發布
       ↓
 /game-retro  ←  /game-visual-qa  ←  /asset-review
@@ -77,7 +77,7 @@ These skills exist in gstack for web/SaaS. gstack-game forks and rewrites them w
 
 ### Wave 2: Engineering workflow
 5. `/game-eng-review` — 技術架構（從 /plan-eng-review 遷移改寫）
-6. `/game-code-review` — PR review（從 /review 遷移改寫）
+6. `/gameplay-implementation-review` — PR review（從 /review 遷移改寫）
 7. `/game-ship` — 發布流程（從 /ship 遷移改寫）
 
 ### Wave 3: Quality & polish
@@ -168,8 +168,7 @@ bun scripts/gen-skill-docs.ts --dry-run # check for drift
 ### File structure
 ```
 gstack-game/
-├── CLAUDE.md                       ← this file
-├── gstack-compat.json              ← records gstack fork source version
+├── CLAUDE.md                       ← dev handoff
 ├── bin/
 │   ├── install.sh
 │   ├── gstack-config               ← config read/write (forked)

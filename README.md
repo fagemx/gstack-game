@@ -162,7 +162,7 @@ Claude: Persona: Casual Newcomer (3-min commute session)
         EMOTION ARC: Curious → Excited → Bored
         Issue: 1:30 dead time will kill D1 retention
 
-You:    /game-code-review
+You:    /gameplay-implementation-review
 Claude: Diff: 847 LOC, 12 files
         [Pass 1 — Critical]
         🔴 DungeonManager.Update() — new List<>() every frame, GC pressure

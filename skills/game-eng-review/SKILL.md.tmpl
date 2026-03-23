@@ -46,7 +46,7 @@ If a prior eng review exists, read it. Note previous Architecture Health Score a
 
 Review a game's technical architecture interactively. Work through each section one issue at a time via AskUserQuestion. Every recommendation includes WHY and a concrete alternative. No vague praise — specific critique with actionable fixes.
 
-This skill reviews architecture DECISIONS, not code. For code review, use `/game-code-review`.
+This skill reviews architecture DECISIONS, not code. For code review, use `/gameplay-implementation-review`.
 
 ## Anti-Sycophancy Protocol
 
@@ -556,7 +556,7 @@ For each identified tech debt item:
 
 ## Important Rules
 
-- **Architecture, not code.** This skill reviews DECISIONS (engine choice, network model, save strategy), not code quality. Code review is `/game-code-review`.
+- **Architecture, not code.** This skill reviews DECISIONS (engine choice, network model, save strategy), not code quality. Code review is `/gameplay-implementation-review`.
 - **Section transitions are mandatory.** After each section: score + key finding + ask before continuing.
 - **Smart routing is mandatory.** Not every game needs 8 sections. Skip networking for single-player. Skip asset pipeline for prototypes. Confirm the routing with the user.
 - **Forcing questions: ONE AT A TIME with push patterns.** For sections not explicitly rewritten above, follow the same pattern: Ask → Push until you hear a specific answer → Red flag vague responses → STOP.
@@ -577,7 +577,7 @@ echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-eng-review-${_DATETIME}.md"
 Write the Architecture Health Score + Completion Summary + Technical Debt Register to `$_PROJECTS_DIR/{user}-{branch}-eng-review-{datetime}.md`. If a prior eng review exists, include `Supersedes: {prior filename}` at the top.
 
 This artifact is discoverable by:
-- `/game-code-review` — reads architecture decisions for code-level validation
+- `/gameplay-implementation-review` — reads architecture decisions for code-level validation
 - `/game-direction` — reads technical risk assessment and scope constraints
 - `/game-ship` — checks eng review status as a release gate
 - `/game-qa` — reads performance targets and platform requirements

@@ -104,7 +104,7 @@ Claude: Persona: Casual Newcomer（通勤 3 分鐘）
         EMOTION ARC: 好奇 → 興奮 → 無聊
         問題：1:30 的空窗期會殺死 D1 retention
 
-你：    /game-code-review
+你：    /gameplay-implementation-review
 Claude: Diff: 847 LOC, 12 files
         [Pass 1 - Critical]
         🔴 DungeonManager.Update() — 每幀 new List<>()，GC 壓力
@@ -127,7 +127,7 @@ gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 spri
 
 **想 → 規劃 → 審查 → 做 → 測試 → 發布 → 回顧**
 
-每個 skill 的產出餵給下一個。`/game-ideation` 產出概念文件，`/game-review` 讀它來審查。`/game-code-review` 發現的問題，`/game-ship` 會確認已修。
+每個 skill 的產出餵給下一個。`/game-ideation` 產出概念文件，`/game-review` 讀它來審查。`/gameplay-implementation-review` 發現的問題，`/game-ship` 會確認已修。
 
 | Skill | 你的專家 | 做什麼 |
 |-------|---------|--------|
@@ -141,10 +141,10 @@ gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 spri
 | `/pitch-review` | **投資人 / 發行商視角** | 市場定位、差異化、可行性、商業論證、冰山驗證等級 |
 | `/prototype-slice-plan` | **製作策略師** | 決定先做什麼：哪個切片、驗證什麼假設、什麼可以 fake、失敗長什麼樣 |
 | `/implementation-handoff` | **設計翻譯官** | 把設計意圖轉成 build package：玩法需求、驗收標準、MUST/SHOULD/COULD 優先級 |
-| `/gameplay-implementation-review` | **資深遊戲程式** | 三層審查：Pass 0（設計意圖存活）+ Pass 1（frame budget、記憶體、同步）+ Pass 2（程式品質）。從 /game-code-review 進化 |
+| `/gameplay-implementation-review` | **資深遊戲程式** | 三層審查：Pass 0（設計意圖存活）+ Pass 1（frame budget、記憶體、同步）+ Pass 2（程式品質）。從 /gameplay-implementation-review 進化 |
 | `/feel-pass` | **遊戲手感醫生** | 診斷機制為什麼感覺死了：回應性、衝擊感、節奏、清晰度、回饋。7 維 /14 評分。最「遊戲特有」的 skill |
 | `/build-playability-review` | **可玩性裁判** | 「這值得玩嗎？」— 循環閉合、session 持續力、留存信號、高潮時刻。6 維 /12 評分 |
-| `/game-code-review` | **資深遊戲程式** | Two-Pass review：frame budget、記憶體、狀態同步、序列化、對抗性審查 |
+| `/gameplay-implementation-review` | **資深遊戲程式** | Two-Pass review：frame budget、記憶體、狀態同步、序列化、對抗性審查 |
 | `/game-qa` | **QA Lead** | 8 維度測試：功能/視覺/效能/音效/輸入/相容性/本地化/進度，量化 Health Score |
 | `/game-ship` | **發布工程師** | Build → Test → Changelog → PR → 平台提交（Steam/App Store/Google Play/Web） |
 | `/game-debug` | **Debug 專家** | 3-strike 假設測試 + 根因分析，不猜答案 |
@@ -251,7 +251,7 @@ gstack-game 包含 **opt-in** 的使用統計，預設關閉。
 ## gstack-game
 Available skills: /game-import, /game-ideation, /game-direction, /game-review,
 /game-eng-review, /balance-review, /player-experience, /game-ux-review,
-/pitch-review, /game-code-review, /game-qa, /game-ship, /game-debug,
+/pitch-review, /gameplay-implementation-review, /game-qa, /game-ship, /game-debug,
 /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review,
 /playtest, /careful, /guard, /unfreeze.
 ```

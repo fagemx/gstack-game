@@ -1,6 +1,6 @@
 ---
 name: build-playability-review
-description: "Use when a prototype or build exists and you need to know: is this worth playing? Not QA (use /game-qa for bugs), not feel (use /feel-pass for responsiveness), not code (use /game-code-review). This evaluates the EXPERIENCE: does the loop close, does the session hold, does the player want to come back."
+description: "Use when a prototype or build exists and you need to know: is this worth playing? Not QA (use /game-qa for bugs), not feel (use /feel-pass for responsiveness), not code (use /gameplay-implementation-review). This evaluates the EXPERIENCE: does the loop close, does the session hold, does the player want to come back."
 user_invocable: true
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
@@ -9,7 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.2.0"
+_GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
 for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do

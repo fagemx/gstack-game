@@ -9,7 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.2.0"
+_GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
 for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
@@ -105,7 +105,7 @@ echo "Branch: $(git branch --show-current 2>/dev/null)"
 
 Structured QA testing across 8 categories. Each category is scored independently and combined into a weighted QA Health Score. Every bug is classified by severity and category before counting.
 
-This skill tests the BUILT game, not design documents. For design review, use `/game-review`. For code review, use `/game-code-review`.
+This skill tests the BUILT game, not design documents. For design review, use `/game-review`. For code review, use `/gameplay-implementation-review`.
 
 ## Anti-Sycophancy Protocol
 

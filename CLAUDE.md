@@ -27,9 +27,8 @@ gstack-game/
 ├── README.zh-TW.md             ← user-facing docs (繁中)
 ├── ETHOS.md                     ← game dev philosophy
 ├── CHANGELOG.md                 ← version history (user-facing)
-├── VERSION                      ← current version (0.2.0)
+├── VERSION                      ← current version (0.3.0)
 ├── package.json                 ← build scripts
-├── gstack-compat.json           ← gstack fork source version record
 ├── bin/                         ← shared utilities
 │   ├── install.sh               ← umbrella installer
 │   ├── gstack-config            ← config read/write
@@ -46,7 +45,7 @@ gstack-game/
 │   ├── balance-review/          ← economy & balance (625L, 70%)
 │   ├── player-experience/       ← player walkthrough (443L, 75%)
 │   ├── pitch-review/            ← pitch evaluation (575L, 70%)
-│   ├── game-code-review/        ← PR review (361L, 75%)
+│   ├── gameplay-implementation-review/        ← PR review (361L, 75%)
 │   ├── game-ideation/           ← concept brainstorming (344L, 65%)
 │   ├── game-direction/          ← direction review (391L, 55%)
 │   ├── game-eng-review/         ← tech architecture (481L, 60%)

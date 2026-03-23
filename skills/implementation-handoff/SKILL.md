@@ -1,6 +1,6 @@
 ---
 name: implementation-handoff
-description: "Use when a prototype slice plan exists and you need to translate design intent into a build package that a coding agent or developer can execute. Not for deciding what to build (use /prototype-slice-plan), not for reviewing built code (use /game-code-review), not for evaluating architecture (use /game-eng-review)."
+description: "Use when a prototype slice plan exists and you need to translate design intent into a build package that a coding agent or developer can execute. Not for deciding what to build (use /prototype-slice-plan), not for reviewing built code (use /gameplay-implementation-review), not for evaluating architecture (use /game-eng-review)."
 user_invocable: true
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
@@ -9,7 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.2.0"
+_GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
 for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do

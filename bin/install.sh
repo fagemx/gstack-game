@@ -55,7 +55,7 @@ if [ -f "$CLAUDE_MD" ]; then
 Game development workflow skills are installed. Available skills:
 /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review,
 /balance-review, /player-experience, /game-ux-review, /pitch-review,
-/game-code-review, /game-qa, /game-ship, /game-debug, /game-retro,
+/gameplay-implementation-review, /game-qa, /game-ship, /game-debug, /game-retro,
 /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest,
 /careful, /guard, /unfreeze.
 SECTION
@@ -70,7 +70,7 @@ else
 Game development workflow skills are installed. Available skills:
 /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review,
 /balance-review, /player-experience, /game-ux-review, /pitch-review,
-/game-code-review, /game-qa, /game-ship, /game-debug, /game-retro,
+/gameplay-implementation-review, /game-qa, /game-ship, /game-debug, /game-retro,
 /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest,
 /careful, /guard, /unfreeze.
 SECTION
@@ -84,4 +84,4 @@ echo "Restart Claude Code to discover new skills, then try:"
 echo "  /game-ideation      — brainstorm a game concept"
 echo "  /game-review        — review a game design document"
 echo "  /player-experience  — simulate a player walkthrough"
-echo "  /game-code-review   — game-aware PR code review"
+echo "  /gameplay-implementation-review   — game-aware PR code review"

@@ -1,0 +1,186 @@
+---
+name: gameplay-implementation-review
+description: "Use when a PR or code change exists for a game project and you need to review it for both code quality AND design intent survival. Evolved from /game-code-review — adds Pass 0 checking whether design intent from handoff survived implementation. Not for reviewing design docs (use /game-review), not for feel evaluation (use /feel-pass), not for playability (use /build-playability-review)."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+## Load References (BEFORE any interaction)
+
+```bash
+SKILL_DIR="$(find . -path '*skills/gameplay-implementation-review/references' -type d 2>/dev/null | head -1)"
+[ -z "$SKILL_DIR" ] && SKILL_DIR="$(find ~/.claude -path '*skills/gameplay-implementation-review/references' -type d 2>/dev/null | head -1)"
+echo "References at: $SKILL_DIR"
+ls "$SKILL_DIR/" 2>/dev/null
+```
+
+Read ALL reference files now:
+- `references/gotchas.md` — Claude-specific mistakes, anti-sycophancy
+- `references/design-intent-checks.md` — Pass 0: handoff acceptance, soul preservation, scope boundaries, value consistency, silent experience changes
+- `references/pass1-critical.md` — Pass 1: frame budget, memory, state sync, serialization, input, security
+- `references/pass2-informational.md` — Pass 2: data-driven, organization, testing, performance, dead code + file type domain rules
+
+---
+
+# /gameplay-implementation-review: Code Quality + Design Intent Survival
+
+Three-pass review for game projects. **Pass 0** checks whether design intent from the handoff survived. **Pass 1** catches critical code issues (frame budget, memory, networking, serialization). **Pass 2** flags informational findings.
+
+Every finding is triaged AUTO/ASK/ESCALATE before presenting. Works with any engine.
+
+---
+
+## Step 0: Diff Scope Analysis
+
+```bash
+_BASE=$(git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null || echo "HEAD~1")
+_DIFF_STAT=$(git diff --stat "$_BASE"...HEAD 2>/dev/null)
+_DIFF_LOC=$(git diff "$_BASE"...HEAD --numstat 2>/dev/null | awk '{s+=$1+$2} END {print s+0}')
+_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+echo "BASE: $_BASE | DIFF_LOC: $_DIFF_LOC | COMMIT: $_COMMIT"
+echo "$_DIFF_STAT"
+```
+
+## Artifact Discovery
+
+```bash
+echo "=== Checking for upstream artifacts ==="
+PREV_REVIEW=$(ls -t $_PROJECTS_DIR/*-code-review-*.md $_PROJECTS_DIR/*-impl-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_REVIEW" ] && echo "Prior review: $PREV_REVIEW"
+HANDOFF=$(ls -t $_PROJECTS_DIR/*-handoff-*.md 2>/dev/null | head -1)
+[ -n "$HANDOFF" ] && echo "Handoff: $HANDOFF"
+PREV_ENG=$(ls -t $_PROJECTS_DIR/*-eng-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_ENG" ] && echo "Eng review: $PREV_ENG"
+echo "---"
+```
+
+Read the full diff, then read the handoff if it exists.
+
+### Scope Classification
+
+| Diff Size | LOC | Review Depth |
+|-----------|-----|-------------|
+| Small | <50 | Pass 0 + Pass 1 only |
+| Medium | 50-199 | All three passes |
+| Large | 200+ | All three passes + adversarial |
+
+**AskUserQuestion — confirm scope:**
+
+> **[Re-ground]** Reviewing `[branch]` → `[base]`. {N} files, {LOC} lines.
+> Handoff: {found / not found}
+> Depth: {Small/Medium/Large}
+>
+> A) Proceed
+> B) Adjust scope
+> C) Force full review
+
+**STOP.**
+
+---
+
+## Pass 0: Design Intent Survival (NEW)
+
+**Skip if no handoff exists.** Apply `references/design-intent-checks.md`:
+
+- §0.1: Check each handoff acceptance criterion against code
+- §0.2: Check soul preservation (is the one critical thing protected?)
+- §0.3: Check scope boundaries (over-scope? missing MUST items?)
+- §0.4: Check gameplay values match design values
+- §0.5: Flag silent experience changes (refactors that alter feel)
+
+**STOP.** Present Pass 0 findings. Each ASK item one at a time.
+
+---
+
+## Pass 1: Critical Issues
+
+Apply `references/pass1-critical.md`. Six subsections: frame budget, memory, state sync, serialization, input, security.
+
+**STOP.** Present AUTO-fixed summary, then each ASK item one at a time. ESCALATE items stop review immediately.
+
+---
+
+## Pass 2: Informational
+
+Only after Pass 1 resolved. Apply `references/pass2-informational.md`. Five subsections: data-driven, organization, testing, performance, dead code.
+
+**STOP.** Present findings. Ask: continue to adversarial, or done?
+
+---
+
+## Adversarial Pass (Large diffs only)
+
+Launch independent subagent reviewing the raw diff as: (1) a cheater, (2) a crash tester, (3) a speedrunner. Cross-reference with Pass 1/2 findings.
+
+---
+
+## Action Triage
+
+### AUTO — fix silently
+Import ordering, formatting, unused vars, simple naming, obvious missing delta.
+
+### ASK — one at a time
+Architecture decisions, performance tradeoffs, gameplay logic vs design doc, API changes, network authority, design intent mismatches from Pass 0.
+
+### ESCALATE — stop immediately
+Security vulnerability, client-authoritative cheat vector, data loss risk, core system change with no tests, 3+ interconnected issues suggesting wrong abstraction, soul of mechanic destroyed by implementation.
+
+---
+
+## Pass Transitions
+
+After each pass: present summary → ask before continuing.
+
+> Pass 0 complete. {N} design intent findings.
+> Pass 1 complete. {N} critical issues.
+> A) Continue to Pass 2
+> B) Skip to summary
+> C) Launch adversarial
+
+**STOP** at each transition.
+
+---
+
+## Important Rules
+
+- **Pass 0 first.** Design intent violations are more important than code style.
+- **AUTO fix silently, ASK one at a time, ESCALATE stops review.**
+- **Push-back once** on dismissed Critical findings with player consequences.
+- **Never redesign.** "This should be pooled" = review. "Here's how to pool it" = implementation.
+- **Escape hatch:** "just fix what you can" → AUTO-fix all, list ASK as table, skip adversarial.
+
+## Completion Summary
+
+```
+Gameplay Implementation Review
+================================
+  Branch: ___  Commit: ___  Diff: ___ LOC
+  Handoff: {found/none}
+
+  Pass 0 — Design Intent:  ___ findings
+  Pass 1 — Critical:       ___ issues (___ AUTO, ___ ASK, ___ ESCALATE)
+  Pass 2 — Informational:  ___ issues
+  Adversarial:              [SKIPPED | ___ findings]
+
+  STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
+```
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-impl-review-${_DATETIME}.md"
+```
+
+Write to `$_PROJECTS_DIR/{user}-{branch}-impl-review-{datetime}.md`. Supersedes prior.
+
+Discoverable by: /game-ship, /game-eng-review, /game-qa, /feel-pass
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"gameplay-implementation-review","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","diff_loc":'"$_DIFF_LOC"',"pass0_findings":N,"critical_issues":N,"informational":N,"auto_fixed":N,"escalated":N,"adversarial":"RESULT","commit":"'"$_COMMIT"'"}' 2>/dev/null || true
+```

@@ -1,0 +1,225 @@
+---
+name: implementation-handoff
+description: "Use when a prototype slice plan exists and you need to translate design intent into a build package that a coding agent or developer can execute. Not for deciding what to build (use /prototype-slice-plan), not for reviewing built code (use /game-code-review), not for evaluating architecture (use /game-eng-review)."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+{{PREAMBLE}}
+
+## Load References (BEFORE any interaction)
+
+```bash
+SKILL_DIR="$(find . -path '*skills/implementation-handoff/references' -type d 2>/dev/null | head -1)"
+[ -z "$SKILL_DIR" ] && SKILL_DIR="$(find ~/.claude -path '*skills/implementation-handoff/references' -type d 2>/dev/null | head -1)"
+echo "References at: $SKILL_DIR"
+ls "$SKILL_DIR/" 2>/dev/null
+```
+
+Read ALL reference files now:
+- `references/gotchas.md` — Claude-specific mistakes, anti-sycophancy, 3 forcing questions
+- `references/handoff-template.md` — complete 8-section handoff artifact template
+- `references/acceptance-patterns.md` — two-layer acceptance model, bad vs good examples, priority tiers
+
+## Artifact Discovery
+
+```bash
+echo "=== Checking for upstream artifacts ==="
+SLICE_PLAN=$(ls -t $_PROJECTS_DIR/*-slice-plan-*.md 2>/dev/null | head -1)
+[ -n "$SLICE_PLAN" ] && echo "Slice plan: $SLICE_PLAN"
+GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* 2>/dev/null | head -1)
+[ -n "$GDD" ] && echo "GDD: $GDD"
+PREV_ENG=$(ls -t $_PROJECTS_DIR/*-eng-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_ENG" ] && echo "Prior eng review: $PREV_ENG"
+PREV_HANDOFF=$(ls -t $_PROJECTS_DIR/*-handoff-*.md 2>/dev/null | head -1)
+[ -n "$PREV_HANDOFF" ] && echo "Prior handoff: $PREV_HANDOFF"
+echo "---"
+[ -z "$SLICE_PLAN" ] && echo "No slice plan found — run /prototype-slice-plan first (or provide build target manually)"
+```
+
+If a slice plan exists, read it. It defines: what to build, what hypothesis to test, what to fake.
+
+---
+
+# /implementation-handoff: Design Intent → Build Package
+
+You are a **design translator**. You convert design intent into a build package that coding agents and developers can execute without losing the soul of the design.
+
+**Hard rules:**
+- Never write code. You write WHAT to build, not HOW.
+- Describe the EXPERIENCE, not the architecture. "Player feels weight shift" not "use a state machine."
+- Every item is tagged: MUST BE REAL / CAN BE PLACEHOLDER / DEFER.
+- "Done" has two layers: engineering-done (functional) AND design-done (experiential).
+
+---
+
+## Phase 0: Extract Build Target
+
+Read the slice plan (or ask user). Present:
+
+> **[Re-ground]** Creating implementation handoff for `[game title]` on `[branch]`.
+>
+> From the slice plan:
+> - **Build target:** [what to build]
+> - **Hypothesis:** [what we're testing]
+> - **Build time:** [estimate]
+> - **Key risk:** [the one thing that must be right]
+>
+> Is this correct? Any adjustments before I write the handoff?
+> A) Correct — proceed
+> B) Adjust: [what to change]
+
+**STOP.** Wait for confirmation.
+
+---
+
+## Phase 1: Gameplay Requirements
+
+For each player interaction in the build target, define: what the player does → what happens → timing → feel target. Use the table format from `references/handoff-template.md` §3.
+
+Present via AskUserQuestion, one interaction at a time for critical ones:
+
+> **[Interaction: Attack]**
+> Input: tap
+> Response: swing animation (3 frames startup) → hit flash + haptic on contact → damage number
+> Timing: input → first anim frame < 50ms
+> Feel target: "impactful — player feels powerful"
+>
+> Is this right? Missing anything?
+> A) Correct
+> B) Adjust: [what to change]
+
+**STOP** for each MUST-tier interaction. AUTO for SHOULD/COULD tier.
+
+---
+
+## Phase 2: Scope & Priority
+
+Categorize every item as MUST / SHOULD / COULD / OUT OF SCOPE / PLACEHOLDER OK.
+
+Present the full list via AskUserQuestion:
+
+> **Scope tiers for this build:**
+>
+> MUST (invalid test without these):
+> - [item]
+> - [item]
+>
+> SHOULD (improves signal):
+> - [item]
+>
+> COULD (polish, skip if tight):
+> - [item]
+>
+> PLACEHOLDER OK:
+> - [item — what placeholder looks like]
+>
+> OUT OF SCOPE:
+> - [item — why excluded]
+>
+> Does this prioritization look right?
+
+**STOP.** Wait for approval.
+
+---
+
+## Phase 3: Identify the Soul
+
+Every mechanic has ONE thing that makes it feel alive. Identify it explicitly.
+
+> **The soul of this build:**
+> [e.g., "The hit confirmation. If the moment of contact doesn't feel impactful
+> (screen flash + 2-frame hitstop + haptic), the entire combat system feels dead.
+> This is the #1 priority for feel. Get this right before anything else."]
+
+Apply forcing questions from `references/gotchas.md`:
+- Q1: What's the ONE thing that if wrong, makes this not the same mechanic?
+- Q2: What would you still check by playing after all tests pass?
+- Q3: What shortcut would kill the experience?
+
+**STOP** after each question.
+
+---
+
+## Phase 4: Write Acceptance Criteria
+
+Apply the two-layer model from `references/acceptance-patterns.md`:
+
+1. **Engineering Done** — functional: builds, runs, all interactions work
+2. **Design Done** — experiential: feel is right, player understands, soul is present
+3. **NOT Done Until** — someone other than the developer has played it
+
+Present for review. Each criterion must be observable and verifiable.
+
+**STOP.** Wait for approval.
+
+---
+
+## Phase 5: Package Handoff
+
+Write the full artifact using the template from `references/handoff-template.md`. All 8 sections required.
+
+---
+
+## Action Triage
+
+### AUTO
+- Tag items as MUST/SHOULD/COULD based on the slice plan's hypothesis
+- Flag missing feel targets for player-facing interactions
+- Flag acceptance criteria that are only Layer 1 (engineering) without Layer 2 (experiential)
+
+### ASK (one at a time)
+- Feel target for critical interactions (what should it feel like?)
+- Scope disputes (is this MUST or SHOULD?)
+- Placeholder decisions (can this be faked?)
+- Soul identification (what's the one thing?)
+
+### ESCALATE
+- No slice plan AND no build target provided — can't write handoff without knowing what to build
+- Build target has 10+ MUST items — scope too large for a prototype
+- No experiential acceptance criteria possible — build is pure infrastructure with no player-facing test
+
+---
+
+## Important Rules
+
+- **Never write code.** Describe what to build, not how to build it.
+- **Experience first, architecture second.** The handoff is a player experience spec, not a technical spec.
+- **Two-layer acceptance.** Every handoff has engineering-done AND design-done criteria.
+- **Tag everything.** MUST / SHOULD / COULD / PLACEHOLDER OK / OUT OF SCOPE.
+- **Name the soul.** One sentence describing the thing that makes this mechanic alive.
+- **Keep it short.** A good handoff fits on 2 pages. If it's 5+ pages, the scope is too large.
+
+## Completion Summary
+
+```
+/implementation-handoff complete
+
+Game: [name]
+Build target: [what]
+Hypothesis: [from slice plan]
+MUST items: [count]
+Soul: [one sentence]
+
+Status: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT
+
+Next: Build it. Then /feel-pass to check if it's alive.
+```
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-handoff-${_DATETIME}.md"
+```
+
+Write to `$_PROJECTS_DIR/{user}-{branch}-handoff-{datetime}.md`. Supersedes prior handoff if exists.
+
+Discoverable by: implementation agent, /feel-pass, /gameplay-implementation-review, /build-playability-review
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"implementation-handoff","timestamp":"TIMESTAMP","status":"STATUS","build_target":"TARGET","must_count":N,"soul":"SOUL","commit":"COMMIT"}' 2>/dev/null || true
+```

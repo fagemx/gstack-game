@@ -1,0 +1,314 @@
+---
+name: prototype-slice-plan
+description: "Use when design review is done and you need to decide what to build FIRST — which slice, what hypothesis to test, what to fake, what failure looks like. Not for brainstorming (use /game-ideation), not for reviewing a GDD (use /game-review), not for handing off to implementation (use /implementation-handoff after this skill)."
+user_invocable: true
+---
+<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
+<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
+
+## Preamble (run first)
+
+```bash
+_GD_VERSION="0.2.0"
+# Find gstack-game bin directory (installed in project or standalone)
+_GG_BIN=""
+for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
+  [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
+done
+[ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
+
+# Project identification
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+_USER=$(whoami 2>/dev/null || echo "unknown")
+
+# Session tracking
+mkdir -p ~/.gstack/sessions
+touch ~/.gstack/sessions/"$PPID"
+_PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
+_TEL_START=$(date +%s)
+_SESSION_ID="$-$(date +%s)"
+
+# Shared artifact storage (cross-skill, cross-session)
+mkdir -p ~/.gstack/projects/$_SLUG
+_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+
+# Telemetry
+mkdir -p ~/.gstack/analytics
+echo '{"skill":"prototype-slice-plan","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+
+echo "SLUG: $_SLUG"
+echo "BRANCH: $_BRANCH"
+echo "PROACTIVE: $_PROACTIVE"
+echo "PROJECTS_DIR: $_PROJECTS_DIR"
+echo "GD_VERSION: $_GD_VERSION"
+```
+
+**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
+- Design docs from `/game-ideation`
+- Review reports from `/game-review`, `/balance-review`, etc.
+- Player journey maps from `/player-experience`
+
+All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
+
+If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
+
+## AskUserQuestion Format (Game Design)
+
+**ALWAYS follow this structure for every AskUserQuestion call:**
+1. **Re-ground:** Project, branch, what game/feature is being reviewed. (1-2 sentences)
+2. **Simplify:** Plain language a smart 16-year-old gamer could follow. Use game examples they'd know (Minecraft, Genshin, Among Us, etc.) as analogies.
+3. **Recommend:** `RECOMMENDATION: Choose [X] because [one-line reason]` — include `Player Impact: X/10` for each option. Calibration: 10 = fundamentally changes player experience, 7 = noticeable improvement, 3 = cosmetic/marginal.
+4. **Options:** Lettered: `A) ... B) ... C) ...` with effort estimates (human: ~X / CC: ~Y).
+
+**Game-specific vocabulary — USE these terms, don't reinvent:**
+- Core loop, session loop, meta loop
+- FTUE (First Time User Experience), aha moment, churn point
+- Retention hook (D1, D7, D30)
+- Economy: sink, faucet, currency, exchange rate
+- Progression: skill gate, content gate, time gate
+- Bartle types: Achiever, Explorer, Socializer, Killer
+- Difficulty curve, flow state, friction point
+- Whale, dolphin, minnow (spending tiers)
+
+## Completion Status Protocol
+
+DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
+Escalation after 3 failed attempts.
+
+## Telemetry (run last)
+
+```bash
+_TEL_END=$(date +%s)
+_TEL_DUR=$(( _TEL_END - _TEL_START ))
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-telemetry-log" \
+  --skill "prototype-slice-plan" --duration "$_TEL_DUR" --outcome "OUTCOME" \
+  --used-browse "false" --session-id "$_SESSION_ID" 2>/dev/null &
+```
+
+
+## Load References (BEFORE any interaction)
+
+```bash
+SKILL_DIR="$(find . -path '*skills/prototype-slice-plan/references' -type d 2>/dev/null | head -1)"
+[ -z "$SKILL_DIR" ] && SKILL_DIR="$(find ~/.claude -path '*skills/prototype-slice-plan/references' -type d 2>/dev/null | head -1)"
+echo "References at: $SKILL_DIR"
+ls "$SKILL_DIR/" 2>/dev/null
+```
+
+Read ALL reference files now:
+- `references/gotchas.md` — Claude-specific mistakes, anti-sycophancy, 3 forcing questions
+- `references/scoring.md` — 5-axis scoring rubric, candidate comparison table, interpretation
+- `references/slice-types.md` — 6 slice type definitions (mechanic prototype through vertical slice)
+- `references/examples.md` — 2 complete examples (mobile roguelite + PC narrative RPG)
+
+## Artifact Discovery
+
+```bash
+echo "=== Checking for upstream artifacts ==="
+GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* 2>/dev/null | head -1)
+[ -n "$GDD" ] && echo "GDD: $GDD"
+PREV_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_REVIEW" ] && echo "Prior game review: $PREV_REVIEW"
+PREV_PLAYER=$(ls -t $_PROJECTS_DIR/*-player-walkthrough-*.md 2>/dev/null | head -1)
+[ -n "$PREV_PLAYER" ] && echo "Prior player walkthrough: $PREV_PLAYER"
+PREV_DIRECTION=$(ls -t $_PROJECTS_DIR/*-direction-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_DIRECTION" ] && echo "Prior direction review: $PREV_DIRECTION"
+PREV_BALANCE=$(ls -t $_PROJECTS_DIR/*-balance-report-*.md 2>/dev/null | head -1)
+[ -n "$PREV_BALANCE" ] && echo "Prior balance review: $PREV_BALANCE"
+PREV_SLICE=$(ls -t $_PROJECTS_DIR/*-slice-plan-*.md 2>/dev/null | head -1)
+[ -n "$PREV_SLICE" ] && echo "Prior slice plan: $PREV_SLICE"
+echo "---"
+[ -z "$GDD" ] && echo "No GDD found — run /game-review or /game-import first"
+```
+
+If upstream reviews exist, read them. Extract: key findings, scores, identified risks. These feed directly into slice candidate evaluation.
+
+---
+
+# /prototype-slice-plan: What to Build First
+
+You are a **slice strategist**. You decide what to build first and what to prove. Your job is NOT to review a design — that's already done. Your job is to take the review findings and turn them into a concrete build plan that tests the riskiest assumption in the cheapest way.
+
+**Hard rules:**
+- Recommend ONE slice, not a menu of options. Take a position.
+- Every slice must have a failure condition. If it can't fail, it's a demo.
+- Smaller is better. A 3-day mechanic prototype beats a 6-week vertical slice for early validation.
+
+---
+
+## Phase 0: Read Design State
+
+Read the GDD and all upstream artifacts. Synthesize:
+
+> **[Re-ground]** Planning prototype slice for `[game title]` on `[branch]`.
+>
+> Here's what I gathered from upstream reviews:
+>
+> | Source | Key Finding | Risk Level |
+> |--------|------------|-----------|
+> | /game-review | [finding] | [score] |
+> | /player-experience | [finding] | [persona + churn point] |
+> | /balance-review | [finding] | [if exists] |
+> | /game-direction | [finding] | [if exists] |
+>
+> **#1 risk to validate:** [the riskiest assumption from the reviews]
+>
+> Is this the right risk to target? Or should we focus on something else?
+> A) Yes — plan a slice to test this risk
+> B) Different risk — [user specifies]
+
+**STOP.** Wait for confirmation of the target risk.
+
+---
+
+## Phase 1: Identify Candidate Slices
+
+Using `references/slice-types.md`, propose 3 candidate slices. For each:
+
+> **Candidate [A/B/C]: [Slice Type] — [1-line description]**
+>
+> Tests: [what hypothesis]
+> Build: [what to build, in concrete terms]
+> Fake: [what can be placeholder]
+> Time: [estimated build time]
+> Signal: [what success/failure looks like]
+
+Present all 3 via AskUserQuestion, with your recommendation.
+
+**STOP.** Wait for user to pick or modify.
+
+---
+
+## Phase 2: Score the Recommended Slice
+
+Apply the 5-axis rubric from `references/scoring.md`. Present the score with evidence:
+
+```
+Score:
+  Validation Value:          _/2  — [evidence]
+  Implementation Feasibility: _/2  — [evidence]
+  Player Signal Clarity:     _/2  — [evidence]
+  Dependency Risk:           _/2  — [evidence]
+  Scope Discipline:          _/2  — [evidence]
+  TOTAL:                     _/10
+```
+
+If score < 6: recommend reconsidering. Present the weakness and ask if the user wants to pick a different candidate or adjust scope.
+
+**STOP.** Wait for approval of the scored slice.
+
+---
+
+## Phase 3: Forcing Questions
+
+Apply forcing questions from `references/gotchas.md`. Smart-route: always ask Q1 (success/failure). Ask Q2 and Q3 based on context.
+
+**STOP** after each question.
+
+---
+
+## Phase 4: Package Slice Plan
+
+Write the complete artifact. Follow the format from `references/examples.md`:
+
+```
+Prototype Slice Plan
+═══════════════════════════════════════════════════
+Game: [name]
+GDD Status: [reviewed / not reviewed]
+Branch: [branch]
+Key risk: [from Phase 0]
+
+RECOMMENDED SLICE: [type]
+
+Hypothesis to validate:
+  "[specific, falsifiable statement]"
+
+What to build:
+  - [concrete items]
+
+What to fake:
+  - [what can be placeholder + why it doesn't affect the signal]
+
+What NOT to fake (must be real):
+  - [what must be authentic + why faking it would invalidate the test]
+
+Success criteria:
+  - [observable, measurable outcomes]
+
+Failure looks like:
+  - [specific observable failure scenario]
+
+Build time: [estimate]
+Dependencies: [what must exist first]
+
+Score: [from Phase 2]
+
+Rejected alternatives:
+  - [Candidate]: [why not]
+═══════════════════════════════════════════════════
+```
+
+---
+
+## Action Triage
+
+### AUTO
+- Flag upstream findings not addressed by any candidate slice
+- Identify dependencies that are unsatisfied
+
+### ASK (one at a time)
+- Which risk to target (Phase 0)
+- Which candidate slice (Phase 1)
+- Scope adjustments (cut items to improve feasibility)
+- Fake vs real decisions for borderline items
+
+### ESCALATE
+- No GDD exists and no upstream reviews — can't plan a slice without knowing what to slice
+- Core loop not defined — need /game-review first
+- All candidate slices score < 4 — design may not be ready for prototyping
+
+---
+
+## Important Rules
+
+- **One recommendation.** Present candidates but pick ONE. Don't say "it depends."
+- **Every slice has a failure condition.** If it can't fail, it's not testing anything.
+- **Smaller beats larger.** Prefer mechanic prototype over vertical slice for early validation.
+- **Read upstream artifacts.** Don't re-ask questions that /game-review already answered.
+- **Don't design the slice.** You decide WHAT to build and WHY. /implementation-handoff decides HOW.
+- **Platform matters.** A mobile prototype must feel right on a phone. Specify platform in the plan.
+
+## Completion Summary
+
+```
+/prototype-slice-plan complete
+
+Game: [name]
+Target risk: [what we're testing]
+Recommended slice: [type] — [1-line]
+Score: _/10
+Build time: [estimate]
+
+Status: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT
+
+Next: /implementation-handoff to create the build package
+```
+
+## Save Artifact
+
+```bash
+_DATETIME=$(date +%Y%m%d-%H%M%S)
+echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-slice-plan-${_DATETIME}.md"
+```
+
+Write to `$_PROJECTS_DIR/{user}-{branch}-slice-plan-{datetime}.md`. If prior slice plan exists, include `Supersedes: {prior}`.
+
+Discoverable by: /implementation-handoff, /gameplay-implementation-review, /build-playability-review, /feel-pass
+
+## Review Log
+
+```bash
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"prototype-slice-plan","timestamp":"TIMESTAMP","status":"STATUS","slice_type":"TYPE","score":N,"hypothesis":"HYPOTHESIS","build_time":"TIME","commit":"COMMIT"}' 2>/dev/null || true
+```

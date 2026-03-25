@@ -8,9 +8,24 @@ user_invocable: true
 
 {{PREAMBLE}}
 
+## Load References
+
+```bash
+echo "=== Loading game-visual-qa reference files ==="
+ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
+```
+
+**Read ALL `references/` files NOW before any user interaction.** They contain visual thresholds, animation standards, platform requirements, scoring model, and gotchas. Zero interruption — load everything upfront.
+
+## Scope Boundaries
+
+- `/game-visual-qa`: Reviews the **visual output** of a built game (what the player sees on screen)
+- `/asset-review`: Reviews **asset files** in the project (formats, sizes, naming, pipeline)
+- `/game-qa` Section 3: Quick visual pass as part of full QA — use `/game-visual-qa` for deep visual-only review
+
 # /game-visual-qa: Visual Quality Assurance
 
-Systematic visual review of game screens, UI, animations, and art consistency.
+Systematic visual review of game screens, UI, animations, and art consistency. Apply `references/gotchas.md` throughout the entire review.
 
 ## Step 0: Visual Context
 
@@ -20,17 +35,35 @@ AskUserQuestion: What are we reviewing?
 - C) UI-only review
 - D) Animation review
 
-Establish: Art style reference (art bible? moodboard? reference game?), target resolution, target platforms.
+Establish:
+1. **Art style reference** — art bible, moodboard, or reference game?
+2. **Art style classification**: A) Pixel art, B) Hand-drawn/2D, C) 3D stylized, D) 3D realistic, E) Mixed media
+   - Style classification affects which thresholds from `references/animation-standards.md` apply
+3. **Target resolution** and **target platforms** (determines thresholds from `references/platform-requirements.md`)
+4. **Build status** — final art, WIP, or placeholder? (See `references/gotchas.md` Scope Traps)
+
+**STOP.** Confirm context before proceeding.
 
 ## Section 1: First Impression (weight: 10%)
+
+**AI confidence: 25% — first impressions are inherently subjective. This section is a prompt for human evaluation, not an AI judgment.**
 
 1-second gut reaction:
 - Professional or amateur?
 - Cohesive or inconsistent?
 - Clear or cluttered?
-- Score: 0-10
+
+Forcing questions:
+- "If you saw this screenshot on a store page with no title, would you wishlist it?"
+- "What genre and quality tier does the art communicate in the first second?"
+
+Score using the per-section scoring from `references/scoring.md`. Section 1 Score: ___/10
+
+**STOP.** One issue per AskUserQuestion.
 
 ## Section 2: Art Style Consistency (weight: 20%)
+
+**AI confidence: 35% — style evaluation requires art direction context. Flag inconsistencies but defer final judgment to the user.**
 
 - Color palette adherence — Do all elements use the same palette?
 - Line weight consistency — Outlines same thickness across all assets?
@@ -39,51 +72,92 @@ Establish: Art style reference (art bible? moodboard? reference game?), target r
 - Environmental scale — Objects correct size relative to characters?
 - Effect style — Particles/VFX match the art style? (realistic effects in pixel art = mismatch)
 
-Score: Start at 10, each inconsistency: high-impact -2, medium -1, low -0.5
+Forcing questions:
+- "Show me the 2 most visually different screens side by side. Are they from the same game?"
+- "If you removed the HUD, could you identify which game this screenshot is from?"
+
+Classify severity per issue using `references/scoring.md` severity definitions. Score: Start at 10, deduct per issue found.
+
+**STOP.** One issue per AskUserQuestion.
 
 ## Section 3: UI Polish (weight: 20%)
 
-- Alignment — Elements on grid? Consistent margins?
-- Typography — Font hierarchy clear? Readable at target resolution?
+**AI confidence: 65% — most UI checks are measurable against `references/visual-thresholds.md`.**
+
+- Alignment — Elements on grid? Consistent margins? (see `references/visual-thresholds.md` Pixel Alignment)
+- Typography — Font hierarchy clear? Readable at target resolution? (see font size minimums)
 - Color meaning — Consistent (red = damage, green = heal) across ALL screens?
-- Touch/click targets — Minimum 44px on mobile? No overlapping targets?
+- Touch/click targets — Meet platform minimums from `references/visual-thresholds.md`?
 - States — Hover, pressed, disabled, loading states all designed?
 - Transitions — Screens transition smoothly? No jarring cuts?
 
-Score: Same deduction model.
+Forcing questions:
+- "Navigate the 3 most-used menus using only the intended input method. Any hesitation point?"
+- "Screenshot every screen with text. Is the font hierarchy identical across all of them?"
+
+Classify severity per issue using `references/scoring.md`. Score: ___/10
+
+**STOP.** One issue per AskUserQuestion.
 
 ## Section 4: Animation Quality (weight: 20%)
 
-- Frame rate — Smooth at target FPS? Any judder?
-- Anticipation — Actions have wind-up? (makes them readable)
-- Follow-through — Actions have recovery? (makes them feel weighty)
+**AI confidence: 60% — frame counts and blend times are measurable; feel and weight are subjective.**
+
+- Frame count — Meets guidelines from `references/animation-standards.md` for the art style?
+- Anticipation — Actions have wind-up >= 2 frames? (makes them readable)
+- Follow-through — Actions have recovery >= 2 frames? (makes them feel weighty)
 - Timing — Fast actions feel fast? Heavy actions feel heavy?
-- Blending — Transitions between animations smooth? No T-pose flashes?
+- Blending — Transition times within targets from `references/animation-standards.md`? No T-pose flashes?
 - Idle — Characters alive when not acting? Breathing, blinking, shifting weight?
 
-Score: Same deduction model.
+Forcing questions:
+- "Play the most common action at 0.25x speed. Is every frame intentional?"
+- "Watch a character stand idle for 30 seconds. Do they feel alive?"
+
+Check against common animation bugs in `references/animation-standards.md`. Classify severity per issue using `references/scoring.md`. Score: ___/10
+
+**STOP.** One issue per AskUserQuestion.
 
 ## Section 5: Screen Adaptation (weight: 15%)
 
-- Aspect ratios — 16:9, 18:9, 21:9, 4:3 — nothing cut off?
-- Safe zone — Critical UI elements within safe area?
-- Scaling — Text readable on smallest target screen?
-- Notch/cutout — Content not hidden behind camera notch?
+**AI confidence: 75% — safe zones and aspect ratios are fully measurable against `references/platform-requirements.md`.**
+
+- Aspect ratios — Test at widest and narrowest supported ratio. Nothing cut off?
+- Safe zone — Critical UI within safe area per `references/platform-requirements.md`?
+- Scaling — Text readable on smallest target screen? (check against `references/visual-thresholds.md`)
+- Notch/cutout — Content not hidden behind camera notch? Uses platform safe area APIs?
 - Orientation — If mobile: landscape/portrait handled correctly?
 
-Score: Same deduction model.
+Forcing questions:
+- "Screenshot the main gameplay screen at 4:3 (iPad) and 19.5:9 (iPhone). What breaks?"
+- "Can you read all HUD text on the smallest target device at arm's length?"
+
+Classify severity per issue using `references/scoring.md`. Score: ___/10
+
+**STOP.** One issue per AskUserQuestion.
 
 ## Section 6: Performance Visual (weight: 15%)
+
+**AI confidence: 70% — most performance visuals are observable, though root causes may not be.**
 
 - Texture quality — No blurry textures at expected view distance?
 - Pop-in — LOD transitions visible? Asset streaming visible?
 - Z-fighting — Overlapping surfaces flickering?
 - Overdraw — Excessive transparency layers? (check with wireframe)
 - Particle budget — Particle effects reasonable? No FPS drop during effects?
+- Frame pacing — Consistent frame delivery? (see FPS targets in `references/animation-standards.md`)
 
-Score: Same deduction model.
+Forcing questions:
+- "Run through the busiest scene in the game. Any visual hitches or pop-in?"
+- "Toggle between lowest and highest quality settings. What changes are visible?"
+
+Classify severity per issue using `references/scoring.md`. Score: ___/10
+
+**STOP.** One issue per AskUserQuestion.
 
 ## Scoring
+
+Calculate weighted final score using formula from `references/scoring.md`:
 
 ```
 Visual QA Score:
@@ -97,27 +171,40 @@ Visual QA Score:
   WEIGHTED TOTAL:         _/10
 ```
 
+Interpret using score ranges from `references/scoring.md`: 90-100 ship-ready, 75-89 shippable with known issues, 60-74 needs work, below 60 not ready.
+
 ## AUTO/ASK/ESCALATE
 
-- **AUTO:** Flag alignment issues, missing states, obvious inconsistencies
-- **ASK:** Style direction choices, animation priority, screen adaptation tradeoffs
-- **ESCALATE:** Art style fundamentally inconsistent (multiple conflicting styles), UI unusable at target resolution
+- **AUTO:** Flag measurable threshold violations (font size, touch targets, contrast ratios, safe zone violations, animation frame counts below minimum)
+- **ASK:** Style direction choices, animation priority tradeoffs, screen adaptation strategy (pillarbox vs expand vs crop), severity disputes
+- **ESCALATE:** Art style fundamentally inconsistent (multiple conflicting styles with no art direction justification), UI unusable at target resolution, critical animation bugs in main gameplay loop
 
 ## Anti-Sycophancy
 
 Forbidden:
-- ❌ "Beautiful art style"
-- ❌ "Smooth animations"
-- ❌ "Clean UI"
+- "Beautiful art style"
+- "Smooth animations"
+- "Clean UI"
+- "Polished visuals"
+- "Great aesthetic"
+- "Nice color palette"
+- "Looks professional"
 
-Instead: "Button text is 10px at 720p — below readability threshold (14px min). 3 screens use rounded buttons, 2 use square — inconsistent."
+Instead use specific, measurable observations: "Button text is 10px at 720p — below readability threshold (14px min). 3 screens use rounded buttons, 2 use square — inconsistent."
+
+Push-back cadence: After every 3 positive findings, actively look for one issue. If you find none, state: "Checked [area] for [specific problem] — none found."
+
+Calibrated acknowledgment examples:
+- "Walk cycle is 8 frames with correct contact/pass/up/down phases. Foot sliding is under 1px — within tolerance."
+- "Color contrast on main HUD passes WCAG AA (measured 5.2:1). Settings menu contrast is 2.9:1 — below 4.5:1 minimum for body text."
 
 ## Completion Summary
 
 ```
 Visual QA:
   Scope: [full/screen/UI/animation]
-  Issues: ___ high, ___ medium, ___ low
+  Art style: [pixel/2D/3D-stylized/3D-realistic/mixed]
+  Issues: ___ critical, ___ high, ___ medium, ___ low
   Visual Score: _/10
   STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
 ```
@@ -136,5 +223,5 @@ Discoverable by: /game-ship, /game-qa
 ## Review Log
 
 ```bash
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-visual-qa","timestamp":"TIMESTAMP","status":"STATUS","visual_score":SCORE,"issues":N,"commit":"COMMIT"}' 2>/dev/null || true
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"{{SKILL_NAME}}","timestamp":"TIMESTAMP","status":"STATUS","visual_score":SCORE,"issues":N,"commit":"COMMIT"}' 2>/dev/null || true
 ```

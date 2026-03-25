@@ -183,13 +183,86 @@ Submit PR with playtest data source.
 | `/game-ideation` | More forcing questions (blind spots in current 6?) | Game director who has greenlit/killed projects |
 | `/game-direction` | IP strategy, localization, age rating cognitive patterns | Producer with 3+ shipped titles |
 
-### ⚪ Skeleton Skills (need significant content)
+### ⚪ Recently upgraded (expert calibration welcome)
 
-| Skill | Current | What's missing |
-|-------|---------|---------------|
-| `/asset-review` | 128L, 35% | Art style consistency criteria, texture/mesh quality benchmarks |
-| `/game-visual-qa` | 140L, 35% | Visual quality thresholds, animation timing standards |
-| `/playtest` | 176L, 40% | Observation metrics, interview question bank, statistical significance |
+These skills were upgraded in v0.4.0 with initial reference files. The structure and benchmarks are in place but need validation from domain experts:
+
+| Skill | Current | What needs calibration |
+|-------|---------|----------------------|
+| `/asset-review` | 329L + 5 refs, 70% | Per-asset texture/mesh budgets — are the numbers realistic for your engine/platform? |
+| `/game-visual-qa` | 231L + 5 refs, 60% | Animation blend times, frame count guidelines — match your production standards? |
+| `/playtest` | 251L + 3 refs, 65% | Observation thresholds marked LOW confidence — need playtest data to validate |
+| `/game-codex` | 331L + 4 refs, 70% | Exploit taxonomy — missing categories for your game type? |
+| `/game-eng-review` | 462L + 5 refs, 70% | Performance budgets — do the platform numbers match your profiling data? |
+
+---
+
+## For Maintainers: Internal Skill Pipeline
+
+gstack-game has 6 internal maintenance skills in `.claude/skills/` that automate the issue-to-merge workflow. These are for repo maintainers, not game developers.
+
+### The pipeline
+
+```
+/issue-create → /issue-plan → /issue-action → PR → /pr-review-loop → merge
+```
+
+### How to use each skill
+
+**`/issue-create`** — Create an issue from conversation context.
+```
+/issue-create skill-gap    — a skill has wrong content or missing knowledge
+/issue-create new-skill    — propose a new skill
+/issue-create bug          — template bug or build issue
+/issue-create              — general (auto-detect type)
+```
+
+**`/issue-plan <number>`** — Three-phase deep-dive on an issue.
+- **Research:** Reads affected skill templates + references, documents facts only
+- **Innovate:** Generates 2-3 approaches at different scales, evaluates trade-offs
+- **Plan:** Concrete implementation plan (files to change, verification checklist)
+- All three phases posted as comments to the issue, labeled `planned`
+- Idempotent: re-run picks up where it left off if conversation breaks
+
+**`/issue-action <number>`** — Implement from approved plan.
+- Reads deep-dive artifacts from `.tmp/deep-dive/issue-{id}/`
+- Creates feature branch, implements step-by-step following the plan
+- Runs `bun run build` + `bun test` after each change
+- Creates PR with structured body
+
+**`/pr-review-loop <number>`** — Automated PR review-fix cycle.
+- Bash state machine drives REVIEW → COMMENT → FIX → re-REVIEW loop
+- Reviews against gstack-game standards (frontmatter, preamble, anti-sycophancy, STOP gates, 300L rule, build/test)
+- Classifies issues as P0 (blocks merge) / P1 (should fix) / P2 (nice to have)
+- Auto-fixes P0/P1, re-reviews until LGTM or max 3 iterations
+- Posts findings as PR comments each round
+
+**`/skill-review <skill-name>`** — Assess skill quality with 15-dimension rubric.
+
+**`/contribute-review <issue-number>`** — Convert a domain expert's Issue into a formatted PR.
+
+### Example: end-to-end workflow
+
+```bash
+# 1. You notice /balance-review gives bad advice on idle games
+/issue-create skill-gap
+# → Creates issue #20 with details
+
+# 2. Plan the fix
+/issue-plan 20
+# → Posts research, innovate, plan to issue. Adds "planned" label.
+
+# 3. Implement
+/issue-action 20
+# → Creates feature branch, implements plan, opens PR #21
+
+# 4. Review
+/pr-review-loop 21
+# → Reviews PR, fixes issues, posts LGTM when clean
+
+# 5. Merge
+gh pr merge 21 --squash --delete-branch
+```
 
 ---
 

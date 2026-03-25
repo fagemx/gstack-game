@@ -182,13 +182,86 @@ bun test         # 確認沒壞
 | `/game-ideation` | 更多逼問問題（現有 6 個有沒有盲點） | greenlight 過/砍過專案的遊戲總監 |
 | `/game-direction` | IP 策略、本地化、年齡分級的認知模式 | 出過 3+ 款遊戲的製作人 |
 
-### ⚪ Skeleton Skills（需要大量內容）
+### ⚪ 最近升級的（歡迎專家校準）
 
-| Skill | 目前 | 缺什麼 |
-|-------|------|--------|
-| `/asset-review` | 128L, 35% | 風格一致性標準、texture/mesh 品質 benchmark |
-| `/game-visual-qa` | 140L, 35% | 視覺品質量化門檻、動畫 timing |
-| `/playtest` | 176L, 40% | 觀察指標、訪談題庫、統計顯著性 |
+這些 skill 在 v0.4.0 加了初始 reference files。結構和 benchmark 已到位，但需要領域專家驗證：
+
+| Skill | 目前 | 需要校準什麼 |
+|-------|------|------------|
+| `/asset-review` | 329L + 5 refs, 70% | 每個 asset 的 texture/mesh budget——你的引擎/平台上這些數字合理嗎？ |
+| `/game-visual-qa` | 231L + 5 refs, 60% | 動畫 blend time、frame count 標準——符合你的產線標準嗎？ |
+| `/playtest` | 251L + 3 refs, 65% | 觀察門檻標為 LOW confidence——需要 playtest 數據驗證 |
+| `/game-codex` | 331L + 4 refs, 70% | Exploit taxonomy——你的遊戲類型有缺少的分類嗎？ |
+| `/game-eng-review` | 462L + 5 refs, 70% | 效能 budget——平台數字跟你的 profiling 數據吻合嗎？ |
+
+---
+
+## 給維護者：內部 Skill 維護 Pipeline
+
+gstack-game 有 6 個內部維護 skill 在 `.claude/skills/`，自動化從 issue 到 merge 的工作流。這些是給 repo 維護者用的，不是給遊戲開發者。
+
+### Pipeline
+
+```
+/issue-create → /issue-plan → /issue-action → PR → /pr-review-loop → merge
+```
+
+### 各 skill 怎麼用
+
+**`/issue-create`** — 從對話建立 issue。
+```
+/issue-create skill-gap    — skill 有錯誤內容或缺少知識
+/issue-create new-skill    — 提議新 skill
+/issue-create bug          — 模板 bug 或 build 問題
+/issue-create              — 通用（自動偵測類型）
+```
+
+**`/issue-plan <number>`** — 對 issue 做三階段 deep-dive。
+- **Research：** 讀受影響的 skill template + references，只記錄事實
+- **Innovate：** 產生 2-3 個不同規模的方案，評估 trade-off
+- **Plan：** 具體實作計畫（改哪些檔案、驗證清單）
+- 三個階段都 post 到 issue comment，加上 `planned` label
+- 冪等：對話斷掉重新跑會接續上次的進度
+
+**`/issue-action <number>`** — 從 approved plan 實作。
+- 讀取 `.tmp/deep-dive/issue-{id}/` 的 deep-dive artifacts
+- 建 feature branch，照 plan 逐步實作
+- 每步後跑 `bun run build` + `bun test`
+- 建 PR
+
+**`/pr-review-loop <number>`** — 自動 PR review-fix 循環。
+- Bash state machine 驅動 REVIEW → COMMENT → FIX → re-REVIEW 循環
+- 用 gstack-game 標準審查（frontmatter、preamble、anti-sycophancy、STOP gates、300L rule、build/test）
+- 分類：P0（擋 merge）/ P1（應該修）/ P2（nice to have）
+- 自動修 P0/P1，重新 review 直到 LGTM 或最多 3 輪
+- 每輪 post findings 到 PR comment
+
+**`/skill-review <skill-name>`** — 用 15 維度 rubric 評估 skill 品質。
+
+**`/contribute-review <issue-number>`** — 把領域專家的 Issue 轉成格式化 PR。
+
+### 範例：完整工作流
+
+```bash
+# 1. 發現 /balance-review 在放置類遊戲給出錯誤建議
+/issue-create skill-gap
+# → 建立 issue #20
+
+# 2. 規劃修正
+/issue-plan 20
+# → 三階段分析 post 到 issue，加 "planned" label
+
+# 3. 實作
+/issue-action 20
+# → 建 feature branch，照 plan 實作，開 PR #21
+
+# 4. Review
+/pr-review-loop 21
+# → 自動 review，修問題，clean 後 post LGTM
+
+# 5. Merge
+gh pr merge 21 --squash --delete-branch
+```
 
 ---
 

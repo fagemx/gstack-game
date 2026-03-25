@@ -441,9 +441,9 @@ Top issue: [the single most impactful finding]
 
 Status: DONE / DONE_WITH_CONCERNS / BLOCKED
 
-Next: Fix top issue → re-run /asset-review to verify
-      Or: /game-visual-qa for in-engine visual review
-      Or: /game-eng-review for architecture review
+Next Step:
+  PRIMARY: /game-visual-qa — pipeline checked, verify rendered output
+  (if build issues): /game-eng-review — architecture problem
 ```
 
 ## Save Artifact

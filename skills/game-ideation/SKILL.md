@@ -609,8 +609,10 @@ Game Ideation Session:
   Twist: [one line]
   Forcing Questions: [X/6 asked]
   Iceberg Gaps: [list weak layers]
-  Next Step: [specific validation action]
   STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
+
+  Next Step:
+    PRIMARY: /game-review — concept formed, review the GDD
 ```
 
 **DONE_WITH_CONCERNS** if: any Iceberg layer is WEAK, fewer than 4/6 forcing questions answered, or core loop fails the verb test.

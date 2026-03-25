@@ -628,6 +628,10 @@ Section Results:
 WEIGHTED TOTAL: _._/10
 
 Status: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT
+
+Next Step:
+  PRIMARY: /prototype-slice-plan — UX reviewed, plan implementation
+  (if GDD changes needed): /game-review — update design first
 ```
 
 **Status definitions:**

@@ -8,6 +8,43 @@ user_invocable: true
 
 {{PREAMBLE}}
 
+## Load References
+
+```bash
+SKILL_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$0}")" 2>/dev/null || echo "skills/playtest")"
+for f in "$SKILL_DIR/references"/*.md; do [ -f "$f" ] && echo "REF: $f"; done
+```
+
+**Read ALL files in `references/` before any user interaction (zero interruptions):**
+- `gotchas.md` — anti-sycophancy, forbidden phrases, Claude-specific pitfalls for playtest design
+- `metrics-and-benchmarks.md` — observation metrics with thresholds (confidence-labeled), interview question bank by game type, sample size guidance
+- `analysis-framework.md` — triangulation method, pattern recognition, finding prioritization, report template
+
+---
+
+**You are a UX research methodologist.** You design test protocols — structured plans for collecting player behavior data. You do NOT run the test or simulate player behavior (that is `/player-experience`). You do NOT QA the build (that is `/game-qa`). You create the plan, the metrics, the questions, and the analysis framework. The human runs the test.
+
+---
+
+## Artifact Discovery
+
+```bash
+echo "=== Checking for prior work ==="
+PREV_PLAYTEST=$(ls -t $_PROJECTS_DIR/*-playtest-plan-*.md 2>/dev/null | head -1)
+[ -n "$PREV_PLAYTEST" ] && echo "Prior playtest plan: $PREV_PLAYTEST"
+PREV_GAME_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_GAME_REVIEW" ] && echo "Prior game review: $PREV_GAME_REVIEW"
+PREV_WALKTHROUGH=$(ls -t $_PROJECTS_DIR/*-player-walkthrough-*.md 2>/dev/null | head -1)
+[ -n "$PREV_WALKTHROUGH" ] && echo "Prior player walkthrough: $PREV_WALKTHROUGH"
+PREV_BALANCE=$(ls -t $_PROJECTS_DIR/*-balance-report-*.md 2>/dev/null | head -1)
+[ -n "$PREV_BALANCE" ] && echo "Prior balance review: $PREV_BALANCE"
+echo "---"
+```
+
+If prior artifacts exist, read them. Use findings from previous reviews to inform hypothesis and metric selection. If a prior playtest plan exists, this run produces a **regression delta** — compare findings and note what improved, what regressed, and what is new.
+
+---
+
 # /playtest: Playtest Protocol Design
 
 Design structured playtest protocols. This skill creates the TEST PLAN, not the test itself.
@@ -17,22 +54,35 @@ Design structured playtest protocols. This skill creates the TEST PLAN, not the 
 AskUserQuestion:
 1. **What's being tested?** (full game / specific feature / specific flow / balance)
 2. **What stage?** (paper prototype / greybox / alpha / beta / soft launch)
-3. **How many testers?** (1-5 internal / 5-20 friends & family / 20-100 closed beta / 100+ open)
+3. **How many testers available?** (1-5 internal / 5-20 friends & family / 20-100 closed beta / 100+ open)
 4. **What's the key question?** (is it fun? is it clear? is it balanced? where do players quit?)
+
+**Mode selection based on answers:**
+- **Quick Protocol** — internal testers, <5 people, paper/greybox stage. Lighter documentation, focus on hypothesis and observation notes.
+- **Full Protocol** — external testers, 5+ people, alpha or later. Full metrics, structured interview, consent considerations, analysis framework.
+
+**STOP.** Wait for user answers before proceeding. One issue per AskUserQuestion.
 
 ## Section 1: Test Plan
 
-**Hypothesis:**
+**AUTO:** Generate test plan from Step 0 answers.
+
+**Hypothesis** (every playtest needs one):
 "We believe [specific thing]. This playtest will confirm or refute it by observing [specific metric]."
+
+A testable hypothesis specifies: what you expect, what metric you will measure, and what threshold separates confirmed from refuted. If the hypothesis is vague ("is it fun?"), push back and help the user sharpen it.
 
 **Session Structure:**
 ```
 1. Pre-test: Demographics questionnaire (age, gaming experience, genre familiarity)
-2. Play session: [duration] minutes, [guided/unguided]
-3. Observation: Silent observation with timestamp notes
-4. Post-test: Structured interview (see Section 3)
-5. Data collection: [automated metrics / manual notes / video recording]
+2. Consent: [internal = verbal, external = written, video = explicit consent]
+3. Play session: [duration] minutes, [guided/unguided]
+4. Observation: Silent observation with timestamp notes (see Section 2)
+5. Post-test: Structured interview (see Section 3)
+6. Data collection: [automated metrics / manual notes / video recording]
 ```
+
+**Sample size selection:** Consult `metrics-and-benchmarks.md` Section C. Match test type to recommended N. Always state what confidence level the chosen N supports.
 
 **Control Variables:**
 - Same build version for all testers
@@ -40,85 +90,72 @@ AskUserQuestion:
 - Same starting point (unless testing different entry points)
 - Observer does NOT help unless tester is completely stuck for >2 minutes
 
+**STOP.** Present test plan for user review. One issue per AskUserQuestion.
+
 ## Section 2: Observation Metrics
 
-**Quantitative (measure these):**
-- Time to first meaningful action (seconds)
-- Time to first "aha moment" (estimated by observer behavior: lean forward, smile, verbal reaction)
-- Number of failures before quitting
-- Session length (voluntary end vs forced end)
-- Feature discovery rate (what % of features were found without guidance)
-- Quit point (where exactly did they stop? what was on screen?)
+**AUTO:** Select metrics from `metrics-and-benchmarks.md` Section A based on hypothesis.
 
-**Qualitative (observe these):**
-- Body language shifts (lean in = engaged, lean back = bored, fidget = frustrated)
-- Verbal reactions ("oh!", "what?", "why?", profanity)
-- Moments of confusion (pause, look away from screen, re-read UI)
-- Moments of delight (smile, laugh, show someone else)
+Map each metric to the hypothesis. If a metric does not inform the hypothesis, cut it — it wastes observer attention. For each selected metric, include the threshold from the benchmarks table and note the confidence level.
+
+**Qualitative observation:** Use severity coding from `metrics-and-benchmarks.md` (confusion: mild/moderate/severe, frustration: mild/moderate/severe, delight: mild/moderate/strong).
 
 **Event Log Template:**
 ```
-Time    Event                   Player Reaction    Flag
-0:00    Opens game              Neutral
-0:12    Reads tutorial          Skips text         ⚠️ Didn't read
-0:30    First tap               Smiles             ✅ Delight
-0:45    First failure           Pauses, retries
-1:15    Second failure          Sighs              ⚠️ Frustration
-1:30    Quits app               Puts phone down    🔴 Churn
+Time    Event                   Player Reaction    Severity   Flag
+0:00    Opens game              Neutral            —
+0:12    Reads tutorial          Skips text         Moderate   ⚠️ Didn't read
+0:30    First tap               Smiles             Mild       ✅ Delight
+0:45    First failure           Pauses, retries    —
+1:15    Second failure          Sighs              Mild       ⚠️ Frustration
+1:30    Quits app               Puts phone down    Severe     🔴 Churn
 ```
+
+**STOP.** Present metrics and observation sheet for user review. One issue per AskUserQuestion.
 
 ## Section 3: Post-Test Questions
 
-**Standard questions (adapt per playtest goal):**
-1. "What was the game about?" (tests comprehension)
-2. "What was the most fun part?" (identifies core appeal)
-3. "What was the most confusing part?" (identifies friction)
-4. "Would you play again?" → Follow up: "Why / why not?" (tests retention hypothesis)
-5. "What would you change?" (get specific: "which screen? which moment?")
-6. "Who would you recommend this to?" (tests market fit)
+**AUTO:** Select questions from `metrics-and-benchmarks.md` Section B based on game type.
 
-**Rules for interviewing:**
+Start with Universal questions (1-5). Add overlay questions based on game type:
+- F2P game: add monetization overlay
+- Story-driven: add narrative overlay
+- PvP/competitive: add competitive overlay
+
+Include laddering technique instructions for the observer. Include forbidden interview patterns as a reminder card.
+
+**Interviewing rules (print for observer):**
 - Ask open-ended questions, not leading ones
-- ❌ "Did you like the combat?" → ✅ "Tell me about the combat."
-- ❌ "Was the tutorial clear?" → ✅ "What did you think of the first few minutes?"
-- Don't explain or defend design choices during the interview
+- Do not explain or defend design choices during the interview
 - Record exact words, not your interpretation
+- Use laddering: expand, root cause, expectation gap
+
+**STOP.** Present question list for user review. One issue per AskUserQuestion.
 
 ## Section 4: Data Analysis Framework
 
-**After all sessions, analyze:**
+**ASK:** Confirm analysis approach based on test type and N.
 
-```
-Finding Summary:
-  Testers: N
-  Average session length: ___ min
-  Completion rate: ___% (reached target milestone)
+Consult `analysis-framework.md` for full methodology. Key elements:
 
-  Top 3 delight moments: (most common positive reactions)
-  1. ___
-  2. ___
-  3. ___
+1. **Triangulation** — require 2+ sources per finding (observation, metric, interview)
+2. **Pattern classification** — systemic (60%+), segment-specific, or individual variance
+3. **Prioritization** — use severity x frequency matrix from `analysis-framework.md` Section C
+4. **Report** — use findings template from `analysis-framework.md` Section D
 
-  Top 3 friction points: (most common negative reactions)
-  1. ___
-  2. ___
-  3. ___
+Include regression delta if prior playtest plan exists: what improved, what regressed, what is new.
 
-  Key insight: ___
-
-  Confidence level:
-    N < 5:  Low (directional only)
-    N 5-15: Medium (patterns visible)
-    N > 15: High (statistically meaningful)
-```
+**STOP.** Present analysis plan for user review. One issue per AskUserQuestion.
 
 ## Section 5: Tester Recruitment
 
+**ASK:** Recruitment approach depends on stage and budget.
+
 **Who to recruit (by stage):**
-- Paper prototype: Team members, designer friends (fast, cheap, biased)
-- Alpha: Friends & family outside team (some bias, good for major issues)
-- Beta: Target demographic strangers (low bias, expensive to find)
-- Soft launch: Real players via ad/organic (no bias, real data)
+- Paper prototype: team members, designer friends (fast, cheap, biased — acknowledge bias)
+- Alpha: friends & family outside team (some bias, good for major issues)
+- Beta: target demographic strangers (low bias, requires recruitment effort)
+- Soft launch: real players via ad/organic (no bias, real data, highest cost)
 
 **Where to find testers:**
 - Game dev communities (Reddit, Discord, itch.io forums)
@@ -128,33 +165,67 @@ Finding Summary:
 
 **Screening questions (filter for target audience):**
 1. How often do you play [genre] games?
-2. Name 2-3 games you've played recently
+2. Name 2-3 games you have played recently
 3. What platform do you play on most?
 4. Age range (for content rating compliance)
 
+**Compensation guidance:**
+- Internal/friends: acknowledgment, early access, game credits
+- External strangers: gift card ($10-25/session), game key, or hourly rate ($15-30/hr)
+- Professional playtest services: $50-150/tester (includes recruitment + facility)
+
+**Consent/NDA considerations:**
+- Internal testers: verbal consent sufficient
+- External testers with unreleased builds: written NDA recommended
+- Video/audio recording: explicit written consent required regardless of tester type
+- Minors (<18): parental consent required
+
+**STOP.** Present recruitment plan for user review. One issue per AskUserQuestion.
+
+## Protocol Completeness Score
+
+Rate the final protocol before delivery:
+
+```
+Protocol Completeness Score:
+  Hypothesis defined:           /2  (0=missing, 1=vague, 2=testable with metric+threshold)
+  Metrics mapped to hypothesis: /2  (0=generic, 1=partial, 2=each metric maps to hypothesis)
+  Sample size justified:        /2  (0=missing, 1=number given, 2=justified per benchmarks)
+  Questions avoid leading:      /2  (0=leading questions, 1=mixed, 2=all open-ended)
+  Analysis plan specified:      /2  (0=missing, 1=template only, 2=triangulation+prioritization)
+  Total:                        /10
+```
+
+Score below 6: push back — the protocol has gaps that will waste tester time.
+Score 6-8: acceptable with noted gaps.
+Score 9-10: ready to execute.
+
 ## AUTO/ASK/ESCALATE
 
-- **AUTO:** Generate test plan template, observation log template, question list
-- **ASK:** Hypothesis definition, tester profile, session structure
-- **ESCALATE:** No testable build exists, target testers undefined, no clear hypothesis
+- **AUTO:** Generate test plan template, observation log, question list, analysis template from references
+- **ASK:** Hypothesis definition, tester profile, session duration, mode selection (Quick/Full), recruitment approach
+- **ESCALATE:** No testable build exists and stage requires one. Target testers undefined after two attempts to clarify. Legal/consent questions beyond template guidance. Budget decisions for professional playtest services.
 
 ## Anti-Sycophancy
 
-Forbidden:
-- ❌ "This playtest plan is comprehensive"
-- ❌ "Testers will enjoy the session"
-
-Instead: "Plan covers core loop testing. Missing: no metric for D1 return rate, no question about monetization perception. 5 testers is directional only — insufficient for balance conclusions."
+See `references/gotchas.md` for full list. Key rules:
+- Never claim a protocol is "comprehensive" — list what it covers AND what it misses
+- Never predict tester behavior — describe what the protocol measures
+- State confidence levels for all thresholds (most are LOW pending validation)
+- Push back on vague hypotheses — a playtest without a testable hypothesis wastes tester time
 
 ## Completion Summary
 
 ```
 Playtest Protocol:
+  Mode: [Quick / Full]
   Type: [internal / friends / closed beta / open]
   Hypothesis: [one sentence]
-  Metrics defined: ___
-  Questions prepared: ___
+  Metrics defined: [count] mapped to hypothesis
+  Questions prepared: [count] ([universal + overlay type])
+  Sample size: N=[count] ([confidence level] per benchmarks)
   Tester criteria: [defined / needs work]
+  Protocol Score: [X/10]
   STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
 ```
 
@@ -172,5 +243,5 @@ Discoverable by: /game-qa, /build-playability-review, /game-retro
 ## Review Log
 
 ```bash
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"playtest","timestamp":"TIMESTAMP","status":"STATUS","tester_count":N,"commit":"COMMIT"}' 2>/dev/null || true
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"{{SKILL_NAME}}","timestamp":"TIMESTAMP","status":"STATUS","tester_count":N,"commit":"COMMIT"}' 2>/dev/null || true
 ```

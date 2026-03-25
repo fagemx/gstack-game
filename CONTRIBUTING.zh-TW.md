@@ -186,10 +186,9 @@ bun test         # 確認沒壞
 
 | Skill | 目前 | 缺什麼 |
 |-------|------|--------|
-| `/asset-review` | 117L, 35% | 風格一致性標準、texture/mesh 品質 benchmark |
-| `/game-visual-qa` | 129L, 35% | 視覺品質量化門檻、動畫 timing |
-| `/playtest` | 165L, 40% | 觀察指標、訪談題庫、統計顯著性 |
-| `/game-debug` | 115L, 40% | 遊戲特定 bug 模式庫（物理穿透、desync、存檔損壞） |
+| `/asset-review` | 128L, 35% | 風格一致性標準、texture/mesh 品質 benchmark |
+| `/game-visual-qa` | 140L, 35% | 視覺品質量化門檻、動畫 timing |
+| `/playtest` | 176L, 40% | 觀察指標、訪談題庫、統計顯著性 |
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## What is this?
 
-A **complete game production workflow** for Claude Code — 27 skills from concept to shipped build. Standalone, no gstack dependency.
+A **complete game production workflow** for Claude Code — 28 skills from concept to shipped build. Standalone, no gstack dependency.
 
 ## Skill Map (v0.3.0)
 
@@ -129,7 +129,7 @@ gstack-game/
 ├── .github/ISSUE_TEMPLATE/         ← 4 contribution templates
 ├── bin/                            ← 7 utilities
 ├── scripts/gen-skill-docs.ts       ← Template engine
-├── skills/                         ← 27 skills + shared/
+├── skills/                         ← 28 skills + shared/
 │   ├── shared/preamble.md
 │   ├── game-review/
 │   │   ├── SKILL.md.tmpl           ← source

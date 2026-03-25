@@ -4,7 +4,7 @@
 
 [English](README.md)
 
-27 個互動式 AI 審查技能，涵蓋**完整的遊戲製作工作流**：設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
+28 個互動式 AI 審查技能，涵蓋**完整的遊戲製作工作流**：設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
 
 > **這是什麼：** 結構化的審查和品質保證系統——幫你判斷、評分、改善你的遊戲設計和程式碼。
 > **這不是什麼：** 不是遊戲生成器，不會幫你寫程式碼或做美術素材。
@@ -37,7 +37,7 @@ gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-ga
 
 打開 Claude Code，貼上這段。Claude 會自己完成安裝。
 
-> Install gstack-game: run **`git clone <repo-url> ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /skill-review, /contribute-review, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
+> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /skill-review, /contribute-review, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
 
 ### 方式 B：加到專案讓隊友也能用
 
@@ -251,9 +251,11 @@ gstack-game 包含 **opt-in** 的使用統計，預設關閉。
 ## gstack-game
 Available skills: /game-import, /game-ideation, /game-direction, /game-review,
 /game-eng-review, /balance-review, /player-experience, /game-ux-review,
-/pitch-review, /gameplay-implementation-review, /game-qa, /game-ship, /game-debug,
-/game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review,
-/playtest, /careful, /guard, /unfreeze.
+/pitch-review, /prototype-slice-plan, /implementation-handoff,
+/gameplay-implementation-review, /feel-pass, /build-playability-review,
+/game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs,
+/game-visual-qa, /asset-review, /playtest, /skill-review, /contribute-review,
+/careful, /guard, /unfreeze.
 ```
 
 ---

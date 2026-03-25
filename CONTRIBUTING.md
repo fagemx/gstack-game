@@ -187,10 +187,9 @@ Submit PR with playtest data source.
 
 | Skill | Current | What's missing |
 |-------|---------|---------------|
-| `/asset-review` | 117L, 35% | Art style consistency criteria, texture/mesh quality benchmarks |
-| `/game-visual-qa` | 129L, 35% | Visual quality thresholds, animation timing standards |
-| `/playtest` | 165L, 40% | Observation metrics, interview question bank, statistical significance |
-| `/game-debug` | 115L, 40% | Game-specific bug pattern library (physics tunneling, desync, save corruption) |
+| `/asset-review` | 128L, 35% | Art style consistency criteria, texture/mesh quality benchmarks |
+| `/game-visual-qa` | 140L, 35% | Visual quality thresholds, animation timing standards |
+| `/playtest` | 176L, 40% | Observation metrics, interview question bank, statistical significance |
 
 ---
 

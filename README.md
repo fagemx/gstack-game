@@ -4,7 +4,7 @@
 
 [繁體中文](README.zh-TW.md)
 
-27 interactive AI review skills for game development — from concept to shipped build. Covers the **complete game production workflow**: design review, prototype planning, implementation handoff, game feel diagnosis, playability assessment, code review, QA, and release. Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
+28 interactive AI review skills for game development — from concept to shipped build. Covers the **complete game production workflow**: design review, prototype planning, implementation handoff, game feel diagnosis, playability assessment, code review, QA, and release. Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
 
 > **What this IS:** A structured review and quality assurance system — it helps you judge, score, and improve your game design and code.
 > **What this is NOT:** A game builder or code generator — it doesn't implement features or create assets for you.
@@ -37,7 +37,7 @@ gstack is Garry Tan's AI engineering workflow for Web/SaaS. gstack-game ports th
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install gstack-game: run **`git clone <repo-url> ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /skill-review, /contribute-review, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
+> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /skill-review, /contribute-review, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
 
 ### Option B: Add to your repo so teammates get it
 
@@ -294,7 +294,7 @@ gstack-game/
 ├── package.json                        ← Build scripts
 ├── bin/                                ← 7 utilities (config, diff-scope, telemetry...)
 ├── scripts/gen-skill-docs.ts           ← Template engine
-├── skills/                             ← 27 skills + shared preamble (many with references/)
+├── skills/                             ← 28 skills + shared preamble (many with references/)
 ├── test/                               ← Tier 1 validation tests
 └── docs/                               ← Domain judgment gaps, source assessment, dev guide
 ```

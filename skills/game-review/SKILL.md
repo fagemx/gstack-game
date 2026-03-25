@@ -83,6 +83,58 @@ If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
 Escalation after 3 failed attempts.
 
+## Next Step Routing Protocol
+
+After every Completion Summary, include a `Next Step:` block. Route based on status:
+
+1. **STATUS = BLOCKED** — Do not suggest a next skill. Report the blocker only.
+2. **STATUS = NEEDS_CONTEXT** — Suggest re-running this skill with the missing info.
+3. **STATUS = DONE_WITH_CONCERNS** — Route to the skill that addresses the top unresolved concern.
+4. **STATUS = DONE** — Route forward in the workflow pipeline.
+
+### Workflow Pipeline
+
+```
+Layer A (Design):
+  /game-import → /game-review
+  /game-ideation → /game-review
+  /game-review → /player-experience → /balance-review
+  /game-direction → /game-eng-review
+  /pitch-review → /game-direction
+  /game-ux-review → /game-review (if GDD changes needed) or /prototype-slice-plan
+
+Layer B (Production):
+  /balance-review → /prototype-slice-plan → /implementation-handoff → [build] → /feel-pass → /gameplay-implementation-review
+
+Layer C (Validation):
+  /build-playability-review → /game-qa → /game-ship
+  /game-ship → /game-docs → /game-retro
+
+Support (route based on findings):
+  /game-debug → /game-qa or /feel-pass
+  /playtest → /player-experience or /balance-review
+  /game-codex → /game-review
+  /game-visual-qa → /game-qa or /asset-review
+  /asset-review → /build-playability-review
+```
+
+### Backtrack Rules
+
+When a score or finding indicates a design-level problem, route backward instead of forward:
+- Core loop fundamentally broken → /game-ideation
+- GDD needs rewriting → /game-review
+- Scope or direction unclear → /game-direction
+- Economy unsound → /balance-review
+
+### Format
+
+Include in the Completion Summary code block:
+```
+Next Step:
+  PRIMARY: /skill — reason based on results
+  (if condition): /alternate-skill — reason
+```
+
 ## Telemetry (run last)
 
 ```bash
@@ -300,6 +352,12 @@ Status: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT
   S5 Risk:           _/10  (___ risks, ___ high-impact)
   S6 Consistency:    _/10  (___ contradictions)
   WEIGHTED TOTAL:    _._/10
+
+Next Step:
+  PRIMARY: /player-experience — validate design through player lens
+  (if S3 Economy < 5): /balance-review — economy needs dedicated analysis
+  (if S1 Core Loop < 5): /game-ideation — core loop needs restructuring
+  (if S5 Risk unclear or scope unscoped): /game-direction — scope and direction review needed
 ```
 
 ### Playtest Protocol

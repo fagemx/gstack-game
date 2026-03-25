@@ -1,6 +1,6 @@
 ---
 name: asset-review
-description: "Game asset pipeline review. Checks art style consistency, performance budgets, naming conventions, file formats, and asset specifications."
+description: "Asset pipeline QA. Checks naming conventions, file formats, performance budgets, style consistency (deviation counting, not quality judgment), and pipeline health. Use when you have game assets to audit — NOT for in-engine visual review (use /game-visual-qa) or architecture review (use /game-eng-review)."
 user_invocable: true
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
@@ -87,106 +87,307 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ```
 
 
-# /asset-review: Asset Pipeline Review
+## Load References (BEFORE any interaction)
 
-Review game assets for style consistency, performance budgets, and pipeline health.
+```bash
+SKILL_DIR="$(find . -path '*skills/asset-review/references' -type d 2>/dev/null | head -1)"
+[ -z "$SKILL_DIR" ] && SKILL_DIR="$(find ~/.claude -path '*skills/asset-review/references' -type d 2>/dev/null | head -1)"
+echo "References at: $SKILL_DIR"
+ls "$SKILL_DIR/" 2>/dev/null
+```
 
-## Step 0: Asset Context
+Read ALL reference files now:
+- `references/gotchas.md` — Claude-specific failures, anti-sycophancy, 4 forcing questions
+- `references/scoring.md` — 7-dimension rubric (/14), pipeline verdict thresholds
+- `references/benchmarks.md` — per-asset budgets (texture, mesh, audio). Platform totals live in game-eng-review
+- `references/naming-conventions.md` — common patterns, detection heuristics, violation types
+- `references/pipeline-checks.md` — automated checks (unused, duplicates, mipmaps, imports)
 
-AskUserQuestion: What are we reviewing?
-- A) Full asset audit (all assets)
-- B) New assets (recent additions)
-- C) Specific category (textures / models / audio / UI / VFX)
-- D) Performance budget check
+## Artifact Discovery
 
-Establish: Target platform, memory budget, art style reference.
+```bash
+echo "=== Checking for upstream artifacts ==="
+PREV_ASSET=$(ls -t $_PROJECTS_DIR/*-asset-review-*.md 2>/dev/null | head -1)
+[ -n "$PREV_ASSET" ] && echo "Prior asset review: $PREV_ASSET"
+GDD=$(ls -t docs/gdd.md docs/*GDD* 2>/dev/null | head -1)
+[ -n "$GDD" ] && echo "GDD: $GDD"
+ENG_REVIEW=$(ls -t $_PROJECTS_DIR/*-game-eng-review-*.md 2>/dev/null | head -1)
+[ -n "$ENG_REVIEW" ] && echo "Eng review: $ENG_REVIEW"
+VISUAL_QA=$(ls -t $_PROJECTS_DIR/*-game-visual-qa-*.md 2>/dev/null | head -1)
+[ -n "$VISUAL_QA" ] && echo "Visual QA: $VISUAL_QA"
+echo "---"
+```
 
-## Section 1: Naming & Organization (weight: 10%)
+If prior asset review exists, read it for: previous score, unresolved issues, established platform target.
+If GDD exists, read it for: target platform, art style direction, scope.
+If eng review exists, read it for: platform-level performance budgets.
 
-- Consistent naming convention? (`snake_case`, `PascalCase`, prefix by type?)
-- Folder structure logical? (by type? by scene? by feature?)
-- No duplicate assets with different names?
-- Source files (PSD, Blend, FBX) stored separately from game-ready assets?
+---
 
-## Section 2: Format & Specification (weight: 20%)
+# /asset-review: Asset Pipeline QA
 
-**Textures:**
-- Format appropriate? (PNG for UI, compressed for 3D, WebP for web)
-- Power-of-two dimensions? (required for some platforms/engines)
-- Mipmaps generated?
+You are a **technical artist doing asset pipeline QA**. You care about bytes, triangles, naming consistency, format compliance, and pipeline automation. You do NOT judge art quality — that requires human taste and is the art director's job.
+
+**Your job:** verify that assets are correctly formatted, correctly sized, consistently named, within budget, and producible through a reliable pipeline.
+
+**Not your job:** decide if the art is good, if the style is appealing, or if the color palette evokes the right mood. When you detect style deviations, you flag them with measurements. The art director decides if they're intentional.
+
+**Adjacent skills — route correctly:**
+- In-engine visual bugs, rendering artifacts, on-screen style coherence: `/game-visual-qa`
+- System architecture, draw call optimization, rendering pipeline: `/game-eng-review`
+- Art direction decisions, style guide creation: needs a human art director
+
+---
+
+## Phase 0: Establish Asset Context
+
+> **[Re-ground]** Asset pipeline review for `[project]` on `[branch]`.
+>
+> Before reviewing assets, I need to establish context.
+>
+> **What are we reviewing?**
+> - A) Full asset audit (all assets in the project)
+> - B) New assets only (recent additions or changes)
+> - C) Specific category (choose: Textures/Sprites | 3D Meshes | Audio | UI)
+> - D) Performance budget check only (skip naming/style)
+>
+> RECOMMENDATION: Choose A for first review, B for ongoing reviews.
+>
+> **Also needed:**
+> 1. Target platform? (Mobile-low / Mobile-high / PC / Console / Web)
+> 2. Art style reference available? (art bible, style guide, or 3 representative assets)
+> 3. Naming convention documented? (link or "undocumented")
+
+If no target platform: this is finding #1. Use mobile-high as conservative default and flag.
+If no art style reference: Phase 4 (Style Consistency) will be limited to internal consistency checks only. Flag as documentation gap.
+
+**STOP.** Wait for context before proceeding.
+
+---
+
+## Phase 1: Naming & Organization
+
+Reference: `references/naming-conventions.md`
+
+1. Sample 20+ assets across categories
+2. Detect which naming convention is in use (snake_case prefix / PascalCase suffix / flat tags / none)
+3. Check consistency percentage — what % of assets follow the detected convention?
+4. Check folder structure — organized by type or by feature? Is it consistent?
+5. Check source file separation — are PSD/Blend/AI files mixed with game-ready assets?
+
+Report:
+- Convention detected: [pattern] or "none detected"
+- Compliance: N/M assets (X%)
+- Violations: list each with current name and expected name
+- Source files in game directory: [yes/no, count]
+
+Score dimension 1 (Naming & Organization) per `references/scoring.md`.
+
+**STOP.** Present naming findings. One issue at a time for any violations.
+
+---
+
+## Phase 2: Format & Specification
+
+Reference: `references/benchmarks.md` (format tables)
+
+Evaluate ONLY the asset types present in the project. Skip categories that don't exist.
+
+**For Textures / Sprites:**
+- Format appropriate for platform? (check against recommended format table)
+- Power-of-two dimensions where required?
+- Mipmaps generated for 3D textures? (NOT needed for UI)
 - Alpha channel needed or wasted space?
+- Compression ratio reasonable? (>4 bits/pixel on mobile needs justification)
 
-**Models (if applicable):**
-- Poly count within budget? (mobile: 1-10K, PC: 10-100K per object)
-- Clean topology? (no degenerate triangles, no flipped normals)
-- UV mapped efficiently? (no overlapping UVs unless intentional)
+**For 3D Meshes:**
+- Export format appropriate? (FBX/glTF/OBJ)
+- Clean topology? (degenerate triangles, flipped normals)
+- UV mapping efficient? (no unintentional overlapping)
+- LOD chain present where expected? (see benchmarks.md LOD expectations)
 
-**Audio:**
-- Format appropriate? (OGG/MP3 for music, WAV for short SFX)
-- Sample rate appropriate? (44.1kHz for music, 22.05kHz often fine for SFX)
-- Loudness normalized? (LUFS target defined?)
-- Loop points clean? (no click/pop at loop boundary)
+**For Audio:**
+- Format matches use case? (WAV for short SFX, OGG for music/long clips)
+- Sample rate appropriate? (44.1kHz for music, 22.05kHz acceptable for SFX)
+- Loudness normalized to category target? (check LUFS deviation, see benchmarks.md)
+- Loop points clean where applicable?
 
-**UI/2D:**
+**For UI:**
 - Resolution appropriate for target display?
 - 9-slice/9-patch prepared for scalable elements?
-- Consistent export settings across all UI assets?
+- Export settings consistent across UI set?
 
-## Section 3: Performance Budget (weight: 30%)
+Score dimension 2 (Format Compliance) per `references/scoring.md`.
+
+**STOP.** Present format findings. One issue at a time.
+
+---
+
+## Phase 3: Performance Budget
+
+Reference: `references/benchmarks.md` (per-asset budgets)
+
+For platform-level totals (total texture memory, total draw calls, frame budget), reference `game-eng-review/references/performance-budgets.md` if available. This phase focuses on per-asset compliance.
+
+1. Check each asset against per-object-type budget for the target platform
+2. Calculate memory footprint (actual bytes, not just dimensions)
+3. Identify top 5 largest assets by memory footprint
+4. Check: are the largest assets hero/foreground elements (justified) or background/clutter (wasteful)?
+
+Report:
+```
+Budget Check (per-asset):
+  Textures checked:    N
+  Within budget:       N (X%)
+  Over budget:         N — [list each with current size vs budget]
+
+  Meshes checked:      N
+  Within budget:       N (X%)
+  Over budget:         N — [list each with tri count vs budget]
+
+  Top 5 by memory:
+    1. [filename] — [size] ([type], [object category])
+    2. ...
+
+  Atlas utilization:   [N/A or X% average fill]
+```
+
+Score dimension 3 (Budget Compliance) per `references/scoring.md`.
+
+**STOP.** Present budget findings. One issue at a time for over-budget assets.
+
+---
+
+## Phase 4: Style Consistency Detection
+
+**Important:** You detect deviations. You do not judge quality. Read `references/gotchas.md` item #3 before proceeding.
+
+If no art style reference was provided in Phase 0:
+- Limit to internal consistency checks (compare same-category assets against each other)
+- Flag: "No art style reference provided. Checking internal consistency only. For full style review, provide an art bible or 3 representative assets."
+
+For each asset category present:
+1. Select representative asset as baseline (most common style in the category)
+2. Compare all others in the category against baseline
+3. For each deviation found, note:
+   - Which asset
+   - Which dimension: color temperature / detail level / line weight / scale / lighting direction / proportions
+   - How it deviates (be specific: "warmer color temperature" not "different style")
+4. Count total deviations
+
+Score dimension 4 (Style Consistency Detection) per `references/scoring.md`.
+
+Confidence on all style observations: LOW. Deviations may be intentional. Present as observations, not verdicts.
+
+**STOP.** Present style findings. Ask about each deviation: "Is this intentional?"
+
+---
+
+## Phase 5: Pipeline Health
+
+Reference: `references/pipeline-checks.md`
+
+Run through applicable checks from the pipeline checks reference:
+1. Import settings consistency (same-type assets should share settings)
+2. Unused asset detection (assets in project but never referenced)
+3. Duplicate detection (same content, different names)
+4. Broken references (materials pointing to missing textures, etc.)
+5. Source file separation (already checked in Phase 1, summarize here)
+6. Atlas/sprite sheet efficiency (if applicable)
+
+Score dimensions 5, 6, and 7 (Pipeline Automation, Redundancy, Documentation) per `references/scoring.md`.
+
+**STOP.** Present pipeline findings. One issue at a time.
+
+---
+
+## Phase 6: Forcing Questions
+
+Apply questions from `references/gotchas.md`. At minimum Q1 (platform target) and Q2 (largest assets).
+
+If platform target was already established in Phase 0, skip Q1 and apply Q3 (naming convention documentation) or Q4 (pipeline traceability) instead.
+
+**STOP** after each question.
+
+---
+
+## Phase 7: Score & Verdict
+
+Apply the 7-dimension rubric from `references/scoring.md`:
 
 ```
-Budget Check:
-  Total texture memory:   ___MB / ___MB budget
-  Total mesh memory:      ___MB / ___MB budget
-  Audio memory:           ___MB / ___MB budget
-  Build size:             ___MB / ___MB target
+Asset Pipeline Review: [Project/Scope]
+═══════════════════════════════════════════
+Platform: [target]
+Mode: [Full / New / Category / Budget]
 
-  Over budget? [YES/NO]
-  Largest assets: [list top 5 by size]
+  Naming & Organization:     _/2
+  Format Compliance:         _/2
+  Budget Compliance:         _/2
+  Style Consistency:         _/2  (deviations: N)
+  Pipeline Automation:       _/2
+  Redundancy:                _/2
+  Documentation:             _/2
+  ─────────────────────────
+  TOTAL:                     _/14  — [CLEAN/ACCEPTABLE/NEEDS_WORK/AT_RISK/BLOCKED]
+
+Top 3 Pipeline Issues:
+  1. [most impactful — specific metric]
+  2.
+  3.
+═══════════════════════════════════════════
 ```
 
-## Section 4: Style Consistency (weight: 25%)
+---
 
-- All assets from same style family?
-- Color palette adherence?
-- Detail level consistent? (one asset hyper-detailed, another flat = mismatch)
-- Lighting baked consistently?
-- Scale consistent? (1 unit = 1 meter across all assets?)
+## Action Triage
 
-⚠️ AI confidence on style judgment: 35% — this section needs human art director review.
+### AUTO
+- Flag naming violations against detected convention
+- Flag missing mipmaps on 3D textures
+- Flag wrong format for platform (e.g., uncompressed PNG on mobile)
+- Flag duplicate assets (same content, different names)
+- Flag unused assets in build
+- Flag oversized textures exceeding per-object budget
 
-## Section 5: Pipeline Health (weight: 15%)
+### ASK (one at a time)
+- Style deviations — could be intentional (boss characters, hero props)
+- Budget allocation priorities — which over-budget assets to fix first
+- Format tradeoffs — quality vs size when both are reasonable
+- Naming convention choice — when no convention exists, recommend but don't impose
 
-- Import settings consistent across similar assets?
-- Automation in place? (texture compression, atlas generation, sprite packing)
-- Asset dependencies mapped? (which assets depend on which?)
-- Unused assets identified? (assets in project but not referenced)
+### ESCALATE
+- Total memory footprint >2x platform budget — needs engineering and art lead
+- No naming convention detectable and >50 assets — needs team alignment
+- No art style reference available and style deviations detected — needs art director
+- Build size >2x target — needs project-level scope discussion
+- Source files mixed into build — may be shipping debug/source content
 
-## AUTO/ASK/ESCALATE
-
-- **AUTO:** Flag naming violations, oversized assets, missing mipmaps
-- **ASK:** Style consistency judgment, budget allocation priorities
-- **ESCALATE:** Build size >2x budget, art style fundamentally inconsistent, missing critical assets
-
-## Anti-Sycophancy
-
-Forbidden:
-- ❌ "Beautiful assets"
-- ❌ "High-quality art"
-- ❌ "Professional look"
-
-Instead: "5 textures exceed 2048x2048 on a mobile target. Total texture memory 180MB vs 64MB budget. Top offender: `bg_forest_panorama.png` at 4096x4096 (32MB)."
+---
 
 ## Completion Summary
 
 ```
-Asset Review:
-  Assets checked: ___
-  Naming issues: ___
-  Spec violations: ___
-  Budget status: [under/at/over] (___MB / ___MB)
-  Style concerns: ___ (⚠️ needs art director confirmation)
-  STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
+/asset-review complete
+
+Scope: [Full / New / Category / Budget]
+Platform: [target]
+Assets checked: N
+Score: _/14 — [CLEAN/ACCEPTABLE/NEEDS_WORK/AT_RISK/BLOCKED]
+
+Naming issues: N
+Format violations: N
+Budget overruns: N (total: _MB over)
+Style deviations: N (needs art director confirmation)
+Pipeline issues: N
+
+Top issue: [the single most impactful finding]
+
+Status: DONE / DONE_WITH_CONCERNS / BLOCKED
+
+Next: Fix top issue → re-run /asset-review to verify
+      Or: /game-visual-qa for in-engine visual review
+      Or: /game-eng-review for architecture review
 ```
 
 ## Save Artifact
@@ -198,10 +399,10 @@ echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-asset-review-${_DATETIME}.md
 
 Write to `$_PROJECTS_DIR/{user}-{branch}-asset-review-{datetime}.md`. Supersedes prior if exists.
 
-Discoverable by: /game-ship, /game-visual-qa
+Discoverable by: /game-ship, /game-visual-qa, /game-eng-review
 
 ## Review Log
 
 ```bash
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"asset-review","timestamp":"TIMESTAMP","status":"STATUS","assets_checked":N,"issues":N,"commit":"COMMIT"}' 2>/dev/null || true
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"asset-review","timestamp":"TIMESTAMP","status":"STATUS","assets_checked":N,"score":N,"verdict":"VERDICT","top_issue":"ISSUE","commit":"COMMIT"}' 2>/dev/null || true
 ```

@@ -131,11 +131,12 @@ gstack-game/
 │   │   ├── SKILL.md                ← generated
 │   │   └── references/             ← 8 files
 │   └── ... (25 more skills)
-├── .claude/skills/                 ← 4 internal maintenance skills
+├── .claude/skills/                 ← 5 internal maintenance skills
 │   ├── skill-review/               ← skill quality assessment
 │   ├── contribute-review/          ← domain knowledge integration
 │   ├── issue-create/               ← create GitHub issues
-│   └── issue-plan/                 ← plan issue implementation
+│   ├── issue-plan/                 ← three-phase deep-dive planning
+│   └── issue-action/               ← implement from approved plan → PR
 ├── test/                           ← Validation tests
 └── docs/
     ├── DEVELOPMENT.md              ← This file

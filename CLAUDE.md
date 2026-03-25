@@ -67,11 +67,12 @@ gstack-game/
 │   ├── careful/                 ← destructive cmd safety (62L)
 │   ├── guard/                   ← full safety mode (56L)
 │   └── unfreeze/                ← unlock guard (32L)
-├── .claude/skills/              ← 4 internal maintenance skills (not published)
+├── .claude/skills/              ← 5 internal maintenance skills (not published)
 │   ├── skill-review/            ← skill quality review (431L)
 │   ├── contribute-review/       ← contribution review (334L)
 │   ├── issue-create/            ← create GitHub issues from conversation
-│   └── issue-plan/              ← plan implementation for GitHub issues
+│   ├── issue-plan/              ← three-phase deep-dive planning (research → innovate → plan)
+│   └── issue-action/            ← implement from approved plan → PR
 ├── test/
 │   └── gen-skill-docs.test.ts   ← Tier 1 template validation (11 tests)
 └── docs/

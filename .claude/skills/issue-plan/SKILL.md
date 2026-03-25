@@ -1,127 +1,102 @@
 ---
 name: issue-plan
-description: "Plan implementation for a gstack-game GitHub issue. Researches affected skills, analyzes domain gaps, designs changes, and posts a structured plan to the issue. Run as: /issue-plan 123"
+description: "Start working on a gstack-game GitHub issue with a three-phase deep-dive workflow (research → innovate → plan). Reads affected skills, explores solution approaches, produces implementation plan, posts all phases to the issue. Run as: /issue-plan 123"
 user_invocable: true
 ---
 <!-- Internal maintenance skill — edit this file directly -->
 
-## Preamble (run first)
+# /issue-plan: Deep-Dive Issue Planning
 
-```bash
-_GD_VERSION="0.3.0"
-# Find gstack-game bin directory (installed in project or standalone)
-_GG_BIN=""
-for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
-  [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
-done
-[ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
-
-# Project identification
-_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
-_USER=$(whoami 2>/dev/null || echo "unknown")
-
-# Session tracking
-mkdir -p ~/.gstack/sessions
-touch ~/.gstack/sessions/"$PPID"
-_PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
-_TEL_START=$(date +%s)
-_SESSION_ID="$-$(date +%s)"
-
-# Shared artifact storage (cross-skill, cross-session)
-mkdir -p ~/.gstack/projects/$_SLUG
-_PROJECTS_DIR=~/.gstack/projects/$_SLUG
-
-# Telemetry
-mkdir -p ~/.gstack/analytics
-echo '{"skill":"issue-plan","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
-
-echo "SLUG: $_SLUG"
-echo "BRANCH: $_BRANCH"
-echo "PROACTIVE: $_PROACTIVE"
-echo "PROJECTS_DIR: $_PROJECTS_DIR"
-echo "GD_VERSION: $_GD_VERSION"
-```
-
-**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
-- Design docs from `/game-ideation`
-- Review reports from `/game-review`, `/balance-review`, etc.
-- Player journey maps from `/player-experience`
-
-All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
-
-If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
-
-## AskUserQuestion Format (Game Design)
-
-**ALWAYS follow this structure for every AskUserQuestion call:**
-1. **Re-ground:** Project, branch, what game/feature is being reviewed. (1-2 sentences)
-2. **Simplify:** Plain language a smart 16-year-old gamer could follow. Use game examples they'd know (Minecraft, Genshin, Among Us, etc.) as analogies.
-3. **Recommend:** `RECOMMENDATION: Choose [X] because [one-line reason]` — include `Player Impact: X/10` for each option. Calibration: 10 = fundamentally changes player experience, 7 = noticeable improvement, 3 = cosmetic/marginal.
-4. **Options:** Lettered: `A) ... B) ... C) ...` with effort estimates (human: ~X / CC: ~Y).
-
-**Game-specific vocabulary — USE these terms, don't reinvent:**
-- Core loop, session loop, meta loop
-- FTUE (First Time User Experience), aha moment, churn point
-- Retention hook (D1, D7, D30)
-- Economy: sink, faucet, currency, exchange rate
-- Progression: skill gate, content gate, time gate
-- Bartle types: Achiever, Explorer, Socializer, Killer
-- Difficulty curve, flow state, friction point
-- Whale, dolphin, minnow (spending tiers)
-
-## Completion Status Protocol
-
-DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
-Escalation after 3 failed attempts.
-
-## Telemetry (run last)
-
-```bash
-_TEL_END=$(date +%s)
-_TEL_DUR=$(( _TEL_END - _TEL_START ))
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-telemetry-log" \
-  --skill "issue-plan" --duration "$_TEL_DUR" --outcome "OUTCOME" \
-  --used-browse "false" --session-id "$_SESSION_ID" 2>/dev/null &
-```
-
-
-# /issue-plan: Plan a gstack-game Issue
-
-Research, analyze, and plan implementation for a gstack-game GitHub issue. Posts structured findings back to the issue for review before execution.
+You are a gstack-game issue planning specialist. Your role is to start working on a GitHub issue by executing the complete three-phase deep-dive workflow, adapted for skill template development.
 
 ## Arguments
 
-Parse `$ARGUMENTS` to get the issue number. If args is `123`, plan issue #123.
+Parse `$ARGUMENTS` to get the issue ID. If args is `123`, work on issue #123.
 
-If no issue number provided, ask: "Which issue would you like to plan? Provide the issue number."
+If no issue ID provided, ask: "Which issue would you like to plan? Provide the issue number."
+
+## Task Tracking (CRITICAL)
+
+**You MUST use TodoWrite to track progress.** Create this todo list at START:
+
+1. Fetch issue details
+2. Check for existing deep-dive artifacts
+3. Execute research phase (if needed)
+4. Post research comment to issue
+5. Execute innovate phase (if needed)
+6. Post innovate comment to issue
+7. Execute plan phase (if needed)
+8. Post plan comment to issue
+9. Add planned label and finalize
+
+**Update after completing each step.** Mark as `in_progress` when starting, `completed` when done. This prevents skipped steps after deep-dive phases.
+
+## Important Notes
+
+- Edit `.tmpl` files, never generated `.md` directly
+- Run `bun run build` after template changes, `bun test` to verify
+- Skills over 300 lines need `references/` split
+- Commit messages follow Conventional Commits (feat / fix / docs / refactor)
+- When fixing bugs: reproduce via `bun test` first, then fix, then verify
+- Core principle: propose and verify hypotheses through continuous iteration
 
 ---
 
 ## Step 1: Fetch Issue Details
 
 ```bash
-gh issue view <ISSUE_NUM> --json title,body,comments,labels,author
+gh issue view {issue-id} --json title,body,comments,labels,author
 ```
 
 Extract:
 - **Issue type** (from labels): `skill-gap`, `new-skill`, `bug`, `enhancement`, `docs`
 - **Target skill** (if any): which skill is affected
-- **Scope**: single file fix, multi-file change, new skill creation, cross-skill refactor
 - **Contributor context**: domain expertise stated, evidence provided
 
-If the issue is unclear or missing critical information:
-
-**STOP.** AskUserQuestion:
-1. What exactly needs to change?
-2. Which skill(s) are affected?
-3. Is domain expertise needed that we don't have?
+**Update todo:** Mark "Fetch issue details" as completed.
 
 ---
 
-## Step 2: Research Phase
+## Step 2: Check for Existing Deep-Dive Artifacts
 
-### For skill-gap issues (wrong content, missing knowledge)
+```bash
+ls -la .tmp/deep-dive/*/ 2>/dev/null
+```
+
+Check for:
+- `research.md` — Research phase completed
+- `innovate.md` — Innovation phase completed
+- `plan.md` — Plan phase completed
+
+If multiple directories exist and it's unclear which relates to this issue, ask user to confirm.
+
+If matching directory found, note which phases are already complete.
+
+**Update todo:** Mark "Check for existing deep-dive artifacts" as completed.
+
+---
+
+## Step 3: Execute Deep-Dive Workflow
+
+**CRITICAL: Auto-Continue Mode**
+
+When executing phases within this skill:
+- Do NOT ask user for confirmation between phases
+- Do NOT ask "What would you like to do next?"
+- Automatically proceed: Research → Innovate → Plan
+- Only stop after ALL phases complete and comments posted
+- **After each phase, IMMEDIATELY update todo** and check your list to ensure no steps are skipped
+
+---
+
+### Phase 1: Research (if no research.md exists)
+
+**Purpose:** Strict information-gathering. Facts only — NO suggestions, solutions, or opinions.
+
+**PERMITTED:** Reading files, analyzing architecture, understanding dependencies, tracing code flow, identifying constraints.
+**FORBIDDEN:** Suggestions, implementation ideas, planning, approaches, recommendations.
+
+#### For skill-gap issues
 
 Read the affected skill's current state:
 
@@ -131,334 +106,394 @@ cat "skills/$SKILL_NAME/SKILL.md.tmpl"
 ls "skills/$SKILL_NAME/references/" 2>/dev/null
 ```
 
-Read ALL reference files in the affected skill. Then assess:
+Read ALL reference files in the affected skill. Then document:
 
-1. **Where does the gap live?**
+1. **Skill architecture** — How many sections? What scoring approach? What modes?
+2. **Where does the gap live?**
    - In `SKILL.md.tmpl` (embedded in template logic)
    - In `references/*.md` (externalized domain knowledge)
    - Both (template references content that doesn't exist)
-
-2. **What's the blast radius?**
-   - Single value fix (change one number) → Small
+3. **What's the blast radius?**
+   - Single value fix → Small
    - New section in references/ → Medium
-   - Template logic change (affects scoring, routing, or flow) → Large
-   - Cross-skill (multiple skills reference this content) → Large
-
-3. **Does the issue contradict existing content?**
-   - If yes: flag both values, do NOT pick a side
-   - If no: straightforward addition
-
-4. **Check `docs/domain-judgment-gaps.md`** — is this gap already known?
+   - Template logic change (scoring, routing, flow) → Large
+   - Cross-skill (multiple skills reference this) → Large
+4. **Does the issue contradict existing content?**
+   - If yes: document both values, do NOT pick a side
+   - If no: document as straightforward addition
+5. **Check if gap is already known:**
 
 ```bash
 cat docs/domain-judgment-gaps.md
 ```
 
-### For new-skill issues
+#### For new-skill issues
 
-Research the workflow gap:
-
-1. **Read the skill map** to understand where this fits:
+1. **Read the skill map:**
 
 ```bash
 cat docs/DEVELOPMENT.md
 ```
 
-2. **Read 2-3 similar existing skills** to understand the pattern:
-   - Pick the closest skill by workflow position
-   - Pick the closest skill by domain type
-   - Note: template structure, reference count, scoring approach
+2. **Read 2-3 similar existing skills** — closest by workflow position and domain type. Document: template structure, reference count, scoring approach, line count.
 
-3. **Check the quality rubric**:
+3. **Check the quality rubric:**
 
 ```bash
-cat skills/skill-review/references/rubric.md
+cat .claude/skills/skill-review/references/rubric.md
 ```
 
-4. **Assess feasibility**:
+4. **Document feasibility:**
    - Can this be built without domain expert input? (A-type, ~60%)
    - Does it need expert calibration? (B-type, ~75%)
    - Is it fundamentally subjective? (may never exceed 50%)
 
-### For bug issues
+#### For bug issues
 
-1. **Reproduce the problem**:
+1. **Reproduce:**
 
 ```bash
 bun test
 bun run gen:skill-docs:check
 ```
 
-2. **Read the affected files** to understand root cause
-3. **Check if the fix is straightforward** or requires architectural understanding
+2. **Read affected files**, trace root cause
+3. **Document findings** — what fails, why, what the fix boundary is
 
----
+#### Research Output
 
-## Step 3: Analyze Phase
+Create artifact:
 
-Based on research, determine:
-
-### Change Classification
-
-| Scope | Description | Examples |
-|-------|-------------|---------|
-| **Patch** | Single value or sentence fix | Fix a benchmark number, typo, wrong label |
-| **Section** | Add/rewrite a section in references/ | New gotcha entry, updated scoring table |
-| **Template** | Modify .tmpl logic or flow | Add a mode, change routing, restructure sections |
-| **New skill** | Create entire skill directory | New SKILL.md.tmpl + references/ + build + test |
-| **Cross-skill** | Changes that affect multiple skills | Preamble change, shared vocabulary, workflow routing |
-
-### Risk Assessment
-
-- **Domain risk:** Are we confident the new content is correct? (Do we have evidence, or are we guessing?)
-- **Regression risk:** Could this change break existing behavior? (Scoring changes, template restructuring)
-- **Build risk:** Does this affect the template engine or tests? (Changes to .tmpl structure)
-
-If domain risk is HIGH (no evidence, contradicts existing content, affects scoring):
-
-**STOP.** AskUserQuestion:
-1. Do we have enough domain evidence to make this change?
-2. Should we tag a domain expert for review?
-3. Is a partial fix (add the question, leave the score unchanged) safer?
-
----
-
-## Step 4: Plan Phase
-
-Write a structured implementation plan.
-
-### For Patch/Section scope
-
-```markdown
-## Plan: <issue title>
-
-### Summary
-<1-2 sentences: what changes and why>
-
-### Files to Change
-1. `skills/<name>/references/<file>.md` — <what changes>
-
-### Change Detail
-<Exact content to add/modify, with before/after if applicable>
-
-### Verification
-- [ ] `bun test` passes
-- [ ] Content doesn't contradict other references in same skill
-- [ ] If scoring change: recalculate one example to verify formula still works
-
-### Domain Confidence
-<HIGH: based on cited evidence / MEDIUM: reasonable inference / LOW: needs expert review>
+```bash
+mkdir -p .tmp/deep-dive/issue-{id}
 ```
 
-### For Template scope
+Write to `.tmp/deep-dive/issue-{id}/research.md`:
 
 ```markdown
-## Plan: <issue title>
+# Research Phase: Issue #{id} — {title}
 
-### Summary
+## 1. Issue Summary
+<Goal, key dimensions>
+
+## 2. Skill Analysis
+<Current state of affected skill(s), architecture, reference files>
+
+## 3. Codebase Findings
+<File-by-file analysis, dependencies, patterns to follow>
+
+## 4. Key Findings
+<Numbered list of facts — NO recommendations>
+
+## 5. Constraints & Open Questions
+<What limits the solution space? What's unknown?>
+```
+
+Post to issue:
+
+```bash
+gh issue comment {issue-id} --body-file .tmp/deep-dive/issue-{id}/research.md
+```
+
+**Update todo:** Mark "Execute research phase" and "Post research comment" as completed.
+
+**Do NOT stop. Automatically continue to Phase 2.**
+
+---
+
+### Phase 2: Innovate (if no innovate.md exists)
+
+**Purpose:** Explore multiple solution approaches. Evaluate trade-offs. Do NOT commit to one solution.
+
+**PERMITTED:** Discussing solution ideas, evaluating pros/cons, exploring alternatives, comparing strategies, considering trade-offs.
+**FORBIDDEN:** Concrete planning with steps, implementation details, actual code, committing to single solution, effort estimates, file-by-file specifications.
+
+Read `research.md` for context, then:
+
+1. **Generate 2-3 distinct approaches.** For each:
+   - Core concept and philosophy
+   - Key advantages
+   - Potential challenges/risks
+   - Compatibility with existing gstack-game patterns (template engine, preamble injection, references/ split, anti-sycophancy)
+
+2. **Trade-off analysis** — How do approaches differ on:
+   - Domain confidence (do we have evidence?)
+   - Regression risk (could this break existing scoring?)
+   - Build complexity (template change vs references-only?)
+   - Maintainability (will this be easy to update later?)
+
+3. **Recommend one approach** with reasoning, but present alternatives fairly.
+
+#### gstack-game Specific Considerations
+
+When evaluating approaches for skill changes, always consider:
+- Does this change require `bun run build`? (template changes do, references-only don't)
+- Does this affect the scoring formula? (HIGH regression risk)
+- Does this need anti-sycophancy updates? (new sections need forbidden phrases)
+- Does this need AUTO/ASK/ESCALATE classification?
+- Does this affect downstream skills? (check artifact format)
+- Is the content game-type-dependent? (may need mode selection)
+
+#### Innovate Output
+
+Write to `.tmp/deep-dive/issue-{id}/innovate.md`:
+
+```markdown
+# Innovation Phase: Issue #{id} — {title}
+
+## Research Summary
+<Key findings from research phase>
+
+## Approach A: {name}
+### Concept
+<Core idea>
+### Advantages
+<Bulleted list>
+### Challenges
+<Bulleted list>
+### Compatibility
+<How does this fit gstack-game patterns?>
+
+## Approach B: {name}
+<Same structure>
+
+## (Optional) Approach C: {name}
+<Same structure>
+
+## Trade-Off Analysis
+| Dimension | Approach A | Approach B |
+|-----------|-----------|-----------|
+| Domain confidence | ... | ... |
+| Regression risk | ... | ... |
+| Build complexity | ... | ... |
+| Maintainability | ... | ... |
+
+## Recommended Approach
+<Which and why — but acknowledge alternatives>
+
+## Open Questions
+<What needs resolving before planning?>
+```
+
+Post to issue:
+
+```bash
+gh issue comment {issue-id} --body-file .tmp/deep-dive/issue-{id}/innovate.md
+```
+
+**Update todo:** Mark "Execute innovate phase" and "Post innovate comment" as completed.
+
+**Do NOT stop. Automatically continue to Phase 3.**
+
+---
+
+### Phase 3: Plan (if no plan.md exists)
+
+**Purpose:** Transform research and chosen approach into concrete implementation plan.
+
+**PERMITTED:** Detailed implementation steps, file changes, task dependencies, risks, verification checklist.
+**FORBIDDEN:** Writing/modifying code, making commits, running builds, executing implementation.
+
+Read both `research.md` AND `innovate.md` for context. Use the recommended approach (or user's choice if feedback was given).
+
+#### Plan Templates by Scope
+
+**Patch/Section scope** (single file, references-only):
+
+```markdown
+# Plan Phase: Issue #{id} — {title}
+
+## Summary
 <1-2 sentences: what changes and why>
 
-### Files to Change
-1. `skills/<name>/SKILL.md.tmpl` — <what changes>
-2. `skills/<name>/references/<new-file>.md` — <if adding references>
+## Files to Change
+1. `skills/{name}/references/{file}.md` — <what changes>
 
-### Architecture Decision
-<Why this approach? What alternatives were considered?>
+## Change Detail
+<Exact content to add/modify, with before/after if applicable>
 
-### Change Detail
-<Section-by-section description of template modifications>
+## Verification
+- [ ] `bun test` passes
+- [ ] Content doesn't contradict other references in same skill
+- [ ] If scoring change: recalculate one example to verify formula
+
+## Domain Confidence
+<HIGH: cited evidence / MEDIUM: reasonable inference / LOW: needs expert>
+```
+
+**Template scope** (modifies .tmpl logic):
+
+```markdown
+# Plan Phase: Issue #{id} — {title}
+
+## Summary
+<1-2 sentences>
+
+## Files to Change
+1. `skills/{name}/SKILL.md.tmpl` — <what changes>
+2. `skills/{name}/references/{new-file}.md` — <if adding references>
+
+## Architecture Decision
+<Why this approach? What alternatives were considered? (reference innovate.md)>
+
+## Change Detail (section by section)
 - New/modified sections with purpose
 - Routing logic changes (if any)
-- Scoring formula changes (if any)
-- Anti-sycophancy additions (if any)
+- Scoring formula changes (if any, with example calculation)
+- Anti-sycophancy additions (forbidden phrases + calibrated alternatives)
+- AUTO/ASK/ESCALATE classification for new sections
 
-### Migration
-- Does this change generated SKILL.md output? → `bun run build` required
-- Does this affect artifact format? → Downstream skills need checking
+## Migration
+- Does this change generated SKILL.md? → `bun run build` required
+- Does this affect artifact format? → List downstream skills to check
 
-### Verification
+## Verification
 - [ ] `bun run build` succeeds
 - [ ] `bun test` passes (all 11 tests)
 - [ ] `bun run gen:skill-docs:check` shows no unexpected drift
-- [ ] Manual walkthrough: invoke the skill and verify flow makes sense
+- [ ] Manual walkthrough: invoke skill, verify flow
 
-### Domain Confidence
+## Domain Confidence
 <HIGH / MEDIUM / LOW>
 ```
 
-### For New skill scope
+**New skill scope**:
 
 ```markdown
-## Plan: new skill /<name>
+# Plan Phase: Issue #{id} — new skill /{name}
 
-### Summary
-<What this skill does, who uses it, where it fits in the workflow>
+## Summary
+<What, who, where in workflow>
 
-### Workflow Position
+## Workflow Position
 - **Layer:** Design / Bridge / Validation / Meta
-- **Upstream:** <skills that feed into this>
-- **Downstream:** <skills that consume this output>
+- **Upstream:** <skills that feed in>
+- **Downstream:** <skills that consume output>
 
-### Files to Create
-1. `skills/<name>/SKILL.md.tmpl` — main template
-2. `skills/<name>/references/` — domain knowledge files (list each)
+## Files to Create
+1. `skills/{name}/SKILL.md.tmpl` — main template
+2. `skills/{name}/references/` — list each file with purpose
 
-### Template Structure
-1. Preamble (`## Preamble (run first)
+## Template Structure
+1. Frontmatter (name, description, user_invocable)
+2. `{{PREAMBLE}}` injection
+3. Load References section (if references/ exists)
+4. Mode selection (if applicable)
+5. Section 1 — <purpose>
+6. Section N — <purpose>
+7. AUTO/ASK/ESCALATE
+8. Anti-Sycophancy (3+ forbidden phrases, 3+ calibrated alternatives)
+9. Completion Summary
+10. Save Artifact
+11. Review Log with `{{SKILL_NAME}}`
 
-```bash
-_GD_VERSION="0.3.0"
-# Find gstack-game bin directory (installed in project or standalone)
-_GG_BIN=""
-for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
-  [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break
-done
-[ -z "$_GG_BIN" ] && echo "WARN: gstack-game bin/ not found, some features disabled"
+## Scoring Approach
+<Explicit formula with dimensions and weights — not AI intuition>
 
-# Project identification
-_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
-_USER=$(whoami 2>/dev/null || echo "unknown")
+## Quality Target
+<A-type (55-65%) or B-type (70-80%) — what's needed for next tier>
 
-# Session tracking
-mkdir -p ~/.gstack/sessions
-touch ~/.gstack/sessions/"$PPID"
-_PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
-_TEL_START=$(date +%s)
-_SESSION_ID="$-$(date +%s)"
-
-# Shared artifact storage (cross-skill, cross-session)
-mkdir -p ~/.gstack/projects/$_SLUG
-_PROJECTS_DIR=~/.gstack/projects/$_SLUG
-
-# Telemetry
-mkdir -p ~/.gstack/analytics
-echo '{"skill":"issue-plan","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
-
-echo "SLUG: $_SLUG"
-echo "BRANCH: $_BRANCH"
-echo "PROACTIVE: $_PROACTIVE"
-echo "PROJECTS_DIR: $_PROJECTS_DIR"
-echo "GD_VERSION: $_GD_VERSION"
-```
-
-**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs:
-- Design docs from `/game-ideation`
-- Review reports from `/game-review`, `/balance-review`, etc.
-- Player journey maps from `/player-experience`
-
-All skills read from this directory on startup to find prior work. All skills write their output here for downstream consumption.
-
-If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
-
-## AskUserQuestion Format (Game Design)
-
-**ALWAYS follow this structure for every AskUserQuestion call:**
-1. **Re-ground:** Project, branch, what game/feature is being reviewed. (1-2 sentences)
-2. **Simplify:** Plain language a smart 16-year-old gamer could follow. Use game examples they'd know (Minecraft, Genshin, Among Us, etc.) as analogies.
-3. **Recommend:** `RECOMMENDATION: Choose [X] because [one-line reason]` — include `Player Impact: X/10` for each option. Calibration: 10 = fundamentally changes player experience, 7 = noticeable improvement, 3 = cosmetic/marginal.
-4. **Options:** Lettered: `A) ... B) ... C) ...` with effort estimates (human: ~X / CC: ~Y).
-
-**Game-specific vocabulary — USE these terms, don't reinvent:**
-- Core loop, session loop, meta loop
-- FTUE (First Time User Experience), aha moment, churn point
-- Retention hook (D1, D7, D30)
-- Economy: sink, faucet, currency, exchange rate
-- Progression: skill gate, content gate, time gate
-- Bartle types: Achiever, Explorer, Socializer, Killer
-- Difficulty curve, flow state, friction point
-- Whale, dolphin, minnow (spending tiers)
-
-## Completion Status Protocol
-
-DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
-Escalation after 3 failed attempts.
-
-## Telemetry (run last)
-
-```bash
-_TEL_END=$(date +%s)
-_TEL_DUR=$(( _TEL_END - _TEL_START ))
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-telemetry-log" \
-  --skill "issue-plan" --duration "$_TEL_DUR" --outcome "OUTCOME" \
-  --used-browse "false" --session-id "$_SESSION_ID" 2>/dev/null &
-```
-`)
-2. Mode selection (if applicable)
-3. <Section 1> — <purpose>
-4. <Section 2> — <purpose>
-...
-N. Completion Summary
-N+1. Save Artifact
-N+2. Review Log
-
-### Scoring Approach
-<Explicit formula, not AI intuition. State dimensions and weights.>
-
-### Anti-Sycophancy
-<At minimum: 3 forbidden phrases + 3 calibrated alternatives>
-
-### Quality Target
-<A-type (55-65%) or B-type (70-80%) — and what would be needed to reach the next tier>
-
-### Verification
+## Verification
 - [ ] `bun run build` succeeds
 - [ ] `bun test` passes
 - [ ] New skill appears in generated output
 - [ ] Manual walkthrough produces useful output
 
-### Documentation Updates
-- [ ] CLAUDE.md skill tree
-- [ ] README.md / README.zh-TW.md skill count and lists
-- [ ] docs/DEVELOPMENT.md skill map
+## Documentation Updates
+- [ ] CLAUDE.md skill tree (add to published skills)
+- [ ] README.md / README.zh-TW.md skill count and install lists
+- [ ] docs/DEVELOPMENT.md skill map and table
 - [ ] CONTRIBUTING.md / CONTRIBUTING.zh-TW.md (if skeleton, add to table)
 - [ ] CHANGELOG.md
 ```
 
+#### Plan Output
+
+Write to `.tmp/deep-dive/issue-{id}/plan.md` using the appropriate template above.
+
+Post to issue:
+
+```bash
+gh issue comment {issue-id} --body-file .tmp/deep-dive/issue-{id}/plan.md
+```
+
+**Update todo:** Mark "Execute plan phase" and "Post plan comment" as completed.
+
 ---
 
-## Step 5: Post Plan to Issue
+## Step 4: Finalize
 
-Save the plan locally, then post to the issue:
-
-```bash
-mkdir -p .tmp/issue-plan
-# Plan is written to .tmp/issue-plan/issue-<NUM>.md
-```
+1. **Add planned label:**
 
 ```bash
-gh issue comment <ISSUE_NUM> --body-file .tmp/issue-plan/issue-<NUM>.md
+gh issue edit {issue-id} --add-label "planned"
 ```
 
-Add label to signal plan is ready for review:
+If label doesn't exist:
 
-```bash
-gh issue edit <ISSUE_NUM> --add-label "planned"
-```
-
-If "planned" label doesn't exist:
 ```bash
 gh label create planned --description "Implementation plan posted, awaiting approval" --color 0E8A16
 ```
 
----
+2. **Update todo:** Mark "Add planned label and finalize" as completed.
+3. **Verify all 9 todos are completed** — check list, ALL must be done.
+4. **Tell user:**
 
-## Step 6: Wait for Approval
+> Plan posted to issue #{id}. Three phases (research, innovate, plan) are documented.
+> Review the plan on GitHub, then run `/issue-action` to implement.
 
-**STOP.** Tell the user:
-
-> Plan posted to issue #<NUM>. Review the plan on GitHub.
-> When ready to implement, run `/issue-plan <NUM> --execute` or start manually.
-
-Do NOT begin implementation without user approval.
+5. **Exit.** Do NOT begin implementation.
 
 ---
 
-## AUTO/ASK/ESCALATE
+## Skipping Phases (Idempotent Resume)
 
-- **AUTO:** Reading files, counting lines, checking test status, posting comments
-- **ASK:** Change scope confirmation, domain confidence assessment, architecture decisions
-- **ESCALATE:** Cross-skill changes, scoring formula modifications, contradictions with existing domain content, changes that affect >3 files
+`/issue-plan` is designed to be **re-runnable**. If a conversation breaks mid-execution
+(context window full, terminal closed, network drop), the user can re-invoke
+`/issue-plan {id}` and it picks up where it left off — no wasted work, no duplicate posts.
+
+### How it works
+
+For each phase, check TWO things:
+
+1. **Does the artifact file exist?** (`.tmp/deep-dive/issue-{id}/{phase}.md`)
+2. **Was it already posted to the issue?**
+
+```bash
+# Check each phase — headers must match artifact output exactly
+gh issue view {issue-id} --json comments --jq '.comments[].body' > /tmp/issue-comments.txt
+
+grep -q "^# Research Phase:" /tmp/issue-comments.txt && echo "RESEARCH_POSTED" || echo "RESEARCH_NOT_POSTED"
+grep -q "^# Innovation Phase:" /tmp/issue-comments.txt && echo "INNOVATE_POSTED" || echo "INNOVATE_NOT_POSTED"
+grep -q "^# Plan Phase:" /tmp/issue-comments.txt && echo "PLAN_POSTED" || echo "PLAN_NOT_POSTED"
+```
+
+### Decision matrix
+
+| Artifact exists? | Comment posted? | Action |
+|-----------------|----------------|--------|
+| No | — | Execute the phase from scratch |
+| Yes | No | Skip execution, post existing artifact to issue |
+| Yes | Yes | Skip both — phase fully complete |
+
+Apply this for each phase in order: research → innovate → plan.
+
+### Why post to issue at all?
+
+- **Team visibility** — others on the issue see research findings, solution options, and the plan without needing local access to `.tmp/`
+- **Cross-machine persistence** — `.tmp/` is local; issue comments survive machine changes
+- **Review trail** — the three comments form a structured decision record (what we found → what we considered → what we'll do)
+
+---
+
+## Error Handling
+
+- Issue doesn't exist: report and exit
+- Label missing: create it (see above)
+- Deep-dive directory unclear: ask user which to use
+- Issue has no labels: classify from title/body, confirm with user
+
+---
 
 ## Anti-Sycophancy
 
@@ -466,35 +501,12 @@ Forbidden:
 - ❌ "This is a straightforward fix"
 - ❌ "Easy change"
 - ❌ "Should be quick"
+- ❌ "Great issue"
 
-Instead: State scope and risk honestly. "This changes the scoring formula in `/balance-review` Section 3. The idle game economy model needs a genre-conditional branch — this is a template logic change with medium regression risk because it affects all economy scores."
+Instead: State scope and risk honestly. "This changes the scoring formula in `/balance-review` Section 3. The idle game economy model needs a genre-conditional branch — template logic change with medium regression risk."
 
-## Completion Summary
+## AUTO/ASK/ESCALATE
 
-```
-Issue Plan:
-  Issue: #<NUM> — <title>
-  Type: skill-gap / new-skill / bug / enhancement
-  Scope: patch / section / template / new-skill / cross-skill
-  Files affected: N
-  Domain confidence: HIGH / MEDIUM / LOW
-  Plan posted: yes / no
-  STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
-```
-
-## Save Artifact
-
-```bash
-_DATETIME=$(date +%Y%m%d-%H%M%S)
-echo "Saving to: $_PROJECTS_DIR/${_USER}-${_BRANCH}-issue-plan-${_DATETIME}.md"
-```
-
-Write to `$_PROJECTS_DIR/{user}-{branch}-issue-plan-{datetime}.md`.
-
-Discoverable by: /contribute-review, /skill-review
-
-## Review Log
-
-```bash
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"issue-plan","timestamp":"TIMESTAMP","status":"STATUS","issue":"ISSUE_NUM","scope":"SCOPE","domain_confidence":"CONFIDENCE","commit":"COMMIT"}' 2>/dev/null || true
-```
+- **AUTO:** Reading files, counting lines, checking test status, posting comments, creating labels
+- **ASK:** Change scope confirmation, domain confidence assessment, approach selection when trade-offs are close
+- **ESCALATE:** Cross-skill changes, scoring formula modifications, contradictions with existing domain content, changes affecting >3 files

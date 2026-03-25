@@ -35,3 +35,5 @@ Thumbs.db
 
 # Temp
 /tmp/
+.claude/worktrees/
+.tmp/

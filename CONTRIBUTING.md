@@ -72,8 +72,8 @@ Submit a PR:
 Read these first:
 - `CLAUDE.md` — developer handbook
 - `docs/DEVELOPMENT.md` — full project overview, skill map, migration guide
-- `skills/skill-review/references/rubric.md` — 15-dimension quality rubric
-- `skills/skill-review/references/refactor-patterns.md` — refactoring method
+- `.claude/skills/skill-review/references/rubric.md` — 15-dimension quality rubric
+- `.claude/skills/skill-review/references/refactor-patterns.md` — refactoring method
 
 Key rules:
 - Edit `.tmpl` files, never `.md` directly

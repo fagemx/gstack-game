@@ -39,7 +39,7 @@ gstack-game/
 │   └── gstack-slug              ← repo slug detection
 ├── scripts/
 │   └── gen-skill-docs.ts        ← template engine (SKILL.md.tmpl → SKILL.md)
-├── skills/                      ← 28 skill directories + shared/
+├── skills/                      ← 26 published skills + shared/
 │   ├── shared/preamble.md       ← injected into every skill via {{PREAMBLE}}
 │   ├── game-review/             ← GDD review (255L, 80%)
 │   ├── balance-review/          ← economy & balance (286L, 70%)
@@ -64,11 +64,14 @@ gstack-game/
 │   ├── game-visual-qa/          ← visual QA (140L, 35%)
 │   ├── asset-review/            ← asset pipeline (128L, 35%)
 │   ├── playtest/                ← playtest protocol (176L, 40%)
-│   ├── skill-review/            ← skill quality review (431L)
-│   ├── contribute-review/       ← contribution review (334L)
 │   ├── careful/                 ← destructive cmd safety (62L)
 │   ├── guard/                   ← full safety mode (56L)
 │   └── unfreeze/                ← unlock guard (32L)
+├── .claude/skills/              ← 4 internal maintenance skills (not published)
+│   ├── skill-review/            ← skill quality review (431L)
+│   ├── contribute-review/       ← contribution review (334L)
+│   ├── issue-create/            ← create GitHub issues from conversation
+│   └── issue-plan/              ← plan implementation for GitHub issues
 ├── test/
 │   └── gen-skill-docs.test.ts   ← Tier 1 template validation (11 tests)
 └── docs/

@@ -2,7 +2,7 @@
 
 ## What is this?
 
-A **complete game production workflow** for Claude Code — 28 skills from concept to shipped build. Standalone, no gstack dependency.
+A **complete game production workflow** for Claude Code — 26 published skills from concept to shipped build, plus 4 internal maintenance skills. Standalone, no gstack dependency.
 
 ## Skill Map (v0.3.0)
 
@@ -21,9 +21,6 @@ LAYER C — Validation + Release (test → ship → reflect)
   /build-playability-review → /game-qa → /game-ship → /game-docs → /game-retro
   /playtest    /game-visual-qa    /asset-review    /game-debug    /game-codex
 
-META — Self-maintenance
-  /skill-review    /contribute-review
-
 SAFETY
   /careful    /guard    /unfreeze
 ```
@@ -34,7 +31,7 @@ SAFETY
 design → slice-plan → handoff → build → feel-pass → impl-review → playability → QA → ship
 ```
 
-### All 27 Skills
+### All 26 Published Skills
 
 | Skill | Layer | Type | references/ |
 |-------|-------|------|-------------|
@@ -61,8 +58,6 @@ design → slice-plan → handoff → build → feel-pass → impl-review → pl
 | `/game-visual-qa` | C | QA | — |
 | `/asset-review` | C | Review | — |
 | `/playtest` | C | Protocol | — |
-| `/skill-review` | Meta | Self-review | 3 files |
-| `/contribute-review` | Meta | Integration | 3 files |
 | `/careful` | Safety | Guard | — |
 | `/guard` | Safety | Guard | — |
 | `/unfreeze` | Safety | Unlock | — |
@@ -129,13 +124,18 @@ gstack-game/
 ├── .github/ISSUE_TEMPLATE/         ← 4 contribution templates
 ├── bin/                            ← 7 utilities
 ├── scripts/gen-skill-docs.ts       ← Template engine
-├── skills/                         ← 28 skills + shared/
+├── skills/                         ← 26 published skills + shared/
 │   ├── shared/preamble.md
 │   ├── game-review/
 │   │   ├── SKILL.md.tmpl           ← source
 │   │   ├── SKILL.md                ← generated
 │   │   └── references/             ← 8 files
-│   └── ... (26 more skills)
+│   └── ... (25 more skills)
+├── .claude/skills/                 ← 4 internal maintenance skills
+│   ├── skill-review/               ← skill quality assessment
+│   ├── contribute-review/          ← domain knowledge integration
+│   ├── issue-create/               ← create GitHub issues
+│   └── issue-plan/                 ← plan issue implementation
 ├── test/                           ← Validation tests
 └── docs/
     ├── DEVELOPMENT.md              ← This file

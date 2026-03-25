@@ -13,7 +13,6 @@ bun.lock
 
 # Claude Code local settings
 .claude/settings.local.json
-.claude/skills/
 .context/
 
 # gstack local state

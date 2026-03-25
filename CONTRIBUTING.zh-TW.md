@@ -72,8 +72,8 @@ bun test         # 確認沒壞
 先讀這些文件理解架構：
 - `CLAUDE.md` — 開發者手冊
 - `docs/DEVELOPMENT.md` — 完整專案概覽、skill map、migration guide
-- `skills/skill-review/references/rubric.md` — 15 維度品質評分標準
-- `skills/skill-review/references/refactor-patterns.md` — 重構方法
+- `.claude/skills/skill-review/references/rubric.md` — 15 維度品質評分標準
+- `.claude/skills/skill-review/references/refactor-patterns.md` — 重構方法
 
 關鍵規則：
 - 改 `.tmpl` 檔案，不直接改 `.md`

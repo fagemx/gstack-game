@@ -190,6 +190,8 @@ Read these reference files before starting the review — they contain scoring r
 - `references/scoring.md` — All 8 section rubrics with mode weight adjustments and scoring notes
 - `references/gotchas.md` — Claude-specific architecture review mistakes, anti-sycophancy protocol, forcing question routing
 - `references/performance-budgets.md` — Frame budgets, draw call limits, memory ceilings, texture sizes, build size limits by platform
+- `references/networking-patterns.md` — Networking models, tick rates, prediction/compensation, bandwidth budgets, latency thresholds
+- `references/engine-framework.md` — Engine selection matrix, Unity/Godot/Unreal architectural patterns, build pipeline
 
 > **Anti-sycophancy and push-back cadence:** See `references/gotchas.md`. Follow the forbidden phrases list and push-back cadence for EVERY interaction.
 
@@ -343,15 +345,7 @@ Push until you hear: A graceful degradation strategy. Dynamic resolution? Partic
 
 **Skip this section if the game is single-player only.** Score as N/A and redistribute weight per mode table in `references/scoring.md`.
 
-First, classify the networking model:
-
-| Model | Latency Tolerance | Bandwidth | Complexity | Example |
-|-------|-------------------|-----------|------------|---------|
-| **Client-Server Authoritative** | Low (action games) | High | High | Overwatch, Valorant |
-| **Client-Server Relaxed** | Medium (RPGs, strategy) | Medium | Medium | World of Warcraft, Clash Royale |
-| **Peer-to-Peer** | Variable | Low | Medium | Fighting games (GGPO), co-op |
-| **Turn-Based** | High (async OK) | Low | Low | Hearthstone, chess |
-| **Async/Social** | Very High | Very Low | Low | Clash of Clans attacks, leaderboards |
+First, classify the networking model using `references/networking-patterns.md` (Networking Models Comparison table). Match the game's latency sensitivity and player count to the appropriate model. Check tick rates, prediction models, and bandwidth budgets against the reference tables.
 
 > **Scoring:** See `references/scoring.md`, Section 3. Five criteria: Model Fitness (0-3), State Synchronization (0-2), Latency Handling (0-2), Cheat Prevention (0-2), Failure Modes (0-1). Total: ___/10.
 

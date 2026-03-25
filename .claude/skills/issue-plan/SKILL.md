@@ -210,19 +210,25 @@ gh issue comment {issue-id} --body-file .tmp/deep-dive/issue-{id}/research.md
 
 Read `research.md` for context, then:
 
-1. **Generate 2-3 distinct approaches.** For each:
+1. **Generate 2-3 distinct approaches, always including a minimal option.** For each:
    - Core concept and philosophy
    - Key advantages
    - Potential challenges/risks
    - Compatibility with existing gstack-game patterns (template engine, preamble injection, references/ split, anti-sycophancy)
+
+   **RULE: One approach MUST be the smallest possible change that delivers value.** Not a stub — a real, useful change that a user would notice. If the smallest useful change is 3 lines in preamble, that's a valid approach. Resist the urge to only propose comprehensive solutions.
 
 2. **Trade-off analysis** — How do approaches differ on:
    - Domain confidence (do we have evidence?)
    - Regression risk (could this break existing scoring?)
    - Build complexity (template change vs references-only?)
    - Maintainability (will this be easy to update later?)
+   - **Effort vs. value** (hours to implement vs. how much user pain it removes)
+   - **Demand validated?** (is this a reported problem, or a theoretical improvement?)
 
 3. **Recommend one approach** with reasoning, but present alternatives fairly.
+
+   **Bias toward smallest-first:** If the minimal approach solves 80% of the problem at 20% of the effort, recommend it — even if the comprehensive approach is "better." The comprehensive version can be a follow-up issue. Ship value early, validate demand, then invest more.
 
 #### gstack-game Specific Considerations
 
@@ -295,6 +301,19 @@ gh issue comment {issue-id} --body-file .tmp/deep-dive/issue-{id}/innovate.md
 **FORBIDDEN:** Writing/modifying code, making commits, running builds, executing implementation.
 
 Read both `research.md` AND `innovate.md` for context. Use the recommended approach (or user's choice if feedback was given).
+
+#### Proportionality Check (before writing the plan)
+
+Before planning, verify the approach is proportional:
+
+1. **Effort vs. issue severity** — A skeleton skill gap (P2) does not justify a 5-hour multi-file plan. Match investment to priority.
+2. **New files vs. editing existing** — Prefer editing existing files over creating new ones. A 3-line preamble change beats a new utility + new skill + preamble change.
+3. **Phased delivery** — If the plan exceeds 2 hours estimated effort, split it:
+   - **This issue:** The smallest change that delivers user-visible value
+   - **Follow-up issue:** The comprehensive version, only if demand is validated
+4. **Demand validation** — If nobody has reported this problem (it came from a review, not a user), default to the minimal approach.
+
+If the recommended approach from Innovate fails this check, **downgrade to the minimal approach** and note the comprehensive version as future work.
 
 #### Plan Templates by Scope
 
@@ -502,8 +521,17 @@ Forbidden:
 - ❌ "Easy change"
 - ❌ "Should be quick"
 - ❌ "Great issue"
+- ❌ "For completeness, we should also..." (scope creep disguised as thoroughness)
+- ❌ "While we're at it..." (bundling unrelated work)
+- ❌ "To do this properly..." (implying the minimal approach is improper)
 
 Instead: State scope and risk honestly. "This changes the scoring formula in `/balance-review` Section 3. The idle game economy model needs a genre-conditional branch — template logic change with medium regression risk."
+
+**Over-engineering red flags** — if you catch yourself writing any of these, step back and check proportionality:
+- Plan creates more than 2 new files for a non-new-skill issue
+- Plan estimates more than 3 hours for a single skill-gap fix
+- Plan proposes a new utility/tool when editing an existing file would work
+- Plan touches files not mentioned in the issue
 
 ## AUTO/ASK/ESCALATE
 

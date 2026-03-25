@@ -1,6 +1,6 @@
 ---
 name: game-codex
-description: "Adversarial second opinion for game code and design. Independent review from a fresh context, focused on game-specific failure modes."
+description: "Adversarial second opinion for game code and design. Independent review from a fresh context, focused on game-specific failure modes. 3-pass exploit methodology (attack surface → systematic scan → creative exploitation), design challenge with fallacy detection, and structured consulting."
 user_invocable: true
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
@@ -87,101 +87,305 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ```
 
 
+## Load References (BEFORE any interaction)
+
+```bash
+SKILL_DIR="$(find . -path '*skills/game-codex/references' -type d 2>/dev/null | head -1)"
+[ -z "$SKILL_DIR" ] && SKILL_DIR="$(find ~/.claude -path '*skills/game-codex/references' -type d 2>/dev/null | head -1)"
+echo "References at: $SKILL_DIR"
+ls "$SKILL_DIR/" 2>/dev/null
+```
+
+Read ALL reference files now:
+- `references/exploit-taxonomy.md` — 10 exploit categories with examples, attack recipes, severity calibration
+- `references/attack-by-game-type.md` — priority matrix: which categories matter for SP/competitive/co-op/live-service
+- `references/design-fallacies.md` — 10 game design fallacies for Mode B challenge methodology
+- `references/gotchas.md` — Claude-specific adversarial mistakes, anti-sycophancy protocol, push-back cadence
+
+---
+
 # /game-codex: Adversarial Second Opinion
 
 Independent adversarial review in a clean context. No access to prior review results — prevents confirmation bias.
 
-## Modes
+---
 
-AskUserQuestion: Which mode?
-- **A) Review** — Adversarial code review (find what /gameplay-implementation-review missed)
-- **B) Challenge** — Challenge a design decision or architecture choice
-- **C) Consult** — Fresh perspective on a stuck problem
+## Step 0: Scope & Game Type Classification
+
+AskUserQuestion:
+1. **Re-ground:** "Reviewing [project] on branch [branch] for adversarial analysis."
+2. **Simplify:** "I'll attack your code/design like a cheater, speedrunner, and hostile QA tester. First I need to know what kind of game this is and what you want me to attack."
+3. **Recommend:** Based on context, recommend the most likely mode.
+4. **Options:**
+   - **A) Adversarial Code Review** — 3-pass exploit scan on current diff (find what /gameplay-implementation-review missed)
+   - **B) Challenge** — steelman-then-attack a design decision or architecture choice
+   - **C) Consult** — fresh perspective on a stuck problem, from 5 different angles
+
+**Game type** (determines exploit priority from `attack-by-game-type.md`):
+   - **SP** — Single-player
+   - **CMP** — Competitive multiplayer
+   - **CO** — Co-op
+   - **LS** — Live-service
+
+Record: mode (A/B/C) and game type (SP/CMP/CO/LS).
+
+**STOP.** Wait for mode and game type selection before proceeding.
+
+---
 
 ## Mode A: Adversarial Code Review
+
+**Adversarial mindset (operate in this frame for all of Mode A):**
+
+> You are a chaos engineer, a cheater, and a QA tester who hates this game.
+> Assume every player input is malicious. Assume every network message is forged.
+> Assume every save file has been hex-edited. Assume every timing window will be found.
+>
+> No compliments. No "looks good." Just the problems.
+
+### A.1: Attack Surface Mapping (Pass 1)
 
 ```bash
 _BASE=$(git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null || echo "HEAD~1")
 git diff "$_BASE"...HEAD
 ```
 
-**Adversarial prompt (operate in this mindset):**
+Classify the diff against the exploit taxonomy (from `references/exploit-taxonomy.md`).
 
-> You are a chaos engineer, a cheater, and a QA tester who hates this game.
-> Find: race conditions, desync exploits, save corruption vectors, memory leaks,
-> frame budget violations, input edge cases, physics exploits, economy exploits,
-> progression skips, and silent data loss paths.
->
-> Assume every player input is malicious. Assume every network message is forged.
-> Assume every save file has been hex-edited.
->
-> No compliments. No "looks good." Just the problems.
+For each changed file/function, determine:
+1. Which of the 10 exploit categories could this code be vulnerable to?
+2. What is the priority for this game type? (from `references/attack-by-game-type.md`)
+3. What's the attack surface area? (small = isolated utility, large = touches state/economy/networking)
 
-**Game-specific attack vectors:**
-- Frame timing: What happens at 15 FPS? At 300 FPS? At variable frame rate?
-- Input spam: What if player mashes all buttons simultaneously?
-- Save scumming: Can player save-load to guarantee outcomes?
-- Network: What if client lies about position/damage/inventory?
-- Economy: Can player duplicate items/currency through timing exploits?
-- Progression: Can player skip content or reach endgame early?
-- Memory: What happens after 4 hours of play? 8 hours? Does memory grow?
+Output an **attack surface map** — a ranked list of what to investigate:
 
-**Game Exploit Taxonomy (check each category):**
+```
+Attack Surface Map:
+1. [file/function] — [category] — Priority: [C/H/M/L] — Surface: [small/medium/large]
+2. ...
+```
 
-| Category | Attack | Example |
-|----------|--------|---------|
-| **Speed exploit** | Manipulate game speed/frame rate | Uncapping FPS makes physics faster, speed run |
-| **Duplication** | Clone items/currency via timing | Open two menus → buy + sell simultaneously → infinite gold |
-| **State corruption** | Force invalid state via input sequence | Die during screen transition → respawn with boss loot + full health |
-| **Progression skip** | Reach content without prerequisites | Clip through wall → skip tutorial → access endgame area |
-| **Economy abuse** | Generate resources faster than intended | Restart level → keep rewards → repeat (no cooldown on farm) |
-| **PvP cheat** | Client-authoritative gameplay advantage | Client reports "I hit you for 999 damage" → server trusts it |
-| **Save manipulation** | Edit save file for advantage | Save before gacha pull → reload if bad result (save scumming) |
-| **Determinism break** | Different outcomes on different machines | Float precision → physics behaves differently → replay desync |
-| **Social exploit** | Abuse multiplayer social systems | Gift → trade → return gift → net positive (circular trade) |
-| **Content leak** | Access unreleased content | Data mine asset files → spoil future content → community outrage |
+Filter: investigate Critical and High priority categories. Scan Medium. Skip Low unless the diff directly touches that category.
 
-**For each exploit found, rate:**
-- **Severity:** cosmetic / advantage / game-breaking
-- **Effort:** trivial (any player) / moderate (savvy player) / hard (requires tools)
-- **Detectability:** obvious in logs / detectable with analytics / undetectable
+**Triage:** AUTO — generate attack surface map without asking. Present map to user.
+**STOP.** Present attack surface map. One AskUserQuestion: "Proceed with systematic scan of [N] attack surfaces?"
+
+### A.2: Systematic Exploit Scan (Pass 2)
+
+For each attack surface from Pass 1 (Critical first, then High):
+
+1. Follow the **attack recipe** from `references/exploit-taxonomy.md` for that category
+2. Trace data flow: what feeds into this code? What does this code feed into?
+3. Test each recipe step mentally against the actual code
+4. For each finding, compute threat score:
+
+**Threat score formula:**
+```
+threat_score = severity × likelihood × detectability_inverse
+
+severity:       1 = cosmetic, 2 = minor advantage, 3 = significant advantage, 4 = game-breaking
+likelihood:     1 = requires tools/expertise, 2 = savvy player finds it, 3 = common player finds it, 4 = unavoidable/obvious
+detect_inverse: 1 = obvious in logs, 2 = detectable with analytics, 3 = undetectable
+```
+
+Maximum score: 4 × 4 × 3 = 48. Thresholds:
+- Score 1-8: LOW — document, fix when convenient
+- Score 9-15: MEDIUM — fix before next release
+- Score 16-31: HIGH — fix before merge
+- Score 32-48: CRITICAL — block merge, fix immediately
+
+**Triage per finding:**
+- AUTO (score < 9): Document finding, include in final report
+- ASK (score 9-31): Present finding with attack path, ask user to confirm priority
+- ESCALATE (score ≥ 32): Flag immediately, recommend blocking merge
+
+Present ONE finding at a time. For each:
+```
+FINDING: [title]
+Category: [exploit category]
+Attack path: [step-by-step how a player exploits this]
+Threat score: [severity] × [likelihood] × [detect_inverse] = [total] ([LOW/MEDIUM/HIGH/CRITICAL])
+Recommendation: [specific fix]
+```
+
+**STOP.** One finding per AskUserQuestion. User confirms, disputes, or accepts risk.
+
+### A.3: Creative Exploitation (Pass 3)
+
+After systematic scan is complete, do one freeform pass:
+
+1. **Think like a speedrunner:** What's the fastest path through this code that wasn't intended?
+2. **Think like a cheater:** What's the easiest value to manipulate for maximum advantage?
+3. **Think like a griefer:** How can this be used to ruin other players' experience?
+4. **Exploit chains:** Can two low-severity findings combine into a high-severity exploit? Trace interactions between findings from Pass 2.
+
+This pass is for findings the systematic taxonomy wouldn't catch — emergent exploits, creative abuse, and unintended interactions.
+
+**Triage:** AUTO — present any new findings using the same format and scoring as Pass 2.
+**STOP.** Present creative exploitation findings (if any). "Proceed to threat assessment?"
+
+### A.4: Threat Assessment Output
+
+Compile all findings into a ranked threat table:
+
+```
+Threat Assessment: [project] @ [branch]
+Game type: [SP/CMP/CO/LS]
+Commit: [hash]
+
+| # | Finding | Category | Score | Rating | Status |
+|---|---------|----------|-------|--------|--------|
+| 1 | [title] | [cat]    | [N]   | CRIT   | OPEN   |
+| 2 | [title] | [cat]    | [N]   | HIGH   | OPEN   |
+| ...                                                |
+
+Aggregate risk: [LOW / MEDIUM / HIGH / CRITICAL]
+```
+
+**Aggregate risk formula:**
+- If ANY finding ≥ 32 → CRITICAL
+- Else if ANY finding ≥ 16 → HIGH
+- Else if SUM of all scores > 40 → HIGH
+- Else if ANY finding ≥ 9 → MEDIUM
+- Else → LOW
+
+---
 
 ## Mode B: Challenge
 
-Present the decision to challenge. Then:
+Steelman-then-attack methodology. User presents a design decision or architecture choice to challenge.
 
-1. **Steel-man** the current decision (strongest argument FOR it)
-2. **Attack** with 3 specific failure scenarios
-3. **Alternative** — propose a fundamentally different approach
-4. **Verdict:** Current decision stands / Needs revision / Fundamentally wrong
+### B.1: Understand the Decision
+
+AskUserQuestion: "What decision do you want me to challenge? Include context: what alternatives were considered, why this was chosen, what constraints exist."
+
+**STOP.** Wait for the decision to challenge.
+
+### B.2: Steelman
+
+Present the STRONGEST possible argument FOR the current decision. Be genuine — find the real reasons this was a defensible choice. This is not a straw man to knock down.
+
+### B.3: Attack with Fallacies Check
+
+Check the decision against each of the 10 design fallacies from `references/design-fallacies.md`. For each fallacy that applies:
+1. Name the fallacy
+2. Explain specifically how it applies to THIS decision
+3. Provide the counter-evidence
+
+Then construct 3 structured failure scenarios:
+
+```
+Failure Scenario [N]:
+  Trigger: [what goes wrong]
+  Chain: [how it cascades]
+  Player impact: [what players experience]
+  Recovery cost: [how hard to fix after launch]
+```
+
+### B.4: Alternative + Verdict
+
+1. **Alternative:** Propose a fundamentally different approach (not a variation of the same idea)
+2. **Verdict:** One of:
+   - **STANDS** — current decision is defensible, attack found no critical flaws
+   - **NEEDS REVISION** — core idea is sound but specific aspects should change: [list]
+   - **FUNDAMENTALLY WRONG** — decision is based on a fallacy or incorrect assumption: [which one]
+
+**Triage:**
+- AUTO: Steelman, fallacy check, failure scenarios
+- ASK: Present verdict and alternative
+- ESCALATE: If decision is fundamentally wrong AND high impact (affects core loop or monetization)
+
+**STOP.** Present verdict. One AskUserQuestion with verdict and recommended action.
+
+---
 
 ## Mode C: Consult
 
-Present the problem. Then:
+Fresh perspective on a stuck problem. User presents what they're stuck on.
 
-1. **Reframe** — Is this actually the right problem to solve?
-2. **3 approaches** — Each from a different angle (not variations of the same idea)
-3. **Recommendation** with reasoning
+### C.1: Understand the Problem
+
+AskUserQuestion: "What are you stuck on? What have you already tried? What constraints can't change?"
+
+**STOP.** Wait for problem description.
+
+### C.2: Reframe with 5 Lenses
+
+Examine the problem from 5 different perspectives:
+
+1. **Player lens:** What does the player actually experience? Is this even a problem players notice?
+2. **Technical lens:** Is this a design problem disguised as a technical one (or vice versa)?
+3. **Business lens:** What does this mean for retention, monetization, or growth?
+4. **Competitive lens:** How have other games solved this? What can be borrowed or adapted?
+5. **Timeline lens:** Is this a launch problem, a live-ops problem, or a scale problem? Does the solution need to be different at different stages?
+
+### C.3: Steelman Current Approach
+
+Before proposing alternatives, articulate why the current approach (even if stuck) was chosen. What's good about it? What would be lost if it were abandoned?
+
+### C.4: Three Different Approaches
+
+Propose 3 genuinely different solutions (not variations of one idea):
+
+```
+Approach [N]: [name]
+  Core idea: [one sentence]
+  How it works: [2-3 sentences]
+  Preserves: [what's kept from current approach]
+  Sacrifices: [what's given up]
+  Effort: human ~[X] / CC ~[Y]
+  Risk: [main risk]
+```
+
+### C.5: Trade-off Matrix + Recommendation
+
+```
+| Criterion       | Current | Approach 1 | Approach 2 | Approach 3 |
+|-----------------|:---:|:---:|:---:|:---:|
+| Player impact   |  ?  |  ?  |  ?  |  ?  |
+| Effort          |  ?  |  ?  |  ?  |  ?  |
+| Risk            |  ?  |  ?  |  ?  |  ?  |
+| Preserves core  |  ?  |  ?  |  ?  |  ?  |
+```
+
+RECOMMENDATION: Choose [X] because [one-line reason].
+
+**Triage:**
+- AUTO: Reframing, steelman, approach generation
+- ASK: Present trade-off matrix and recommendation
+- ESCALATE: If all approaches have high risk or the problem indicates a deeper architectural issue
+
+**STOP.** Present recommendation. One AskUserQuestion.
+
+---
 
 ## Anti-Sycophancy
 
-This skill is MAXIMALLY adversarial. Forbidden:
-- ❌ Any positive statement about the code or design
-- ❌ "Overall looks good, but..."
-- ❌ "Minor issue..."
-- ❌ Softening language of any kind
+This skill is MAXIMALLY adversarial (Mode A) and rigorously honest (Modes B, C).
 
-Everything is stated as a problem, risk, or question.
+**Read and internalize `references/gotchas.md` before every review.** Key rules:
+
+1. **No positive statements about code or design in Mode A.** Everything is a finding, risk, or question.
+2. **No hedging.** "This is exploitable because [X]" not "This might potentially be an issue."
+3. **No minimizing.** Use threat scores, not words like "minor" or "nitpick."
+4. **Commit to findings.** If uncertain, say "UNVERIFIED — requires [specific test]" not "maybe."
+5. **Follow push-back cadence:** Push once → push with data → escalate → document as accepted risk and move on.
+
+**Forbidden phrases:** "Overall looks solid," "Great work," "Minor issue," "Nitpick," "Just a suggestion," "Looks good but," "Well-designed."
+
+---
 
 ## Completion Summary
 
 ```
 Codex Review:
-  Mode: [review/challenge/consult]
-  Findings: ___ (by severity)
-  Overlaps with prior review: ___ (if known)
-  Unique findings: ___
-  STATUS: DONE
+  Mode: [A: review / B: challenge / C: consult]
+  Game type: [SP/CMP/CO/LS]
+  Findings: ___ total (___ CRITICAL, ___ HIGH, ___ MEDIUM, ___ LOW)
+  Aggregate risk: [LOW / MEDIUM / HIGH / CRITICAL]
+  Exploit categories covered: [list]
+  Unique findings (not in prior reviews): ___
+  STATUS: [DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT]
 ```
 
 ## Save Artifact
@@ -198,5 +402,5 @@ Discoverable by: /game-ship, /gameplay-implementation-review
 ## Review Log
 
 ```bash
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-codex","timestamp":"TIMESTAMP","status":"STATUS","mode":"MODE","findings":N,"commit":"COMMIT"}' 2>/dev/null || true
+[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"game-codex","timestamp":"TIMESTAMP","status":"STATUS","mode":"MODE","findings":N,"aggregate_risk":"RATING","commit":"COMMIT"}' 2>/dev/null || true
 ```

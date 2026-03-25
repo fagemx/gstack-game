@@ -4,7 +4,7 @@
 
 [English](README.md)
 
-26 個互動式 AI 審查技能，涵蓋**完整的遊戲製作工作流**：設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
+27 個互動式 AI 審查技能，涵蓋**完整的遊戲製作工作流**：設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
 
 > **這是什麼：** 結構化的審查和品質保證系統——幫你判斷、評分、改善你的遊戲設計和程式碼。
 > **這不是什麼：** 不是遊戲生成器，不會幫你寫程式碼或做美術素材。
@@ -21,11 +21,10 @@ gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-ga
 ## Quick Start：前 10 分鐘
 
 1. 安裝 gstack-game（30 秒 — 見下方）
-2. 跑 `/game-import` — 把你的 PDF/文件/筆記轉成標準 GDD。它會讀取檔案、對照 8-section 標準做完整度審計、問你缺失的部分、然後寫出 `docs/gdd.md`。
-3. 跑 `/game-review` — 逐 section 設計審查，帶評分、逼問、建議。
-4. 跑 `/player-experience` — 用特定 persona 模擬玩家走查。
-5. 跑 `/game-ideation` — 如果還沒有設計，從零發想。
-6. 到這裡停。你會知道這對你有沒有用。
+2. 跑 `/triage` — 自動偵測專案狀態，告訴你該跑哪個 skill。
+3. 或直接跳進去：`/game-import`（有文件）、`/game-ideation`（從零開始）、`/game-review`（有 GDD）。
+4. 每個 skill 結束時會推薦 **Next Step** — 跟著走就好。
+5. 跑 2-3 個 skill 就能判斷適不適合你。
 
 ---
 
@@ -37,7 +36,7 @@ gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-ga
 
 打開 Claude Code，貼上這段。Claude 會自己完成安裝。
 
-> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
+> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /triage, /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
 
 ### 方式 B：加到專案讓隊友也能用
 
@@ -131,6 +130,7 @@ gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 spri
 
 | Skill | 你的專家 | 做什麼 |
 |-------|---------|--------|
+| `/triage` | **專案導航員** | 偵測專案狀態（BLANK/IDEA/DOCUMENTED/REVIEWED/BUILDING/SHIPPING），引導你跑對的 skill。不知道從哪開始就跑這個。 |
 | `/game-ideation` | **遊戲設計 Mentor** | 用 Fantasy/Loop/Twist 結構化概念，6 個逼問問題挑戰前提，冰山驗證框架規劃下一步 |
 | `/game-direction` | **製作人 / 創意總監** | 挑戰「為什麼做這個遊戲」，10 個認知模式審查方向，Scope 決策（ADD/KEEP/DEFER/CUT） |
 | `/game-review` | **資深遊戲設計師** | GDD 審查：Core Loop、Progression、Economy、Motivation、Risk，量化 GDD Health Score |
@@ -249,9 +249,9 @@ gstack-game 包含 **opt-in** 的使用統計，預設關閉。
 
 ```
 ## gstack-game
-Available skills: /game-import, /game-ideation, /game-direction, /game-review,
-/game-eng-review, /balance-review, /player-experience, /game-ux-review,
-/pitch-review, /prototype-slice-plan, /implementation-handoff,
+Available skills: /triage, /game-import, /game-ideation, /game-direction,
+/game-review, /game-eng-review, /balance-review, /player-experience,
+/game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff,
 /gameplay-implementation-review, /feel-pass, /build-playability-review,
 /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs,
 /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze.

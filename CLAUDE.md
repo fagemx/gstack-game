@@ -39,7 +39,7 @@ gstack-game/
 │   └── gstack-slug              ← repo slug detection
 ├── scripts/
 │   └── gen-skill-docs.ts        ← template engine (SKILL.md.tmpl → SKILL.md)
-├── skills/                      ← 26 published skills + shared/
+├── skills/                      ← 27 published skills + shared/
 │   ├── shared/preamble.md       ← injected into every skill via {{PREAMBLE}}
 │   ├── game-review/             ← GDD review (255L, 80%)
 │   ├── balance-review/          ← economy & balance (286L, 70%)
@@ -48,31 +48,33 @@ gstack-game/
 │   ├── gameplay-implementation-review/        ← PR review (186L, 75%)
 │   ├── game-ideation/           ← concept brainstorming (524L, 65%)
 │   ├── game-direction/          ← direction review (490L, 55%)
-│   ├── game-eng-review/         ← tech architecture (589L, 60%)
+│   ├── game-eng-review/         ← tech architecture (462L + 5 refs, 70%)
 │   ├── game-qa/                 ← QA testing (702L, 65%)
 │   ├── game-ux-review/          ← UI/UX (565L, 60%)
 │   ├── game-ship/               ← release process (448L, 65%)
 │   ├── game-import/             ← project import (514L)
+│   ├── triage/                  ← project navigator (320L)
 │   ├── feel-pass/               ← game feel diagnosis (280L)
 │   ├── build-playability-review/← playability assessment (211L)
 │   ├── prototype-slice-plan/    ← prototype planning (235L)
 │   ├── implementation-handoff/  ← implementation handoff (225L)
 │   ├── game-debug/              ← debugging (182L, 55%)
 │   ├── game-retro/              ← retrospective (166L, 40%)
-│   ├── game-codex/              ← adversarial review (123L, 40%)
+│   ├── game-codex/              ← adversarial review (331L + 4 refs, 70%)
 │   ├── game-docs/               ← release docs (137L, 40%)
-│   ├── game-visual-qa/          ← visual QA (140L, 35%)
-│   ├── asset-review/            ← asset pipeline (128L, 35%)
-│   ├── playtest/                ← playtest protocol (176L, 40%)
+│   ├── game-visual-qa/          ← visual QA (231L + 5 refs, 60%)
+│   ├── asset-review/            ← asset pipeline (329L + 5 refs, 70%)
+│   ├── playtest/                ← playtest protocol (251L + 3 refs, 65%)
 │   ├── careful/                 ← destructive cmd safety (62L)
 │   ├── guard/                   ← full safety mode (56L)
 │   └── unfreeze/                ← unlock guard (32L)
-├── .claude/skills/              ← 5 internal maintenance skills (not published)
+├── .claude/skills/              ← 6 internal maintenance skills (not published)
 │   ├── skill-review/            ← skill quality review (431L)
 │   ├── contribute-review/       ← contribution review (334L)
 │   ├── issue-create/            ← create GitHub issues from conversation
 │   ├── issue-plan/              ← three-phase deep-dive planning (research → innovate → plan)
-│   └── issue-action/            ← implement from approved plan → PR
+│   ├── issue-action/            ← implement from approved plan → PR
+│   └── pr-review-loop/          ← automated PR review-fix cycle (max 3 iterations)
 ├── test/
 │   └── gen-skill-docs.test.ts   ← Tier 1 template validation (11 tests)
 └── docs/

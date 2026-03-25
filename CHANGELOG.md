@@ -1,5 +1,53 @@
 # Changelog
 
+## 0.4.0 — 2026-03-25
+
+**Self-guiding workflow.** Skills now tell you what to do next. New entry point skill, deep domain knowledge for 6 skills, and a complete internal maintenance pipeline.
+
+### New skills
+
+- `/triage` — Entry point for new users. Detects project state from artifacts and project files, classifies into 6 states (BLANK/IDEA/DOCUMENTED/REVIEWED/BUILDING/SHIPPING), routes to the right skill. Run this when you don't know where to start.
+
+### Next Step routing
+
+Every skill now ends with a **Next Step** recommendation based on results:
+- Score-conditional routing (e.g., Economy < 5 → `/balance-review`)
+- Backtrack rules (core loop broken → `/game-ideation`)
+- Forward pipeline through all three layers (Design → Production → Validation)
+- 27 skills connected into a self-guiding workflow
+
+### Skill depth upgrades
+
+Six skills upgraded from skeleton/thin to production quality with reference files:
+
+| Skill | Before | After |
+|-------|--------|-------|
+| `/game-codex` | 123L, 40% | 331L + 4 refs (544L). 3-pass adversarial methodology, threat scoring formula, exploit taxonomy, design fallacies |
+| `/asset-review` | 128L, 35% | 329L + 5 refs (380L). Pipeline QA role, 7-dimension /14 scoring, per-asset benchmarks |
+| `/game-visual-qa` | 140L, 35% | 231L + 5 refs (341L). Animation standards, visual thresholds, deduction scoring, AI confidence disclaimers |
+| `/playtest` | 176L, 40% | 251L + 3 refs (238L). Observation metrics with confidence labels, interview question bank, analysis framework |
+| `/game-eng-review` | 589L, 0 refs | 462L + 5 refs (587L). Scoring, gotchas, performance budgets, networking patterns, engine framework |
+| `/game-debug` | 182L, 55% | Promoted from skeleton table — has full bug recipes |
+
+### Artifact visibility
+
+Every skill now shows existing artifacts on startup (preamble compact summary). Users can see what prior skills produced without manual `ls`.
+
+### Internal maintenance pipeline (for contributors)
+
+Six internal skills in `.claude/skills/` (not published to users):
+
+```
+/issue-create → /issue-plan → /issue-action → PR → /pr-review-loop → merge
+```
+
+- `/issue-create` — Create GitHub issues from conversation (skill-gap, new-skill, bug)
+- `/issue-plan` — Three-phase deep-dive (research → innovate → plan) with TodoWrite tracking
+- `/issue-action` — Implement from approved plan, create PR
+- `/pr-review-loop` — Automated PR review-fix cycle (bash state machine, max 3 iterations)
+- `/skill-review` — 15-dimension quality rubric (moved from published to internal)
+- `/contribute-review` — Domain knowledge integration (moved from published to internal)
+
 ## 0.3.0 — 2026-03-23
 
 **Bridge Layer + Production Workflow.** The biggest structural change since launch. Five new skills fill the gap between design review and implementation. The back half now runs on game production work units (mechanic, feel, playability), not just software delivery units (diff, PR, build).

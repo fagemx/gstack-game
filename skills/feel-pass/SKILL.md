@@ -393,8 +393,9 @@ Top blocker: [the one thing that would improve feel the most]
 
 Status: DONE / DONE_WITH_CONCERNS / BLOCKED
 
-Next: Fix top blocker → re-run /feel-pass to verify
-      Or: /build-playability-review for full build assessment
+Next Step:
+  PRIMARY: /build-playability-review — feel checked, verify playability
+  (if feel score < 7/14): /implementation-handoff — rework needed, re-handoff
 ```
 
 ## Save Artifact

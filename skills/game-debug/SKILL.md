@@ -297,6 +297,10 @@ Bug Investigation:
   Regression test: [written / not applicable / TODO]
   Related occurrences: ___ found
   STATUS: DONE / DONE_WITH_CONCERNS / BLOCKED
+
+  Next Step:
+    PRIMARY: /game-qa — bug fixed, re-test
+    (if root cause is design): /game-review — design issue, not code issue
 ```
 
 ## Save Artifact

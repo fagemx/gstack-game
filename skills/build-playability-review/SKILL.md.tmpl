@@ -186,11 +186,11 @@ Top blocker: [one thing]
 
 Status: DONE / DONE_WITH_CONCERNS / BLOCKED
 
-Next:
-  - PLAY-READY → /game-qa for bug sweep, then /game-ship
-  - ALMOST → fix [blocker], then re-run playability
-  - NOT YET → fix [top 2 blockers], consider /feel-pass if feel is weak
-  - TECH DEMO → back to /implementation-handoff, scope may need cutting
+Next Step:
+  PRIMARY: /game-qa — playable, now test systematically
+  (if softlock found): /game-debug — investigate the blocker
+  (if ALMOST): fix blocker, then re-run /build-playability-review
+  (if NOT YET or TECH DEMO): /feel-pass or /implementation-handoff — rework needed
 ```
 
 ## Save Artifact

@@ -252,6 +252,9 @@ Documentation:
   Internal changelog: [written / updated]
   Docs swept: ___/___ up to date
   STATUS: DONE / DONE_WITH_CONCERNS
+
+  Next Step:
+    PRIMARY: /game-retro — docs done, run retrospective
 ```
 
 ## Save Artifact

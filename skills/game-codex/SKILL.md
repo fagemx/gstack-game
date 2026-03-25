@@ -442,6 +442,10 @@ Codex Review:
   Exploit categories covered: [list]
   Unique findings (not in prior reviews): ___
   STATUS: [DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT]
+
+  Next Step:
+    PRIMARY: Route back to the skill that was being challenged
+    (if new design risks found): /game-review — reassess design
 ```
 
 ## Save Artifact

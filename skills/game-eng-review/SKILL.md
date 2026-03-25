@@ -534,6 +534,10 @@ Section Results:
 WEIGHTED TOTAL: _._/10
 
 Status: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT
+
+Next Step:
+  PRIMARY: /prototype-slice-plan — architecture validated, plan what to build
+  (if critical tech debt): fix debt first, then re-run /game-eng-review
 ```
 
 **Status definitions:**

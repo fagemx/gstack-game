@@ -1,12 +1,34 @@
-# game-eng-review — Scoring Rubrics
+# Scoring Rubrics & Mode Weights
 
-## Section 1: Engine & Framework (引擎選型) — Weight: 15%
+## Mode Weight Adjustments
 
-### Evaluation Criteria
+Default weights assume a multi-platform PC/console game. Adjust per game type:
+
+| Section | Default | A: Single-player PC | B: Mobile F2P | C: Multiplayer Action | D: Multiplayer Casual | E: Prototype |
+|---------|---------|---------------------|---------------|----------------------|----------------------|-------------|
+| 1. Engine & Framework | 15% | 15% | 15% | 10% | 10% | 25% |
+| 2. Rendering & Performance | 20% | 25% | 25% | 20% | 15% | 20% |
+| 3. Networking Architecture | 15% | SKIP | SKIP | 25% | 20% | SKIP |
+| 4. Data & Persistence | 10% | 15% | 15% | 10% | 10% | 5% |
+| 5. Asset Pipeline | 10% | 10% | 15% | 10% | 10% | 5% |
+| 6. Platform Adaptation | 10% | 10% | 15% | 10% | 15% | 5% |
+| 7. Testing Strategy | 10% | 15% | 10% | 10% | 10% | 5% |
+| 8. Cross-Section Consistency | 10% | 10% | 5% | 5% | 10% | 35% |
+
+**Weight rationale:**
+- **Single-player PC:** No networking. Rendering and testing get extra weight because single-player games have no "server-side fix" for shipped bugs. Data gets more weight because save corruption is unrecoverable without cloud.
+- **Mobile F2P:** Rendering and asset pipeline are critical due to hardware diversity and store size limits. Platform adaptation matters more (iOS/Android differences, thermal throttling). Cross-consistency matters less because iterative live-ops allows course correction.
+- **Multiplayer Action:** Networking jumps to 25% — it IS the architecture for action multiplayer. Engine drops because the networking model constrains engine choice, not vice versa.
+- **Multiplayer Casual:** Networking important but less latency-sensitive. Platform adaptation high because casual games target the widest hardware range.
+- **Prototype:** Engine choice and cross-consistency dominate. Everything else is structural check only — premature optimization of rendering or networking wastes prototype velocity.
+
+When Section 3 (Networking) is SKIP, redistribute its weight as noted in each column above.
+
+## Section 1: Engine & Framework — Scoring Rubric
 
 | Criterion | Points | Deduction Rules |
 |-----------|--------|-----------------|
-| **Fitness for Genre** | 0-3 | 3 = engine's strengths align with game's core requirements (e.g., Unity for mobile 2D, Unreal for high-fidelity 3D). 2 = workable but not optimal. 1 = significant workarounds needed. 0 = engine fundamentally mismatched |
+| **Fitness for Genre** | 0-3 | 3 = engine strengths align with core requirements (e.g., Unity for mobile 2D, Unreal for high-fidelity 3D). 2 = workable but not optimal. 1 = significant workarounds needed. 0 = engine fundamentally mismatched |
 | **Team Familiarity** | 0-2 | 2 = team has shipped with this engine. 1 = team has prototyped but not shipped. 0 = team has no experience with this engine |
 | **Platform Support** | 0-2 | 2 = engine natively supports all target platforms with proven track record. 1 = supports with known limitations. 0 = requires custom porting work |
 | **Ecosystem & Tooling** | 0-1 | 1 = mature plugin ecosystem, asset store, debugging tools available. 0 = limited ecosystem or team building custom tooling for basics |
@@ -14,24 +36,13 @@
 
 **Section 1 Score: ___/10**
 
-### Engine Red Flags
+### Scoring Notes
 
-- Custom engine for a small team with a deadline — almost always wrong unless the team has shipped a custom engine before
-- Engine version locked to an old release with no upgrade plan — accumulating tech debt
-- "We chose it because we like it" with no analysis of game requirements fit
-- Engine requires workarounds for a core game mechanic (e.g., tile-based game on an engine with no native tilemap)
-- No build pipeline established yet — "we'll figure out builds later"
+- **Fitness for Genre** is the highest-weight criterion because a mismatched engine creates cascading problems in every other section.
+- **Team Familiarity** score of 0 is not automatically fatal — a team learning a well-fitted engine may be better off than a team using a familiar but mismatched one. Weight this against Fitness.
+- **License & Cost Risk:** Score 0 only when licensing is genuinely unclear or hostile (not when the team simply has not read the terms — that is an ASK, not a deduction).
 
-### Forcing Questions
-
-Ask via AskUserQuestion, **ONE AT A TIME:**
-
-**Q1:** "What is the ONE thing this engine does better than alternatives for YOUR specific game?"
-
---
-If the architecture doc does not include a frame budget: **-2 points.** Without a budget, performance is being managed by hope.
-
-### Evaluation Criteria
+## Section 2: Rendering & Performance — Scoring Rubric
 
 | Criterion | Points | Deduction Rules |
 |-----------|--------|-----------------|
@@ -43,53 +54,31 @@ If the architecture doc does not include a frame budget: **-2 points.** Without 
 
 **Section 2 Score: ___/10**
 
-### Performance Red Flags
+### Scoring Notes
 
-- "We'll optimize later" — optimization is architectural, not a polish task
-- No profiling infrastructure in the project — if you can't measure, you can't manage
-- Texture sizes not standardized — a single 4K texture can blow mobile memory
-- No target hardware defined — "it should run on most PCs" is not a spec
-- GC-heavy language (C#, JS) with no allocation strategy for hot paths
+- If the architecture doc does not include a frame budget: **-2 points** from Frame Budget Defined. Without a budget, performance is managed by hope.
+- For 2D games, LOD/Culling should be scored N/A and its 2 points redistributed equally to Frame Budget and Memory Budget.
+- **Draw Call Strategy** at score 0 is more severe on mobile (where draw calls are the primary bottleneck) than on modern PC/console. See `references/performance-budgets.md` for platform-specific targets.
 
-### Forcing Questions
-
-Ask via AskUserQuestion, **ONE AT A TIME:**
-
-**Q1:** "What is your worst-case scene in terms of rendering cost, and have you profiled it?"
-
---
-| **Async/Social** | Very High | Very Low | Low | Clash of Clans attacks, leaderboards |
-
-### Evaluation Criteria
+## Section 3: Networking Architecture — Scoring Rubric
 
 | Criterion | Points | Deduction Rules |
 |-----------|--------|-----------------|
-| **Model Fitness** | 0-3 | 3 = network model matches game's latency/bandwidth needs. 2 = workable but suboptimal. 1 = will cause noticeable player-facing issues. 0 = model cannot support core gameplay |
+| **Model Fitness** | 0-3 | 3 = network model matches latency/bandwidth needs. 2 = workable but suboptimal. 1 = will cause noticeable player-facing issues. 0 = model cannot support core gameplay |
 | **State Synchronization** | 0-2 | 2 = sync strategy documented (what state is authoritative, what is predicted, what is cosmetic). 1 = general sync approach but no state classification. 0 = not addressed |
-| **Latency Handling** | 0-2 | 2 = prediction/rollback/interpolation strategy documented with target latency tolerance. 1 = acknowledged but no specific strategy. 0 = not addressed (for action games, this is -2 effectively) |
+| **Latency Handling** | 0-2 | 2 = prediction/rollback/interpolation strategy documented with target latency tolerance. 1 = acknowledged but no specific strategy. 0 = not addressed (for action games, this is effectively -2) |
 | **Cheat Prevention** | 0-2 | 2 = server-authoritative for game-critical state, client validation documented. 1 = some server authority but gaps identified. 0 = trust-the-client architecture for competitive game |
 | **Failure Modes** | 0-1 | 1 = disconnect handling, reconnect flow, and desync recovery documented. 0 = not addressed |
 
 **Section 3 Score: ___/10**
 
-### Networking Red Flags
+### Scoring Notes
 
-- Client-authoritative for competitive multiplayer — cheating will be trivial
-- No tick rate specified — "as fast as possible" is not a design
-- Rollback/prediction not planned for action games with <200ms latency requirement
-- No bandwidth budget — streaming too much state will cause lag on mobile networks
-- "We'll add multiplayer later" to a game designed around multiplayer — networking is foundational, not a feature
+- **Model Fitness** at 3 points is the gateway criterion. If the network model is wrong, nothing else in this section matters.
+- **Latency Handling** score 0 for an action game (tick rate > 10Hz) should be an automatic ESCALATE — this is not a deferred item.
+- For async/social networking (leaderboards, ghost data), scoring should be lenient on Latency Handling and Cheat Prevention but strict on State Synchronization.
 
-### Forcing Questions (must ask at least 2)
-
-1. "What happens when a player has 300ms ping? Describe their exact experience." — Tests whether latency handling is designed or hoped for.
-2. "Which game state lives on the server and which on the client? Can you draw the boundary?" — If this boundary is unclear, cheat prevention and desync bugs will be constant.
-3. "What is the maximum bandwidth per player per second, and does it fit within mobile data constraints?" — Mobile networks have real bandwidth limits (~50-100 KB/s practical for games).
-
---
-## Section 4: Data & Persistence (資料與存檔) — Weight: 10%
-
-### Evaluation Criteria
+## Section 4: Data & Persistence — Scoring Rubric
 
 | Criterion | Points | Deduction Rules |
 |-----------|--------|-----------------|
@@ -101,24 +90,13 @@ Ask via AskUserQuestion, **ONE AT A TIME:**
 
 **Section 4 Score: ___/10**
 
-### Data Red Flags
+### Scoring Notes
 
-- Save file is a raw serialized object dump — any class change breaks saves
-- No save versioning — first patch will corrupt existing player saves
-- Cloud sync with no conflict resolution — "last write wins" loses player progress
-- Player-facing data stored in plain text with no validation — trivial to cheat, easy to corrupt
-- No analytics events for key game moments — can't measure retention without data
+- **Schema Migration** score 0 for a game planning post-launch updates should be an ESCALATE. First patch WILL break saves.
+- **Cloud Sync** score 0 is acceptable for single-platform offline games. Do not deduct for a PC-only single-player game without cloud save — it is a nice-to-have, not architecture.
+- **Analytics Pipeline** score 0 is acceptable for hobby/jam projects. For commercial F2P, score 0 here should trigger an ASK.
 
-### Forcing Questions (must ask at least 2)
-
-1. "A player updates the game and loads their old save. What happens if you added a new stat since their last play?" — Tests schema migration. If the answer is "it crashes" or "we haven't thought about it," saves will break.
-2. "A player plays on their phone, then opens the game on their tablet. Both have different progress. What happens?" — Tests cloud sync conflict resolution.
-3. "How large is a typical save file, and how long does saving take?" — Large saves cause hitches. Frequent autosaves with large files = frame drops.
-
---
-## Section 5: Asset Pipeline (素材管線) — Weight: 10%
-
-### Evaluation Criteria
+## Section 5: Asset Pipeline — Scoring Rubric
 
 | Criterion | Points | Deduction Rules |
 |-----------|--------|-----------------|
@@ -130,24 +108,13 @@ Ask via AskUserQuestion, **ONE AT A TIME:**
 
 **Section 5 Score: ___/10**
 
-### Asset Pipeline Red Flags
+### Scoring Notes
 
-- No texture size standards — artists delivering 4K textures for mobile game
-- Build size exceeds store limits (iOS: 200MB OTA, Google Play: 150MB base APK)
-- All assets loaded at launch — long initial load, high memory usage
-- No asset import pipeline automation — manual export/import prone to errors
-- Audio files uncompressed in build — massive size increase for minimal quality gain
+- **Build Size Budget** is critical for mobile (store limits are hard walls). See `references/performance-budgets.md` for platform-specific limits.
+- **Loading Strategy** score 1 (synchronous loading) is a red flag for any game with scene transitions — players perceive freezes as crashes.
+- **Asset Specifications** score 0 is the single most common source of bloated builds. Artists without specs will deliver quality appropriate to their monitor, not the target device.
 
-### Forcing Questions (must ask at least 2)
-
-1. "What is your current build size per platform, and what is the limit?" — If they don't know, they haven't checked. Store limits are hard walls.
-2. "What happens when a player enters a new area — is loading synchronous or streamed?" — Synchronous loading = freeze. Long freezes = player thinks game crashed.
-
-### Action Classification
---
-## Section 6: Platform Adaptation (平台適配) — Weight: 10%
-
-### Evaluation Criteria
+## Section 6: Platform Adaptation — Scoring Rubric
 
 | Criterion | Points | Deduction Rules |
 |-----------|--------|-----------------|
@@ -159,19 +126,7 @@ Ask via AskUserQuestion, **ONE AT A TIME:**
 
 **Section 6 Score: ___/10**
 
-### Action Classification
-
-- **AUTO:** Resolution inconsistencies in config, missing platform-specific settings
-- **ASK:** Input method priority, quality tier definitions, cert requirement decisions
-- **ESCALATE:** No certification awareness for console/mobile submission — guaranteed rejection
-
-**STOP.** One issue per AskUserQuestion.
-
----
-
-## Section 7: Testing Strategy (測試策略) — Weight: 10%
-
-### Evaluation Criteria
+## Section 7: Testing Strategy — Scoring Rubric
 
 | Criterion | Points | Deduction Rules |
 |-----------|--------|-----------------|
@@ -183,24 +138,7 @@ Ask via AskUserQuestion, **ONE AT A TIME:**
 
 **Section 7 Score: ___/10**
 
-### Testing Red Flags
-
-- "We test by playing" — manual testing does not catch regressions
-- No CI pipeline — builds break silently
-- No crash reporting — bugs in the wild go undetected
-- No automated performance tests — frame rate regressions caught by players, not developers
-- Gameplay logic interleaved with rendering — untestable without full engine boot
-
-### Action Classification
-
-- **AUTO:** CI config errors, test framework setup issues
-- **ASK:** Test coverage priorities, CI/CD pipeline design, crash reporting tool selection
-- **ESCALATE:** No testing infrastructure AND approaching release
-
---
-| **Performance × GDD** | Does frame budget support the game's vision? | GDD promises 200 units on screen but frame budget only supports 50 |
-
-### Evaluation Criteria
+## Section 8: Cross-Section Consistency — Scoring Rubric
 
 | Criterion | Points | Deduction Rules |
 |-----------|--------|-----------------|
@@ -210,55 +148,30 @@ Ask via AskUserQuestion, **ONE AT A TIME:**
 
 **Section 8 Score: ___/10**
 
-### Action Classification
+## Weighted Total Formula
 
-- **AUTO:** Terminology inconsistencies across architecture sections
-- **ASK:** Cross-section design tensions that require architectural decisions
-- **ESCALATE:** Architecture fundamentally cannot support the game design — engine/network/performance limits conflict with GDD requirements
+```
+Architecture Health Score
+  Section 1 -- Engine & Framework:       _/10  (weight: W1%)  -> weighted: _.___
+  Section 2 -- Rendering & Performance:  _/10  (weight: W2%)  -> weighted: _.___
+  Section 3 -- Networking Architecture:  _/10  (weight: W3%)  -> weighted: _.___
+  Section 4 -- Data & Persistence:       _/10  (weight: W4%)  -> weighted: _.___
+  Section 5 -- Asset Pipeline:           _/10  (weight: W5%)  -> weighted: _.___
+  Section 6 -- Platform Adaptation:      _/10  (weight: W6%)  -> weighted: _.___
+  Section 7 -- Testing Strategy:         _/10  (weight: W7%)  -> weighted: _.___
+  Section 8 -- Cross-Consistency:        _/10  (weight: W8%)  -> weighted: _.___
 
-**STOP.** One issue per AskUserQuestion.
-
----
-
-## Required Outputs
-
-### Architecture Health Score
-
---
-  Section 8 — Cross-Consistency:        _/10  (weight: 10%)  → weighted: _.___
-  ─────────────────────────────────────────────
   WEIGHTED TOTAL:                       _._/10
-
-  * If Section 3 is N/A (single-player), redistribute 15% weight:
-    Rendering +5%, Data +5%, Testing +5%
-
-Score Interpretation:
-  8.0-10.0  PRODUCTION-READY — Architecture supports the game design, well-documented
-  6.0-7.9   SOLID — Good foundation, address flagged issues before scaling team
-  4.0-5.9   NEEDS WORK — Significant gaps that will cause production bottlenecks
-  2.0-3.9   MAJOR REVISION — Architectural decisions need rethinking
-  0.0-1.9   START OVER — No architecture yet, just technology choices
-
-Top 3 Deductions (biggest point losses):
-  1. [Section] [Criterion]: -N because [specific reason]
-  2. [Section] [Criterion]: -N because [specific reason]
-  3. [Section] [Criterion]: -N because [specific reason]
---
-  Section 8 — Cross-Consistency:        _/10, ___ contradictions found
-
-WEIGHTED TOTAL: _._/10
-
-Status: DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT
 ```
 
-**Status definitions:**
-- **DONE** — All sections reviewed, all critical issues resolved, Architecture Health Score >= 6.0
-- **DONE_WITH_CONCERNS** — All sections reviewed, some issues deferred, score 4.0-5.9
-- **BLOCKED** — Review could not complete due to ESCALATE items (engine cannot support GDD, no performance targets, fundamental architecture mismatch)
-- **NEEDS_CONTEXT** — Review paused because critical context is missing (no target platforms, no performance targets, no GDD)
+Use the mode weight adjustments table above — do NOT use default weights blindly. If Section 3 is N/A (single-player), use the mode-specific column which already redistributes that weight.
 
-### NOT in Scope
+## Score Interpretation
 
-List deferred work with rationale:
-```
-- [Issue]: Deferred because [reason]. Revisit when [condition].
+| Range | Label | Meaning |
+|-------|-------|---------|
+| 8.0-10.0 | PRODUCTION-READY | Architecture supports the game design, well-documented |
+| 6.0-7.9 | SOLID | Good foundation, address flagged issues before scaling team |
+| 4.0-5.9 | NEEDS WORK | Significant gaps that will cause production bottlenecks |
+| 2.0-3.9 | MAJOR REVISION | Architectural decisions need rethinking |
+| 0.0-1.9 | START OVER | No architecture yet, just technology choices |

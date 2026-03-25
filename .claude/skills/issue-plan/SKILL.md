@@ -210,25 +210,30 @@ gh issue comment {issue-id} --body-file .tmp/deep-dive/issue-{id}/research.md
 
 Read `research.md` for context, then:
 
-1. **Generate 2-3 distinct approaches, always including a minimal option.** For each:
+1. **Generate 2-3 distinct approaches at different scales.** For each:
    - Core concept and philosophy
    - Key advantages
    - Potential challenges/risks
    - Compatibility with existing gstack-game patterns (template engine, preamble injection, references/ split, anti-sycophancy)
 
-   **RULE: One approach MUST be the smallest possible change that delivers value.** Not a stub — a real, useful change that a user would notice. If the smallest useful change is 3 lines in preamble, that's a valid approach. Resist the urge to only propose comprehensive solutions.
+   Approaches should represent genuinely different strategies, not just "same thing but less." A 3-line preamble tweak and a full skill rewrite can both be correct — for different problems.
 
 2. **Trade-off analysis** — How do approaches differ on:
    - Domain confidence (do we have evidence?)
    - Regression risk (could this break existing scoring?)
    - Build complexity (template change vs references-only?)
    - Maintainability (will this be easy to update later?)
-   - **Effort vs. value** (hours to implement vs. how much user pain it removes)
-   - **Demand validated?** (is this a reported problem, or a theoretical improvement?)
+   - **Fitness** — does this approach match the nature of the problem? A skeleton skill at 35% needs a full build-out, not a patch. A missing preamble line needs a patch, not a new utility.
 
-3. **Recommend one approach** with reasoning, but present alternatives fairly.
+3. **Recommend the approach that best fits the problem** with reasoning.
 
-   **Bias toward smallest-first:** If the minimal approach solves 80% of the problem at 20% of the effort, recommend it — even if the comprehensive approach is "better." The comprehensive version can be a follow-up issue. Ship value early, validate demand, then invest more.
+   The right size is the one that **solves the actual problem without solving adjacent problems nobody asked about.** A game-codex rewrite from 123L to 610L is correct if the skill is fundamentally too thin. A 3-line preamble change is correct if the problem is "users can't see artifacts." Both are right-sized — the question is whether the approach matches what the issue actually needs.
+
+   **Signs of a misfit:**
+   - The approach solves problems the issue didn't mention (scope creep)
+   - The approach creates infrastructure for hypothetical future needs (YAGNI)
+   - The approach could be split into "solves the issue" + "nice to have" and only the first part is necessary
+   - The approach builds a new tool when editing an existing file achieves the same outcome
 
 #### gstack-game Specific Considerations
 
@@ -302,18 +307,15 @@ gh issue comment {issue-id} --body-file .tmp/deep-dive/issue-{id}/innovate.md
 
 Read both `research.md` AND `innovate.md` for context. Use the recommended approach (or user's choice if feedback was given).
 
-#### Proportionality Check (before writing the plan)
+#### Scope Fitness Check (before writing the plan)
 
-Before planning, verify the approach is proportional:
+Before planning, verify the approach actually fits the issue:
 
-1. **Effort vs. issue severity** — A skeleton skill gap (P2) does not justify a 5-hour multi-file plan. Match investment to priority.
-2. **New files vs. editing existing** — Prefer editing existing files over creating new ones. A 3-line preamble change beats a new utility + new skill + preamble change.
-3. **Phased delivery** — If the plan exceeds 2 hours estimated effort, split it:
-   - **This issue:** The smallest change that delivers user-visible value
-   - **Follow-up issue:** The comprehensive version, only if demand is validated
-4. **Demand validation** — If nobody has reported this problem (it came from a review, not a user), default to the minimal approach.
+1. **Does the plan solve the stated problem?** Re-read the issue title and body. If the plan solves more than what was asked, split off the extras as separate issues.
+2. **Does the plan create things only this issue needs?** New utilities, new skills, new infrastructure should exist because THIS issue requires them — not because they'd be "nice to have" for future issues.
+3. **Could the plan be split into "solves the issue" + "improvements"?** If yes, the plan should only contain the first part. File the improvements as follow-up issues.
 
-If the recommended approach from Innovate fails this check, **downgrade to the minimal approach** and note the comprehensive version as future work.
+This is NOT about making plans small. A skeleton skill at 35% genuinely needs a full build-out — that IS the issue. But a "users can't see artifacts" issue doesn't need a new CLI utility + new skill + preamble change when a preamble change alone solves it.
 
 #### Plan Templates by Scope
 
@@ -527,11 +529,12 @@ Forbidden:
 
 Instead: State scope and risk honestly. "This changes the scoring formula in `/balance-review` Section 3. The idle game economy model needs a genre-conditional branch — template logic change with medium regression risk."
 
-**Over-engineering red flags** — if you catch yourself writing any of these, step back and check proportionality:
-- Plan creates more than 2 new files for a non-new-skill issue
-- Plan estimates more than 3 hours for a single skill-gap fix
-- Plan proposes a new utility/tool when editing an existing file would work
-- Plan touches files not mentioned in the issue
+**Scope creep red flags** — if you catch yourself writing any of these, re-read the issue and check fitness:
+- "For completeness, we should also..." (solving adjacent problems nobody asked about)
+- "While we're at it..." (bundling unrelated improvements)
+- "To do this properly..." (implying the focused approach is improper)
+- Plan includes infrastructure "for future use" that only this issue would need today
+- Plan solves a problem the issue didn't mention
 
 ## AUTO/ASK/ESCALATE
 

@@ -95,6 +95,7 @@ After every Completion Summary, include a `Next Step:` block. Route based on sta
 Layer A (Design):
   /game-import → /game-review
   /game-ideation → /game-review
+  /game-review → /plan-design-review → /prototype-slice-plan
   /game-review → /player-experience → /balance-review
   /game-direction → /game-eng-review
   /pitch-review → /game-direction

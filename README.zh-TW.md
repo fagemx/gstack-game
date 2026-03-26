@@ -4,7 +4,7 @@
 
 [English](README.md)
 
-27 個互動式 AI 審查技能，涵蓋**完整的遊戲製作工作流**：設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
+28 個互動式 AI 審查技能，涵蓋**完整的遊戲製作工作流**：設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
 
 > **這是什麼：** 結構化的審查和品質保證系統——幫你判斷、評分、改善你的遊戲設計和程式碼。
 > **這不是什麼：** 不是遊戲生成器，不會幫你寫程式碼或做美術素材。
@@ -36,7 +36,7 @@ gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-ga
 
 打開 Claude Code，貼上這段。Claude 會自己完成安裝。
 
-> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /triage, /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
+> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /triage, /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /plan-design-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
 
 ### 方式 B：加到專案讓隊友也能用
 
@@ -138,6 +138,7 @@ gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 spri
 | `/balance-review` | **數值策劃** | 難度曲線（Flow State）、Sink/Faucet 經濟、Gini 係數、pity system、獎勵心理學 |
 | `/player-experience` | **UX 研究員** | 第一人稱玩家走查，6 種 persona，情緒模型，repeat play simulation |
 | `/game-ux-review` | **UI/UX 設計師** | HUD 可讀性、選單流程、商店 UI、教學、控制器/觸控適配、無障礙 |
+| `/plan-design-review` | **資深產品設計師** | 實作前計畫審查：7-pass Fix-to-10（資訊架構、互動狀態、玩家旅程、AI slop、設計系統、輸入/無障礙、未決決策）。從零建立 DESIGN.md。Codex + Subagent 平行審查 |
 | `/pitch-review` | **投資人 / 發行商視角** | 市場定位、差異化、可行性、商業論證、冰山驗證等級 |
 | `/prototype-slice-plan` | **製作策略師** | 決定先做什麼：哪個切片、驗證什麼假設、什麼可以 fake、失敗長什麼樣 |
 | `/implementation-handoff` | **設計翻譯官** | 把設計意圖轉成 build package：玩法需求、驗收標準、MUST/SHOULD/COULD 優先級 |
@@ -251,7 +252,7 @@ gstack-game 包含 **opt-in** 的使用統計，預設關閉。
 ## gstack-game
 Available skills: /triage, /game-import, /game-ideation, /game-direction,
 /game-review, /game-eng-review, /balance-review, /player-experience,
-/game-ux-review, /pitch-review, /prototype-slice-plan, /implementation-handoff,
+/game-ux-review, /plan-design-review, /pitch-review, /prototype-slice-plan, /implementation-handoff,
 /gameplay-implementation-review, /feel-pass, /build-playability-review,
 /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs,
 /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze.

@@ -39,7 +39,7 @@ gstack-game/
 │   └── gstack-slug              ← repo slug detection
 ├── scripts/
 │   └── gen-skill-docs.ts        ← template engine (SKILL.md.tmpl → SKILL.md)
-├── skills/                      ← 27 published skills + shared/
+├── skills/                      ← 28 published skills + shared/
 │   ├── shared/preamble.md       ← injected into every skill via {{PREAMBLE}}
 │   ├── game-review/             ← GDD review (255L, 80%)
 │   ├── balance-review/          ← economy & balance (286L, 70%)
@@ -51,6 +51,7 @@ gstack-game/
 │   ├── game-eng-review/         ← tech architecture (462L + 5 refs, 70%)
 │   ├── game-qa/                 ← QA testing (702L, 65%)
 │   ├── game-ux-review/          ← UI/UX (565L, 60%)
+│   ├── plan-design-review/      ← pre-impl design plan review (679L + 5 refs, 65%)
 │   ├── game-ship/               ← release process (448L, 65%)
 │   ├── game-import/             ← project import (514L)
 │   ├── triage/                  ← project navigator (320L)

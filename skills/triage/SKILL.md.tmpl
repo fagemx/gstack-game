@@ -38,8 +38,8 @@ done
 _PRIOR_SKILLS=""
 for pattern in "*-gdd-import-*" "*-concept-*" "*-game-review-*" "*-balance-review-*" \
                "*-direction-*" "*-player-exp-*" "*-eng-review-*" "*-pitch-review-*" \
-               "*-slice-plan-*" "*-impl-handoff-*" "*-impl-review-*" "*-feel-pass-*" \
-               "*-playability-*" "*-qa-*" "*-ship-*"; do
+               "*-plan-design-review-*" "*-slice-plan-*" "*-impl-handoff-*" "*-impl-review-*" \
+               "*-feel-pass-*" "*-playability-*" "*-qa-*" "*-ship-*"; do
   FOUND=$(ls -t $_PROJECTS_DIR/$pattern.md 2>/dev/null | head -1)
   [ -n "$FOUND" ] && _PRIOR_SKILLS="$_PRIOR_SKILLS $pattern" && echo "PRIOR: $FOUND"
 done
@@ -141,9 +141,10 @@ Present exactly ONE AskUserQuestion based on the classified state. Follow the 4-
 > B) **Player walkthrough** — simulate a player's first experience → `/player-experience`
 > C) **Plan the build** — scope a prototype or vertical slice → `/prototype-slice-plan`
 > D) **Check the pitch** — evaluate this as a pitch to publishers/investors → `/pitch-review`
-> E) **Something else** — tell me what you're trying to accomplish
+> E) **Design the UI plan** — define UI/UX decisions before building → `/plan-design-review`
+> F) **Something else** — tell me what you're trying to accomplish
 >
-> RECOMMENDATION: Choose A if no review has been done yet. The design review surfaces issues before you invest build time. Player Impact: 8/10.
+> RECOMMENDATION: Choose A if no review has been done yet. Choose E if the GDD exists but UI/UX decisions are vague or missing. Player Impact: 8/10.
 
 ### REVIEWED State
 
@@ -155,8 +156,9 @@ Present exactly ONE AskUserQuestion based on the classified state. Follow the 4-
 > B) **Review the direction** — strategic assessment before committing to build → `/game-direction`
 > C) **Address review findings** — go back and fix issues found in reviews → `/game-review` (re-run)
 > D) **Balance deep-dive** — economy and progression need specific attention → `/balance-review`
+> E) **Design plan review** — check if plan has complete UI/UX specs before building → `/plan-design-review`
 >
-> RECOMMENDATION: Choose A if reviews came back clean. Choose C if reviews flagged critical issues.
+> RECOMMENDATION: Choose A if reviews came back clean. Choose E if the plan lacks UI/UX detail. Choose C if reviews flagged critical issues.
 
 ### BUILDING State
 

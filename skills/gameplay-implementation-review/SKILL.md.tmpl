@@ -47,6 +47,7 @@ echo "$_DIFF_STAT"
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for upstream artifacts ==="
 PREV_REVIEW=$(ls -t $_PROJECTS_DIR/*-code-review-*.md $_PROJECTS_DIR/*-impl-review-*.md 2>/dev/null | head -1)
 [ -n "$PREV_REVIEW" ] && echo "Prior review: $PREV_REVIEW"

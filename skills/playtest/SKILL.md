@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -147,6 +148,7 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ## Load References
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 SKILL_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$0}")" 2>/dev/null || echo "skills/playtest")"
 for f in "$SKILL_DIR/references"/*.md; do [ -f "$f" ] && echo "REF: $f"; done
 ```
@@ -165,6 +167,7 @@ for f in "$SKILL_DIR/references"/*.md; do [ -f "$f" ] && echo "REF: $f"; done
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for prior work ==="
 PREV_PLAYTEST=$(ls -t $_PROJECTS_DIR/*-playtest-plan-*.md 2>/dev/null | head -1)
 [ -n "$PREV_PLAYTEST" ] && echo "Prior playtest plan: $PREV_PLAYTEST"

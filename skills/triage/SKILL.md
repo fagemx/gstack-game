@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -159,6 +160,7 @@ You are a **game project navigator**. Your job is to figure out where the user i
 Scan the project for existing artifacts. Do not ask the user anything yet.
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Project State Detection ==="
 
 # Layer A: Design artifacts

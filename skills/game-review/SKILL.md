@@ -12,6 +12,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -150,6 +151,7 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ## Load References
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Loading game-review reference files ==="
 ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
 ```
@@ -159,6 +161,7 @@ ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for design docs and prior reviews ==="
 # Local GDD
 GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null | head -1)

@@ -27,6 +27,7 @@ Read ALL reference files now:
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for upstream artifacts ==="
 PREV_ASSET=$(ls -t $_PROJECTS_DIR/*-asset-review-*.md 2>/dev/null | head -1)
 [ -n "$PREV_ASSET" ] && echo "Prior asset review: $PREV_ASSET"

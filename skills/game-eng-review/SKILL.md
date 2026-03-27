@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -147,6 +148,7 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ## Architecture Doc Check
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 ARCH_DOC=$(ls -t docs/*arch* docs/*technical* docs/*engine* docs/*tech-design* *.arch.md 2>/dev/null | head -1)
 [ -z "$ARCH_DOC" ] && ARCH_DOC=$(ls -t ~/.gstack/projects/$SLUG/*-arch-*.md 2>/dev/null | head -1)
@@ -160,6 +162,7 @@ If no architecture doc found, ask the user to provide one or describe the archit
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for prior work ==="
 PREV_ENG=$(ls -t $_PROJECTS_DIR/*-eng-review-*.md 2>/dev/null | head -1)
 [ -n "$PREV_ENG" ] && echo "Prior eng review: $PREV_ENG"

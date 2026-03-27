@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -147,6 +148,7 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ## Load References
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 SKILL_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$0}")" 2>/dev/null || echo "skills/player-experience")"
 for f in "$SKILL_DIR/references"/*.md; do [ -f "$f" ] && echo "REF: $f"; done
 ```
@@ -163,6 +165,7 @@ for f in "$SKILL_DIR/references"/*.md; do [ -f "$f" ] && echo "REF: $f"; done
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for prior work ==="
 PREV_WALKTHROUGH=$(ls -t $_PROJECTS_DIR/*-player-walkthrough-*.md 2>/dev/null | head -1)
 [ -n "$PREV_WALKTHROUGH" ] && echo "Prior player walkthrough: $PREV_WALKTHROUGH"
@@ -192,6 +195,7 @@ This skill **role-plays as a player** — not a reviewer. Walk through the game 
 ### 0A. Read the GDD
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md design/gdd/*.md 2>/dev/null | head -1)
 [ -z "$GDD" ] && GDD=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)

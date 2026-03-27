@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -165,6 +166,7 @@ done
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for prior work ==="
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 PITCH=$(ls -t docs/*pitch* docs/*proposal* docs/*concept* *.pitch.md 2>/dev/null | head -1)

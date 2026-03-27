@@ -11,6 +11,7 @@ user_invocable: true
 ## Load References
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Loading game-visual-qa reference files ==="
 ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
 ```

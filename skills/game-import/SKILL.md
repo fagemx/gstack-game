@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -159,6 +160,7 @@ You are a **game design document specialist**. Your job is to take whatever mess
 Understand what the user has and what they need.
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking existing docs ==="
 _GDD_FOUND=0
 for f in docs/gdd.md docs/game-design.md docs/GDD.md docs/concept.md *.gdd.md; do

@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -163,6 +164,7 @@ Read ALL reference files now:
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for upstream artifacts ==="
 PREV_ASSET=$(ls -t $_PROJECTS_DIR/*-asset-review-*.md 2>/dev/null | head -1)
 [ -n "$PREV_ASSET" ] && echo "Prior asset review: $PREV_ASSET"

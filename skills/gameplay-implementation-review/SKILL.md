@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -183,6 +184,7 @@ echo "$_DIFF_STAT"
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for upstream artifacts ==="
 PREV_REVIEW=$(ls -t $_PROJECTS_DIR/*-code-review-*.md $_PROJECTS_DIR/*-impl-review-*.md 2>/dev/null | head -1)
 [ -n "$PREV_REVIEW" ] && echo "Prior review: $PREV_REVIEW"

@@ -96,6 +96,155 @@ Evaluate the nested loop model (micro/meso/macro/meta), MDA framework alignment,
 
 ---
 
+## Phase 1.5: Independent Design Validation (optional)
+
+After Section 1 scoring, offer a cold-read second opinion on the core loop premise.
+
+**AskUserQuestion (gate):**
+
+> Section 1 scored the core loop at ___/10. Before moving to Progression, want an independent AI perspective on the core loop premise? It reads a structured summary without this conversation's context. Takes 2-5 minutes.
+> A) Yes, get a second opinion
+> B) No, continue to Section 2
+
+**STOP.** Wait for answer. If B: skip Phase 1.5 entirely, proceed to Section 2.
+
+**If A: Assemble context block.**
+
+Collect from Phase 0 and Section 1:
+- Game title and genre
+- 5 context anchors (from Phase 0)
+- Review mode (A/B/C/D/E) and why
+- Section 1 score and top deductions
+- Core loop sentence (from Q1 or inferred from GDD)
+- Forcing question answers (verbatim user quotes where given)
+- Any issues flagged ASK or ESCALATE in Section 1
+
+**Write the assembled prompt to a temp file** (prevents shell injection from user-derived content):
+
+```bash
+CODEX_PROMPT_FILE=$(mktemp /tmp/gstack-game-review-validation-XXXXXXXX.txt)
+```
+
+Write the mode-appropriate prompt to this file:
+
+**Concept-stage prompt (GDD is early / many forcing questions unanswered):**
+
+"You are an independent senior game designer doing a cold read. You have NOT seen any prior review. Here is a structured summary of a game's core loop design:
+
+[CONTEXT BLOCK]
+
+Your job:
+1. MDA BACKWARD CHECK: Starting from the stated target aesthetics (or infer them if missing), what dynamics SHOULD emerge? Do the described mechanics actually produce those dynamics? If no target aesthetics are stated, that is your first finding.
+2. RETENTION CLIFF PREDICTION: Based on this core loop, where does the player hit the first wall? Estimate the session count or hour mark where the loop stops being novel. What is missing to carry the player past that point?
+3. CORE VERB ANALYSIS: What is the primary verb? Is it intrinsically satisfying with zero rewards (the Tetris test)? If the verb depends on extrinsic reward, name the dependency.
+4. ONE WRONG PREMISE: Name one assumption in this design that you think is wrong, and what evidence would prove you right.
+
+Be specific. Reference the context. No praise. No preamble."
+
+**Post-playtest prompt (GDD is detailed / has playtest data):**
+
+"You are an independent senior game designer doing a cold read. You have NOT seen any prior review. Here is a structured summary of a game's core loop design with playtest context:
+
+[CONTEXT BLOCK]
+
+Your job:
+1. MDA ALIGNMENT AUDIT: Do the mechanics produce the intended dynamics? Where does the chain break? Quote specific mechanics and trace to specific aesthetics.
+2. 100TH REPETITION TEST: What does mastery look like in this loop? Is the skill ceiling high enough for the target audience, or does it flatten? Estimate the hour mark where a skilled player has 'solved' the loop.
+3. FAIL STATE QUALITY: Is failure interesting or just punishing? Does the fail state teach the player something about the system?
+4. COMPETITOR DIFFERENTIATION: What is the one-sentence 'It's the game where you...' description? If you can't write one, that is your finding.
+
+Be specific. Reference the context. No praise. No preamble."
+
+**Route prompt by GDD state:** Use concept-stage if Section 1 had 2+ forcing questions asked (indicating gaps). Use post-playtest if Section 1 scored 7+ and GDD had detailed answers.
+
+### Run Codex (if available):
+
+```bash
+which codex 2>/dev/null && echo "CODEX_AVAILABLE" || echo "CODEX_NOT_AVAILABLE"
+```
+
+If CODEX_AVAILABLE:
+
+```bash
+TMPERR=$(mktemp /tmp/codex-game-review-err-XXXXXXXX)
+_REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+codex exec "$(cat "$CODEX_PROMPT_FILE")" -C "$_REPO_ROOT" -s read-only -c 'model_reasoning_effort="high"' 2>"$TMPERR"
+```
+
+Use a 5-minute timeout (`timeout: 300000`). After completion, read stderr:
+
+```bash
+cat "$TMPERR"
+rm -f "$TMPERR" "$CODEX_PROMPT_FILE"
+```
+
+**Error handling (all non-blocking):**
+- Auth failure (stderr contains "auth", "login", "unauthorized", "API key"): Note "Codex auth failed. Run `codex login`." Fall back to Claude subagent.
+- Timeout: Note "Codex timed out." Fall back to Claude subagent.
+- Empty response: Note "Codex returned no response." Fall back to Claude subagent.
+
+### Claude Subagent Fallback (if CODEX_NOT_AVAILABLE or Codex errored):
+
+Dispatch via the Agent tool with the same mode-appropriate prompt. The subagent has fresh context, providing genuine independence.
+
+If the subagent fails or times out: "Second opinion unavailable. Continuing to Section 2."
+
+### Presentation:
+
+If Codex ran:
+```
+SECOND OPINION (Codex):
+════════════════════════════════════════════════════════════
+<full codex output, verbatim — do not truncate or summarize>
+════════════════════════════════════════════════════════════
+```
+
+If Claude subagent ran:
+```
+SECOND OPINION (Claude subagent):
+════════════════════════════════════════════════════════════
+<full subagent output, verbatim — do not truncate or summarize>
+════════════════════════════════════════════════════════════
+```
+
+### Cross-Model Synthesis:
+
+After presenting the second opinion, provide a game-design-specific synthesis:
+
+```
+Cross-Model Synthesis:
+═══════════════════════════════════════════
+| Check                    | Primary | Second Opinion | Agree? |
+|--------------------------|---------|----------------|--------|
+| MDA alignment            | [finding] | [finding]   | yes/no |
+| Retention cliff location | [est]  | [est]          | yes/no |
+| Core verb satisfaction   | [pass/fail] | [pass/fail] | yes/no |
+| Premise challenge        | —      | [which premise] | —      |
+═══════════════════════════════════════════
+```
+
+Then 3-5 bullet synthesis:
+- Where the primary review agrees with the second opinion
+- Where it disagrees and why
+- Whether any challenged premise changes the Section 1 assessment
+
+### Premise Revision Check:
+
+If the second opinion challenged an assumption from Phase 0 or Section 1:
+
+**AskUserQuestion:**
+
+> The second opinion challenged: "{premise text}". Their argument: "{reasoning}".
+> A) Revise this premise — re-score Section 1 with the revision
+> B) Keep the original premise — proceed to Section 2
+
+If A: revise the premise, re-score Section 1, update the running score.
+If B: note that user defended the premise (and capture their reasoning if given — this is a design conviction signal).
+
+**STOP.** Proceed to Section 2.
+
+---
+
 ## Section 2: Progression & Retention (進度與留存)
 
 Evaluate SDT integration at each retention tier (FTUE/D1/D7/D30), flow state design, difficulty curve shape, and churn point identification. Apply `references/progression.md` for the full evaluation framework, benchmarks, forcing questions, and action classification.

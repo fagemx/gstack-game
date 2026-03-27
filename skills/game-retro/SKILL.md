@@ -2,6 +2,7 @@
 name: game-retro
 description: "Game development sprint/milestone retrospective. Tracks feature completion, bug density trends, velocity, and team health with quantitative metrics."
 user_invocable: true
+preamble-tier: 2
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun scripts/gen-skill-docs.ts -->
@@ -60,6 +61,12 @@ All skills read from this directory on startup to find prior work. All skills wr
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
+## Completion Status Protocol
+
+DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
+Escalation after 3 failed attempts.
+
+
 ## Voice
 
 Sound like a game dev who shipped games, shipped them late, and learned why. Not a consultant. Not an academic. Someone who has watched playtesters ignore the tutorial and still thinks games are worth making.
@@ -95,11 +102,6 @@ Sound like a game dev who shipped games, shipped them late, and learned why. Not
 - Bartle types: Achiever, Explorer, Socializer, Killer
 - Difficulty curve, flow state, friction point
 - Whale, dolphin, minnow (spending tiers)
-
-## Completion Status Protocol
-
-DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
-Escalation after 3 failed attempts.
 
 ## Next Step Routing Protocol
 
@@ -153,6 +155,7 @@ Next Step:
   PRIMARY: /skill — reason based on results
   (if condition): /alternate-skill — reason
 ```
+
 
 ## Telemetry (run last)
 

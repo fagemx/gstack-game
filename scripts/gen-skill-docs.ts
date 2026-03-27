@@ -27,19 +27,42 @@ function readFragment(name: string): string {
   return readFileSync(path, "utf-8");
 }
 
-// Placeholder registry
-const fragments: Record<string, string> = {
-  "{{PREAMBLE}}": readFragment("preamble"),
-};
+// Parse YAML frontmatter from template
+function parseFrontmatter(content: string): Record<string, string> {
+  if (!content.startsWith("---\n")) return {};
+  const endIdx = content.indexOf("\n---\n", 4);
+  if (endIdx === -1) return {};
+  const fmRaw = content.slice(4, endIdx);
+  const fm: Record<string, string> = {};
+  for (const line of fmRaw.split("\n")) {
+    const match = line.match(/^(\w[\w-]*):\s*(.+)$/);
+    if (match) fm[match[1]] = match[2].replace(/^["']|["']$/g, "");
+  }
+  return fm;
+}
+
+// Assemble tier-appropriate preamble from fragments
+// T1: core + telemetry
+// T2: core + standard + telemetry
+// T3: core + standard + expert + telemetry
+function assemblePreamble(tier: number): string {
+  const parts = [readFragment("preamble-core")];
+  if (tier >= 2) parts.push(readFragment("preamble-standard"));
+  if (tier >= 3) parts.push(readFragment("preamble-expert"));
+  parts.push(readFragment("preamble-telemetry"));
+  return parts.join("\n\n");
+}
 
 // Process a single template
 function processTemplate(tmplPath: string, skillName: string): string {
   let content = readFileSync(tmplPath, "utf-8");
 
-  // Replace shared fragments
-  for (const [placeholder, fragment] of Object.entries(fragments)) {
-    content = content.replaceAll(placeholder, fragment);
-  }
+  // Read preamble-tier from frontmatter (default: 2)
+  const fm = parseFrontmatter(content);
+  const tier = parseInt(fm["preamble-tier"] || "2", 10);
+
+  // Replace {{PREAMBLE}} with tier-appropriate assembly
+  content = content.replaceAll("{{PREAMBLE}}", assemblePreamble(tier));
 
   // Replace skill-specific variables
   content = content.replaceAll("{{SKILL_NAME}}", skillName);

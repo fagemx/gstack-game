@@ -3,6 +3,8 @@ name: game-ideation
 description: "Interactive game concept brainstorming. Structures raw ideas into Fantasy/Loop/Twist, challenges assumptions with forcing questions, and validates with Iceberg framework."
 user_invocable: true
 preamble-tier: 2
+allowed-tools:
+  - WebSearch
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun scripts/gen-skill-docs.ts -->
@@ -133,6 +135,79 @@ Use MDA backward — start from Aesthetics, not Mechanics:
 > C) I changed my mind — let me start over
 
 **STOP.** Wait for confirmation. The fantasy is the foundation. Don't build on a shaky one.
+
+---
+
+## Phase 1.5: Genre/Market Landscape Check
+
+Now that the fantasy is defined, check what the market looks like for this genre before designing the core loop. This is NOT full market research (that's Phase 5, Layer 3). This is a quick sanity check: how crowded is this space, and what are competitors doing?
+
+**Privacy gate — AskUserQuestion:**
+
+> **[Re-ground]** Your fantasy is: *"{fantasy statement from Phase 1}"*. Before designing the core loop, I want to check the current landscape for games in this space.
+>
+> **[Simplify]** I'd search for things like "[genre] games 2026" and "[core mechanic] game market" — generalized terms, never your specific concept name or proprietary ideas.
+>
+> A) **Yes, search away** — check what's out there
+> B) **Skip — keep this private** — I'll work from what I already know
+>
+> RECOMMENDATION: Choose A unless this concept is under NDA or stealth. Knowing the landscape costs 2 minutes and can save months of building something the market already has.
+
+**STOP.** Wait for answer.
+
+**If A (search):**
+
+Search using generalized genre/mechanic terms only. Never search the user's specific game name or proprietary concept.
+
+WebSearch queries (run 2-3):
+- `"[genre from fantasy] games [current year]"` — what's launching, what's trending
+- `"[core mechanic] [genre] game market"` — competitor density and saturation
+- `"[genre] indie game [current year]"` — what the indie landscape looks like (scope-appropriate comps)
+
+Read the top 2-3 results from each search.
+
+**If B (skip):** Note: "Search skipped — proceeding with in-distribution knowledge only." Move directly to Phase 2.
+
+**If WebSearch is unavailable:** Note: "WebSearch unavailable — proceeding with in-distribution knowledge only." Move directly to Phase 2.
+
+### Three-Layer Synthesis
+
+After reading search results, synthesize:
+
+- **Layer 1 — Conventional Wisdom:** What does everyone already know about this genre? What are the established patterns, the "obvious" design choices, the things every game in this space does?
+- **Layer 2 — Current Landscape:** What do the search results show? How many recent games target this space? What mechanics are trending? What's oversaturated? What gaps exist?
+- **Layer 3 — Differentiation Reality:** Given the designer's fantasy from Phase 1 — does it stand out from what's already out there? Or is it "zombie survival game #47"?
+
+### Eureka Check
+
+If Layer 3 reveals genuine differentiation — something the market hasn't tried, or an assumption everyone makes that might be wrong — flag it:
+
+> **EUREKA:** Everyone in [genre] does [X] because they assume [assumption]. But [evidence from search + designer's fantasy] suggests that's wrong. This means [implication for core loop design].
+
+If no eureka moment exists: "The conventional wisdom in this genre is well-established. Your differentiation needs to come from execution or a specific twist in Phase 3."
+
+### Landscape Summary
+
+Present to the user via AskUserQuestion:
+
+> **Genre/Market Snapshot:**
+>
+> - **Genre health:** [growing / stable / declining / oversaturated]
+> - **Recent competitors:** [2-3 games with release year]
+> - **Common pattern:** [what most games in this space do]
+> - **Gap or opportunity:** [what's missing or underserved]
+> {If eureka: **EUREKA:** [the insight]}
+>
+> **What this means for your core loop:**
+> [1-2 sentences about how this should influence Phase 2 design]
+>
+> A) **Proceed to Core Loop** — this landscape informs our design
+> B) **Reconsider the fantasy** — the landscape changes my thinking
+> C) **Search for something more specific** — I want to look at [topic]
+>
+> RECOMMENDATION: {based on findings}
+
+**STOP.** Wait for answer. If B, return to Phase 1. If C, run one more targeted search, then re-present.
 
 ---
 

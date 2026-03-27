@@ -1,12 +1,3 @@
----
-name: unfreeze
-description: "Deactivate /guard scope restriction. Returns to normal editing mode."
-user_invocable: true
-preamble-tier: 1
----
-<!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
-<!-- Regenerate: bun scripts/gen-skill-docs.ts -->
-
 ## Preamble (run first)
 
 ```bash
@@ -29,7 +20,7 @@ mkdir -p ~/.gstack/sessions
 touch ~/.gstack/sessions/"$PPID"
 _PROACTIVE=$([ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-config" get proactive 2>/dev/null || echo "true")
 _TEL_START=$(date +%s)
-_SESSION_ID="$-$(date +%s)"
+_SESSION_ID="$$-$(date +%s)"
 
 # Shared artifact storage (cross-skill, cross-session)
 mkdir -p ~/.gstack/projects/$_SLUG
@@ -39,7 +30,7 @@ _PROJECTS_DIR=~/.gstack/projects/$_SLUG
 mkdir -p ~/.gstack/analytics
 _SLUG_SAFE=$(printf '%s' "$_SLUG" | tr -d '"\\\n\r\t')
 _BRANCH_SAFE=$(printf '%s' "$_BRANCH" | tr -d '"\\\n\r\t')
-echo '{"skill":"unfreeze","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG_SAFE"'","branch":"'"$_BRANCH_SAFE"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+echo '{"skill":"{{SKILL_NAME}}","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG_SAFE"'","branch":"'"$_BRANCH_SAFE"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
 
 echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"
@@ -65,38 +56,3 @@ If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
 DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
 Escalation after 3 failed attempts.
-
-
-## Telemetry (run last)
-
-```bash
-_TEL_END=$(date +%s)
-_TEL_DUR=$(( _TEL_END - _TEL_START ))
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-telemetry-log" \
-  --skill "unfreeze" --duration "$_TEL_DUR" --outcome "OUTCOME" \
-  --used-browse "false" --session-id "$_SESSION_ID" 2>/dev/null &
-```
-
-
-# /unfreeze: Deactivate Guard Mode
-
-Removes the file edit scope restriction set by `/guard`.
-
-## What it does
-
-1. Clears the active scope restriction
-2. Confirms deactivation
-3. `/careful` protections remain active if they were enabled separately
-
-## Usage
-
-Just invoke `/unfreeze`. No arguments needed.
-
-> Guard mode deactivated. All files are now editable.
-> Note: If /careful was active, destructive command warnings are still on.
-
-## Review Log
-
-```bash
-[ -n "$_GG_BIN" ] && "$_GG_BIN/gstack-review-log" '{"skill":"unfreeze","timestamp":"TIMESTAMP","status":"DEACTIVATED","commit":"COMMIT"}' 2>/dev/null || true
-```

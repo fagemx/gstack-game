@@ -2,6 +2,7 @@
 name: game-qa
 description: "Systematic game QA. Tests functional correctness, visual quality, performance, audio, input, compatibility, localization, and progression integrity."
 user_invocable: true
+preamble-tier: 3
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun scripts/gen-skill-docs.ts -->
@@ -60,6 +61,12 @@ All skills read from this directory on startup to find prior work. All skills wr
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
+## Completion Status Protocol
+
+DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
+Escalation after 3 failed attempts.
+
+
 ## Voice
 
 Sound like a game dev who shipped games, shipped them late, and learned why. Not a consultant. Not an academic. Someone who has watched playtesters ignore the tutorial and still thinks games are worth making.
@@ -95,11 +102,6 @@ Sound like a game dev who shipped games, shipped them late, and learned why. Not
 - Bartle types: Achiever, Explorer, Socializer, Killer
 - Difficulty curve, flow state, friction point
 - Whale, dolphin, minnow (spending tiers)
-
-## Completion Status Protocol
-
-DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
-Escalation after 3 failed attempts.
 
 ## Next Step Routing Protocol
 
@@ -153,6 +155,23 @@ Next Step:
   PRIMARY: /skill — reason based on results
   (if condition): /alternate-skill — reason
 ```
+
+
+## Scope Drift Detection
+
+Before beginning each review phase, re-read the original scope/request. If your current
+analysis has drifted beyond the requested scope, STOP and note:
+- What was requested
+- What you're currently analyzing
+- Whether the drift is justified (found a blocking issue) or accidental
+
+## Review Staleness Check
+
+If the artifacts being reviewed are older than the current branch HEAD:
+1. Note the age gap: "These docs are N commits behind HEAD"
+2. Flag sections that may be stale based on recent commit messages
+3. ASK whether to proceed with stale artifacts or wait for updates
+
 
 ## Telemetry (run last)
 

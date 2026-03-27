@@ -133,24 +133,67 @@ describe("generated SKILL.md", () => {
 });
 
 describe("preamble", () => {
-  test("shared/preamble.md exists", () => {
-    expect(existsSync(join(SKILLS_DIR, "shared", "preamble.md"))).toBe(true);
+  test("all preamble fragment files exist", () => {
+    for (const frag of ["preamble-core", "preamble-standard", "preamble-expert", "preamble-telemetry"]) {
+      expect(existsSync(join(SKILLS_DIR, "shared", `${frag}.md`))).toBe(true);
+    }
   });
 
-  test("preamble contains AskUserQuestion format", () => {
+  test("preamble-standard contains AskUserQuestion format", () => {
     const content = readFileSync(
-      join(SKILLS_DIR, "shared", "preamble.md"),
+      join(SKILLS_DIR, "shared", "preamble-standard.md"),
       "utf-8"
     );
     expect(content).toContain("AskUserQuestion");
   });
 
-  test("preamble contains Completion Status Protocol", () => {
+  test("preamble-core contains Completion Status Protocol", () => {
     const content = readFileSync(
-      join(SKILLS_DIR, "shared", "preamble.md"),
+      join(SKILLS_DIR, "shared", "preamble-core.md"),
       "utf-8"
     );
     expect(content).toContain("DONE");
     expect(content).toContain("BLOCKED");
+  });
+});
+
+describe("preamble tiers", () => {
+  test("all templates have valid preamble-tier (1, 2, or 3)", () => {
+    const invalid: string[] = [];
+    for (const name of skillDirs) {
+      const tmpl = join(SKILLS_DIR, name, "SKILL.md.tmpl");
+      if (!existsSync(tmpl)) continue;
+      const content = readFileSync(tmpl, "utf-8");
+      const tierMatch = content.match(/preamble-tier:\s*(\d+)/);
+      if (!tierMatch) { invalid.push(`${name}: missing preamble-tier`); continue; }
+      const tier = parseInt(tierMatch[1]);
+      if (tier < 1 || tier > 3) invalid.push(`${name}: invalid tier ${tier}`);
+    }
+    expect(invalid).toEqual([]);
+  });
+
+  test("T1 skills do not contain Voice or AskUserQuestion in preamble area", () => {
+    const t1Skills = ["careful", "guard", "unfreeze", "game-docs"];
+    const failures: string[] = [];
+    for (const name of t1Skills) {
+      const md = join(SKILLS_DIR, name, "SKILL.md");
+      if (!existsSync(md)) continue;
+      const preambleArea = readFileSync(md, "utf-8").split("\n").slice(0, 60).join("\n");
+      if (preambleArea.includes("## Voice")) failures.push(`${name}: has Voice`);
+      if (preambleArea.includes("AskUserQuestion Format")) failures.push(`${name}: has AskUser`);
+    }
+    expect(failures).toEqual([]);
+  });
+
+  test("T3 skills contain Scope Drift Detection", () => {
+    const t3Skills = ["gameplay-implementation-review", "game-eng-review", "game-qa",
+                       "game-ship", "game-codex", "game-visual-qa", "plan-design-review"];
+    const missing: string[] = [];
+    for (const name of t3Skills) {
+      const md = join(SKILLS_DIR, name, "SKILL.md");
+      if (!existsSync(md)) continue;
+      if (!readFileSync(md, "utf-8").includes("Scope Drift Detection")) missing.push(name);
+    }
+    expect(missing).toEqual([]);
   });
 });

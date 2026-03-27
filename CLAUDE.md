@@ -16,7 +16,7 @@ bun test                         # run before every commit — free, <2s
 ```
 
 `bun test` runs template validation: frontmatter checks, preamble injection verification,
-placeholder expansion, and drift detection. All 11 tests must pass before committing.
+placeholder expansion, drift detection, and tier validation. All 14 tests must pass before committing.
 
 ## Project structure
 
@@ -40,7 +40,11 @@ gstack-game/
 ├── scripts/
 │   └── gen-skill-docs.ts        ← template engine (SKILL.md.tmpl → SKILL.md)
 ├── skills/                      ← 28 published skills + shared/
-│   ├── shared/preamble.md       ← injected into every skill via {{PREAMBLE}}
+│   ├── shared/
+│   │   ├── preamble-core.md     ← T1+: bash setup, artifacts, completion status
+│   │   ├── preamble-standard.md ← T2+: voice, AskUser, vocabulary, routing
+│   │   ├── preamble-expert.md   ← T3: scope drift, review staleness
+│   │   └── preamble-telemetry.md← all: end-of-session telemetry (always last)
 │   ├── game-review/             ← GDD review (255L, 80%)
 │   ├── balance-review/          ← economy & balance (286L, 70%)
 │   ├── player-experience/       ← player walkthrough (273L, 75%)
@@ -116,8 +120,16 @@ Rules:
 
 | Placeholder | Resolves to |
 |-------------|-------------|
-| `{{PREAMBLE}}` | Contents of `skills/shared/preamble.md` |
+| `{{PREAMBLE}}` | Tier-assembled preamble (core + standard + expert + telemetry based on `preamble-tier`) |
 | `{{SKILL_NAME}}` | Directory name of the skill (e.g. `game-review`) |
+
+### Preamble tiers
+
+| Tier | Skills | Includes |
+|------|--------|----------|
+| T1 | careful, guard, unfreeze, game-docs | core + telemetry |
+| T2 | 17 design/review skills | + voice, AskUser, vocabulary, routing |
+| T3 | 7 expert/production skills | + scope drift, review staleness |
 
 ### Template format
 
@@ -126,6 +138,7 @@ Rules:
 name: my-skill
 description: "One-line description."
 user_invocable: true
+preamble-tier: 2
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun scripts/gen-skill-docs.ts -->

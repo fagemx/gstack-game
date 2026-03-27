@@ -37,9 +37,11 @@ _SESSION_ID="$-$(date +%s)"
 mkdir -p ~/.gstack/projects/$_SLUG
 _PROJECTS_DIR=~/.gstack/projects/$_SLUG
 
-# Telemetry
+# Telemetry (sanitize inputs before JSON interpolation)
 mkdir -p ~/.gstack/analytics
-echo '{"skill":"game-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG"'","branch":"'"$_BRANCH"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
+_SLUG_SAFE=$(printf '%s' "$_SLUG" | tr -d '"\\\n\r\t')
+_BRANCH_SAFE=$(printf '%s' "$_BRANCH" | tr -d '"\\\n\r\t')
+echo '{"skill":"game-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'"$_SLUG_SAFE"'","branch":"'"$_BRANCH_SAFE"'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
 
 echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"

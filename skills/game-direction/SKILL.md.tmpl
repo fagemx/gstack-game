@@ -3,6 +3,8 @@ name: game-direction
 description: "Game direction review from producer/creative director perspective. Challenges premises, evaluates scope, market positioning, and strategic alignment."
 user_invocable: true
 preamble-tier: 2
+allowed-tools:
+  - WebSearch
 ---
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun scripts/gen-skill-docs.ts -->
@@ -96,6 +98,72 @@ Before reviewing any details, challenge the premise itself. This is the most imp
 **Push until you hear:** A specific strategic rationale — not just "I'm passionate about it" (that's motivation, not strategy). "Mobile puzzle market is shifting toward AI-integrated play, our team shipped 2 puzzle games, and we have a working LLM integration from our last project" = strategic. "I've always wanted to make this game" = passion (valid, but not strategy).
 
 **STOP.** Wait for answer. Push once on vague answers.
+
+### 0A.5: Market Positioning Check
+
+The designer just told you "why this game, why now." Before accepting or challenging that answer, check what the market actually says.
+
+**Privacy gate — AskUserQuestion:**
+
+> **[Re-ground]** You said: *"{summary of 0A answer — their strategic rationale}"*. I want to verify the market timing claim with current data.
+>
+> **[Simplify]** I'd search for things like "[genre] market [platform] [year]" and "[genre] player trends" — generalized terms only, never your game's name or proprietary details.
+>
+> A) **Yes, check the market** — validate my timing claim
+> B) **Skip — keep this private** — challenge me with what you already know
+>
+> RECOMMENDATION: Choose A. "Why now?" is a market question. Market questions deserve market data, not just intuition.
+
+**STOP.** Wait for answer.
+
+**If A (search):**
+
+Search using generalized genre/platform terms only. Never search the user's specific game name or proprietary concept.
+
+WebSearch queries (run 2-3):
+- `"[genre] [platform] market [current year]"` — is this genre growing or declining on this platform?
+- `"[genre] game releases [current year]"` — how many competitors are launching?
+- `"[genre] player demographics trends"` — is the audience expanding or contracting?
+
+Read the top 2-3 results from each search.
+
+**If B (skip):** Note: "Search skipped — challenging with in-distribution knowledge only." Proceed to 0B.
+
+**If WebSearch is unavailable:** Note: "WebSearch unavailable — proceeding with in-distribution knowledge only." Proceed to 0B.
+
+#### Three-Layer Synthesis
+
+- **Layer 1 — Conventional Wisdom:** What does the industry assume about this genre/platform combination? What's the "obvious" take?
+- **Layer 2 — Current Data:** What do search results show about market timing, competitor density, audience trends?
+- **Layer 3 — Designer's Claim vs. Reality:** Does the designer's "why now" answer hold up against the data? Where does it align? Where does it contradict?
+
+#### Eureka Check
+
+If the data reveals something that contradicts or strongly validates the designer's timing claim:
+
+> **EUREKA:** The designer says [claim]. Market data shows [evidence]. This means [implication — either "the timing is even better than stated because..." or "the timing claim doesn't hold because..."].
+
+If no eureka: "Market data is consistent with the designer's rationale. Proceeding with premise challenge."
+
+#### Market Check Summary
+
+Present findings, then push back (or validate) the 0A answer with evidence:
+
+> **Market Positioning Check:**
+>
+> - **Your claim:** "{designer's why-now rationale}"
+> - **Market says:** [genre] on [platform] is [growing/stable/declining/oversaturated]
+> - **Competitor density:** [X recent releases in this space]
+> - **Audience trend:** [expanding/stable/contracting]
+> {If eureka: **EUREKA:** [the insight]}
+>
+> **My assessment:** [Does the "why now" hold up? Specific evidence for/against.]
+>
+> {If misalignment found: "Your rationale says [X] but market data shows [Y]. This doesn't kill the project, but the plan should account for [implication]."}
+>
+> Let's continue to asset leverage assessment.
+
+Proceed to 0B. No separate STOP needed here — this is an informational push-back, not a decision point.
 
 ### 0B. Existing Asset Leverage
 

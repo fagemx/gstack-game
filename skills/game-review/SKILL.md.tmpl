@@ -14,6 +14,7 @@ user_invocable: true
 ## Load References
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Loading game-review reference files ==="
 ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
 ```
@@ -23,6 +24,7 @@ ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for design docs and prior reviews ==="
 # Local GDD
 GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* docs/*design-doc* *.gdd.md 2>/dev/null | head -1)

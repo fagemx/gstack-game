@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -147,6 +148,7 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ## Document Check
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 GDD=$(ls -t docs/*GDD* docs/*game-design* docs/*design-doc* docs/*concept* *.gdd.md 2>/dev/null | head -1)
 [ -z "$GDD" ] && GDD=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md ~/.gstack/projects/$SLUG/*-concept-*.md 2>/dev/null | head -1)
@@ -162,6 +164,7 @@ If no GDD or concept doc found, suggest `/game-ideation` first. Direction review
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for prior work ==="
 PREV_DIRECTION=$(ls -t $_PROJECTS_DIR/*-direction-review-*.md 2>/dev/null | head -1)
 [ -n "$PREV_DIRECTION" ] && echo "Prior direction review: $PREV_DIRECTION"

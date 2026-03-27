@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -147,6 +148,7 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ## QA Scope Check
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 VERSION=$(cat version.txt 2>/dev/null || cat package.json 2>/dev/null | grep '"version"' | head -1 | sed 's/.*: *"\(.*\)".*/\1/' || echo "UNKNOWN")
 LAST_QA=$(ls -t ~/.gstack/reviews/$SLUG/game-qa-*.json 2>/dev/null | head -1)

@@ -11,6 +11,7 @@ user_invocable: true
 ## QA Scope Check
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 VERSION=$(cat version.txt 2>/dev/null || cat package.json 2>/dev/null | grep '"version"' | head -1 | sed 's/.*: *"\(.*\)".*/\1/' || echo "UNKNOWN")
 LAST_QA=$(ls -t ~/.gstack/reviews/$SLUG/game-qa-*.json 2>/dev/null | head -1)

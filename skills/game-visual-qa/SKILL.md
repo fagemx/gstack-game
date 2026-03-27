@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -147,6 +148,7 @@ _TEL_DUR=$(( _TEL_END - _TEL_START ))
 ## Load References
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Loading game-visual-qa reference files ==="
 ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
 ```

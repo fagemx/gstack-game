@@ -11,6 +11,7 @@ user_invocable: true
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for prior work ==="
 # Local docs
 CONCEPT=$(ls -t docs/*concept* docs/*idea* docs/*pitch* *.concept.md 2>/dev/null | head -1)

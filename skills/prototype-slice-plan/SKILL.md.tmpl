@@ -26,6 +26,7 @@ Read ALL reference files now:
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for upstream artifacts ==="
 GDD=$(ls -t docs/gdd.md docs/*GDD* docs/*game-design* 2>/dev/null | head -1)
 [ -n "$GDD" ] && echo "GDD: $GDD"

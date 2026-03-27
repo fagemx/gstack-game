@@ -29,6 +29,7 @@ done
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for prior work ==="
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 PITCH=$(ls -t docs/*pitch* docs/*proposal* docs/*concept* *.pitch.md 2>/dev/null | head -1)

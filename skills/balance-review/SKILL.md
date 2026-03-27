@@ -9,6 +9,7 @@ user_invocable: true
 ## Preamble (run first)
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 _GD_VERSION="0.3.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
@@ -166,6 +167,7 @@ Read ALL reference files now. Do not proceed until you have read every file:
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 BDOC=$(ls -t docs/*balance* docs/*economy* docs/*progression* docs/*difficulty* design/gdd/*economy* design/gdd/*balance* assets/data/*curve* 2>/dev/null | head -1)
 [ -z "$BDOC" ] && BDOC=$(ls -t ~/.gstack/projects/$SLUG/*-balance-*.md ~/.gstack/projects/$SLUG/*-economy-*.md 2>/dev/null | head -1)

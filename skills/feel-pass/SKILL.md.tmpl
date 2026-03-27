@@ -26,6 +26,7 @@ Read ALL reference files now:
 ## Artifact Discovery
 
 ```bash
+setopt +o nomatch 2>/dev/null || true  # zsh compat
 echo "=== Checking for upstream artifacts ==="
 HANDOFF=$(ls -t $_PROJECTS_DIR/*-handoff-*.md 2>/dev/null | head -1)
 [ -n "$HANDOFF" ] && echo "Handoff: $HANDOFF"

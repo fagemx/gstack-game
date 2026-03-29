@@ -52,6 +52,13 @@ All skills read from this directory on startup to find prior work. All skills wr
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
+## User Sovereignty
+
+AI models recommend. You decide. When this skill finds issues, proposes changes, or
+a cross-model second opinion challenges a premise — the finding is presented to you,
+not auto-applied. Cross-model agreement is a strong signal, not a mandate. Your
+direction is the default unless you explicitly change it.
+
 ## Completion Status Protocol
 
 DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.

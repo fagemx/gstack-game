@@ -13,17 +13,32 @@ set -euo pipefail
 STATE_DIR="${GSTACK_STATE_DIR:-$HOME/.gstack}"
 CONFIG_FILE="$STATE_DIR/config.yaml"
 
+# Validate key: only alphanumeric, hyphens, and underscores allowed
+validate_key() {
+  case "$1" in
+    *[!a-zA-Z0-9_-]*) echo "gstack-config: invalid key '$1'" >&2; exit 1 ;;
+    '') echo "gstack-config: empty key" >&2; exit 1 ;;
+  esac
+}
+
 case "${1:-}" in
   get)
     KEY="${2:?Usage: gstack-config get <key>}"
-    grep -E "^${KEY}:" "$CONFIG_FILE" 2>/dev/null | tail -1 | awk '{print $2}' | tr -d '[:space:]' || true
+    validate_key "$KEY"
+    grep -F "${KEY}:" "$CONFIG_FILE" 2>/dev/null | grep -E "^${KEY}:" | tail -1 | awk '{print $2}' | tr -d '[:space:]' || true
     ;;
   set)
     KEY="${2:?Usage: gstack-config set <key> <value>}"
     VALUE="${3:?Usage: gstack-config set <key> <value>}"
+    validate_key "$KEY"
     mkdir -p "$STATE_DIR"
-    if grep -qE "^${KEY}:" "$CONFIG_FILE" 2>/dev/null; then
-      sed -i '' "s/^${KEY}:.*/${KEY}: ${VALUE}/" "$CONFIG_FILE"
+    # Escape sed replacement special characters in value
+    ESCAPED_VALUE="$(printf '%s' "$VALUE" | sed 's/[&/\]/\\&/g')"
+    if grep -qF "${KEY}:" "$CONFIG_FILE" 2>/dev/null && grep -qE "^${KEY}:" "$CONFIG_FILE" 2>/dev/null; then
+      # Portable sed: use temp file instead of sed -i (not portable across macOS/Linux)
+      TMPFILE="$(mktemp)"
+      sed "s/^${KEY}:.*/${KEY}: ${ESCAPED_VALUE}/" "$CONFIG_FILE" > "$TMPFILE"
+      mv "$TMPFILE" "$CONFIG_FILE"
     else
       echo "${KEY}: ${VALUE}" >> "$CONFIG_FILE"
     fi

@@ -64,6 +64,13 @@ All skills read from this directory on startup to find prior work. All skills wr
 
 If `PROACTIVE` is `"false"`, do not proactively suggest gstack-game skills.
 
+## User Sovereignty
+
+AI models recommend. You decide. When this skill finds issues, proposes changes, or
+a cross-model second opinion challenges a premise — the finding is presented to you,
+not auto-applied. Cross-model agreement is a strong signal, not a mandate. Your
+direction is the default unless you explicitly change it.
+
 ## Completion Status Protocol
 
 DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.
@@ -382,10 +389,10 @@ Cross-Model Synthesis:
 ═══════════════════════════════════════════
 ```
 
-Then 3-5 bullet synthesis:
-- Where the primary review agrees with the second opinion
-- Where it disagrees and why
-- Whether any challenged premise changes the Section 1 assessment
+Then 3-5 bullet synthesis — present both perspectives neutrally:
+- Where the primary review and second opinion agree
+- Where they diverge, with each side's reasoning
+- Any challenged premises the user should weigh before proceeding
 
 ### Premise Revision Check:
 

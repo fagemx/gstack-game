@@ -14,7 +14,7 @@ export async function score(
   round: number,
 ): Promise<ApiCallResult<ScoreResult>> {
   const prompt = scorePrompt(docContent, docId, round);
-  const result = await callClaude(prompt, model, 2048);
+  const result = await callClaude(prompt, model, 8192);
 
   const jsonMatch = result.text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {

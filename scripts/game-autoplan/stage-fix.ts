@@ -21,7 +21,7 @@ export async function fix(
     : undefined;
 
   const prompt = fixPrompt(docContent, gapJson, round, prevScoreStr);
-  const result = await callClaude(prompt, model, 8192);
+  const result = await callClaude(prompt, model, 32768);
 
   return {
     data: result.text.trim(),

@@ -13,7 +13,7 @@ export async function interrogate(
   docId: string,
 ): Promise<ApiCallResult<GapAnalysis>> {
   const prompt = interrogatePrompt(docContent, docId);
-  const result = await callClaude(prompt, model, 4096);
+  const result = await callClaude(prompt, model, 16384);
 
   const jsonMatch = result.text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {

@@ -136,7 +136,7 @@ gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 spri
 | `/game-review` | **資深遊戲設計師** | GDD 審查：Core Loop、Progression、Economy、Motivation、Risk，量化 GDD Health Score |
 | `/game-eng-review` | **技術總監** | 引擎選型、渲染管線、網路架構、資產管線、平台適配 |
 | `/balance-review` | **數值策劃** | 難度曲線（Flow State）、Sink/Faucet 經濟、Gini 係數、pity system、獎勵心理學 |
-| `/player-experience` | **UX 研究員** | 第一人稱玩家走查，6 種 persona，情緒模型，repeat play simulation |
+| `/player-experience` | **UX 研究員** | 第一人稱玩家走查，7 種 persona（4D：profile/stance/behavior/influence），情緒模型，repeat play simulation |
 | `/game-ux-review` | **UI/UX 設計師** | HUD 可讀性、選單流程、商店 UI、教學、控制器/觸控適配、無障礙 |
 | `/plan-design-review` | **資深產品設計師** | 實作前計畫審查：7-pass Fix-to-10（資訊架構、互動狀態、玩家旅程、AI slop、設計系統、輸入/無障礙、未決決策）。從零建立 DESIGN.md。Codex + Subagent 平行審查 |
 | `/pitch-review` | **投資人 / 發行商視角** | 市場定位、差異化、可行性、商業論證、冰山驗證等級 |
@@ -206,6 +206,7 @@ gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 spri
 | **[gstack](https://github.com/garrytan/gstack)** | 工程架構 + 6 個審查方法論原理 |
 | **Claude-Code-Game-Studios** | MDA/SDT/Flow 理論、Nested Loop、Pillar methodology、經濟系統框架 |
 | **guardian**（PlayerSimulatorAgent） | 玩家模擬 prompt、冰山驗證框架、Fantasy/Loop/Twist |
+| **hakoniwa** | 4D 人格模型（立場/MBTI-行為/影響力）、ReACT 證據方法論、社群反應預測、事件注入測試 |
 
 ---
 
@@ -214,7 +215,7 @@ gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 spri
 ```bash
 bun run build                        # 從 .tmpl 生成所有 SKILL.md
 bun run gen:skill-docs:check         # 檢查有沒有 drift（CI 用）
-bun test                             # 跑 11 個驗證測試
+bun test                             # 跑 24 個驗證測試
 ```
 
 ### 新增 skill

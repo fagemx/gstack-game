@@ -195,7 +195,7 @@ Each skill feeds the next. `/game-import` converts your PDF into a GDD that `/ga
 | `/game-review` | **Senior Game Designer** | GDD review: Core Loop, Progression, Economy, Motivation, Risk. Quantified GDD Health Score |
 | `/game-eng-review` | **Technical Director** | Engine choice, rendering pipeline, networking architecture, asset pipeline, platform adaptation |
 | `/balance-review` | **Economy Designer** | Difficulty curves (Flow State), Sink/Faucet economy, Gini coefficient, pity systems, reward psychology |
-| `/player-experience` | **UX Researcher** | First-person player walkthrough, 6 personas, emotion model, repeat play simulation |
+| `/player-experience` | **UX Researcher** | First-person player walkthrough, 7 personas (4D: profile/stance/behavior/influence), emotion model, repeat play simulation |
 | `/game-ux-review` | **UI/UX Designer** | HUD readability, menu flow, shop UI, tutorial, controller/touch adaptation, accessibility |
 | `/plan-design-review` | **Senior Product Designer** | Pre-implementation plan review: 7-pass Fix-to-10 (info architecture, interaction states, player journey, AI slop, design system, input/a11y, decisions). Builds DESIGN.md from scratch. Codex + Subagent parallel review |
 | `/pitch-review` | **Investor / Publisher Lens** | Market positioning, differentiation, feasibility, business case, Iceberg validation level |
@@ -264,6 +264,7 @@ The engineering backbone matches gstack quality. What's missing is **game indust
 | **[gstack](https://github.com/garrytan/gstack)** | Engineering architecture + 6 review methodology principles |
 | **Claude-Code-Game-Studios** | MDA/SDT/Flow theory, Nested Loop, Pillar methodology, economy frameworks |
 | **guardian** (PlayerSimulatorAgent) | Player simulation prompts, Iceberg validation framework, Fantasy/Loop/Twist |
+| **hakoniwa** | 4D persona model (stance/MBTI-behavior/influence), ReACT evidence methodology, community reception prediction, event injection testing |
 
 ---
 
@@ -272,7 +273,7 @@ The engineering backbone matches gstack quality. What's missing is **game indust
 ```bash
 bun run build                        # Generate all SKILL.md from templates
 bun run gen:skill-docs:check         # Check for drift (CI use)
-bun test                             # Run 11 validation tests
+bun test                             # Run 24 validation tests
 ```
 
 ### Adding a new skill
@@ -291,7 +292,7 @@ gstack-game/
 ├── README.zh-TW.md                     ← 繁體中文版
 ├── ETHOS.md                            ← Game dev philosophy (Boil the Lake, game edition)
 ├── CHANGELOG.md                        ← Version history
-├── VERSION                             ← 0.3.0
+├── VERSION                             ← 0.5.0
 ├── package.json                        ← Build scripts
 ├── bin/                                ← 7 utilities (config, diff-scope, telemetry...)
 ├── scripts/gen-skill-docs.ts           ← Template engine

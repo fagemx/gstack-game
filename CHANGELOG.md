@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.5.0 — 2026-04-15
+
+**Sharper reviews, richer player personas, community-aware shipping.** Two upstream syncs bring behavioral UX testing, anti-slop detection, and multi-agent methodology to the game review pipeline.
+
+### Upstream sync: gstack (v0.15.7 → v0.17.0)
+
+- **6 game UX behavioral tests** in `/game-ux-review` and `/plan-design-review` — HUD Clarity Test, First Frame Test, Tutorial Bloat Detection, Player Patience Meter, Mindless Choice Audit, Dead Input Test. Each produces a concrete PASS/PARTIAL/FAIL.
+- **First-person narration mode** in `/player-experience`, `/feel-pass`, and `/game-ux-review` — reviews must name specific elements and describe moment-by-moment experience. "I tap the screen and... nothing" instead of "the UI lacks feedback."
+- **Game Design Slop Blacklist** in `/game-review` — 10 common design anti-patterns (stat-inflation skill trees, meaningless daily logins, tooltip-bombardment tutorials, etc.) with challenge questions and severity classification.
+- **Expanded anti-sycophancy** — 12 new banned AI filler phrases, 5 forbidden postures ("That's an interesting approach" → must take a position), punchier writing rules.
+- **Confusion Protocol** — all T2+ skills now stop and ask when facing high-stakes design ambiguity instead of guessing.
+- **Scope Drift Detection upgrade** — T3 skills now detect both scope creep (analyzed more than requested) and missing requirements (didn't cover what was requested).
+- **Token ceiling warning** — template engine warns when any generated SKILL.md exceeds 100KB (~25K tokens).
+
+### Upstream sync: hakoniwa methodology
+
+- **4-dimensional player personas** in `/player-experience` — each persona now has profile, stance spectrum (-1.0 to +1.0), MBTI-informed behavior type, and influence weight (0.1 lurker to 0.9 KOL). New Persona 7: Genre Critic. Stance distribution guide for 5 common launch scenarios.
+- **ReACT evidence standards** for T3 skills — every HIGH/CRITICAL finding requires 2+ data points, 1+ direct quote, comparison context, and explicit confidence calibration (HIGH/MEDIUM/LOW).
+- **Design consistency evaluator** in `/game-review` — 3 dimensions: voice consistency (do systems match design pillars?), boundary behavior (does design hold under extreme conditions?), environmental storytelling density (how many channels communicate?).
+- **Community Reception Forecast** in `/pitch-review` — stakeholder spectrum analysis, amplification timeline prediction, top 2 controversy risk scenarios with mitigation.
+- **Launch Window Risk** (Phase 8) in `/game-ship` — audience reaction quick-scan, segment-by-segment risk assessment, timing check against competitor releases.
+- **Event injection testing** in `/playtest` — 5 categories of deliberate disruptions (difficulty spikes, economy shocks, social disruptions, UX interruptions, information reveals) with observation framework. Optional Section 1B in playtest protocol.
+
+### Infrastructure
+
+- Shell injection fix in `gstack-review-log` (echo → printf)
+- Version sync: package.json now matches VERSION file
+
 ## 0.4.0 — 2026-03-25
 
 **Self-guiding workflow.** Skills now tell you what to do next. New entry point skill, deep domain knowledge for 6 skills, and a complete internal maintenance pipeline.

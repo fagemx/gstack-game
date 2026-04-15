@@ -11,7 +11,7 @@ preamble-tier: 2
 
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-_GD_VERSION="0.3.0"
+_GD_VERSION="0.5.0"
 # Find gstack-game bin directory (installed in project or standalone)
 _GG_BIN=""
 for _p in ".claude/skills/gstack-game/bin" ".claude/skills/game-review/../../gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do

@@ -381,6 +381,47 @@ Route by stage (minimum 3 questions). Ask ONE AT A TIME via AskUserQuestion.
 
 ---
 
+## Section 6: Community Reception Forecast（社群反應預測）
+
+After scoring Sections 1-5, predict how different player segments will react to this pitch. This is NOT a simulation — it's structured stakeholder analysis using the game's positioning.
+
+### Stakeholder Spectrum
+
+Map the game's target audience onto 5 segments. Use realistic distributions (not 50/50):
+
+| Segment | % | Who | Likely Reaction |
+|---------|---|-----|-----------------|
+| **Strong Support** | _% | [e.g., genre enthusiasts, indie supporters] | [what excites them] |
+| **Support** | _% | [e.g., optimistic early adopters] | [what they need to commit] |
+| **Neutral** | _% | [e.g., wait-and-see, price-sensitive] | [what would convert them] |
+| **Opposing** | _% | [e.g., skeptics, genre purists] | [their objection] |
+| **Strong Opposing** | _% | [e.g., franchise veterans, competitor fans] | [their narrative] |
+
+### Amplification Prediction
+
+Who speaks first, and who speaks loudest?
+
+```
+Launch Timeline:
+  Hour 0-6:   Who reacts first? [streamers / journalists / Reddit]
+  Hour 6-24:  Who amplifies? [content creators / community leaders]
+  Day 2-3:    Who verifies? [players who bought report actual experience]
+  Day 7:      Who defines the narrative? [reviewers / long-form analysis]
+```
+
+### Risk Scenarios (pick top 2)
+
+For the game's 2 most likely controversy points:
+- **Scenario:** [what could go wrong — e.g., "price perceived as too high for indie"]
+- **Which segment amplifies it:** [e.g., "Opposing segment + neutral price-sensitive"]
+- **Mitigation in pitch:** [what the pitch should address preemptively]
+
+This section is informational — it does NOT have a score. It informs the Recommendation by surfacing reception risks that the pitch should address.
+
+**STOP.** Present forecast and ask before proceeding to Completion Summary.
+
+---
+
 ## Important Rules
 
 - **Questions ONE AT A TIME.** Never batch forcing questions or section findings.

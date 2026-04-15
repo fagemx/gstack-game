@@ -207,6 +207,8 @@ ls references/*.md 2>/dev/null | while read f; do echo "  $f"; done
 
 **Read ALL `references/` files NOW before any user interaction.** They contain rubrics, frameworks, forcing questions, and protocols. Zero interruption — load everything upfront.
 
+Key references: `scoring.md` (rubrics), `core-loop.md` / `progression.md` / `economy.md` / `motivation.md` / `risk.md` (section frameworks), `cross-section.md` (cross-validation), `design-consistency.md` (3-dimension consistency evaluator: voice, boundaries, storytelling density), `gotchas.md` (anti-sycophancy).
+
 ## Artifact Discovery
 
 ```bash

@@ -21,6 +21,7 @@ for f in "$SKILL_DIR/references"/*.md; do [ -f "$f" ] && echo "REF: $f"; done
 - `gotchas.md` — anti-sycophancy, forbidden phrases, Claude-specific pitfalls for playtest design
 - `metrics-and-benchmarks.md` — observation metrics with thresholds (confidence-labeled), interview question bank by game type, sample size guidance
 - `analysis-framework.md` — triangulation method, pattern recognition, finding prioritization, report template
+- `event-injection.md` — deliberate disruption testing: difficulty spikes, economy shocks, UX interruptions, information reveals
 
 ---
 
@@ -94,6 +95,27 @@ A testable hypothesis specifies: what you expect, what metric you will measure, 
 - Observer does NOT help unless tester is completely stuck for >2 minutes
 
 **STOP.** Present test plan for user review. One issue per AskUserQuestion.
+
+## Section 1B: Event Injection Design (Optional)
+
+**ASK:** After test plan is confirmed, offer event injection:
+
+> Your test plan observes natural play. Want to also test how the game handles disruptions?
+>
+> Event injection = introducing a controlled disruption at a specific moment and observing the player's reaction. This reveals design resilience that normal play doesn't test.
+>
+> A) **Add 2-3 injections** — pick from `event-injection.md` based on hypothesis. Adds ~5 min per tester.
+> B) **Skip** — observe natural play only. Better for first-time playtests or when testing FTUE.
+
+If A: Select injection types from `references/event-injection.md` that match the hypothesis. Design max 3 injections per session. Each injection needs:
+- **What:** the disruption
+- **When:** the exact trigger moment
+- **Tests:** what design quality it reveals
+- **Observe:** what to watch for in player reaction
+
+Add injection markers to Section 2's event log template.
+
+**STOP.** Present injection plan for user review. One issue per AskUserQuestion.
 
 ## Section 2: Observation Metrics
 

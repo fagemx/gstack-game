@@ -205,6 +205,24 @@ Missing: {what was requested but not covered}
 
 If drift is justified (found a blocking issue that forced scope expansion), say so. Otherwise, refocus.
 
+## Evidence Standards (T3 skills)
+
+Every HIGH or CRITICAL finding must include structured evidence. Do not make bold claims without backing.
+
+**Required per finding:**
+- **≥2 data points** — specific numbers, metrics, or concrete observations (not vibes)
+- **≥1 direct quote or reference** — from the GDD, playtest data, codebase, or player feedback
+- **Comparison context** — "compared to [genre benchmark / prior review / stated design goal]"
+
+**Confidence Calibration:**
+- **HIGH confidence:** Finding is supported by multiple independent sources (GDD + playtest data + implementation evidence). Trend is clear.
+- **MEDIUM confidence:** Finding is supported by 1-2 sources. Directional but counter-evidence may exist. State: "Medium confidence — based on [source], but [caveat]."
+- **LOW confidence:** Finding is based on inference, analogy, or limited data. State: "Low confidence — inferred from [basis]. Verify with [what's needed]."
+
+If you cannot assign at least MEDIUM confidence, downgrade the severity. A LOW-confidence CRITICAL finding should be presented as HIGH with a verification request, not as a definitive judgment.
+
+**Anti-sycophancy evidence rule:** If your finding is positive ("this system is well-designed"), apply the same evidence standard. Unearned praise is as harmful as unfounded criticism.
+
 ## Review Staleness Check
 
 If the artifacts being reviewed are older than the current branch HEAD:
@@ -599,6 +617,40 @@ Define BEFORE shipping what constitutes a rollback trigger:
 
 ---
 
+## Phase 8: Launch Window Risk Assessment
+
+Before going live, assess how the community will receive this release. This is a 5-minute structured check, not a full analysis.
+
+### Audience Reaction Quick-Scan
+
+For this specific release (not the game overall), identify:
+
+1. **What's the headline?** — If a gaming journalist writes one sentence about this update, what is it? If you can't write a clear headline, the release message is unclear.
+
+2. **Who's excited, who's angry?**
+
+| Segment | Reaction | Risk Level |
+|---------|----------|-----------|
+| Core players (daily active) | [positive/neutral/negative] — because [reason] | [LOW/MED/HIGH] |
+| Lapsed players (checking back) | [positive/neutral/negative] — because [reason] | [LOW/MED/HIGH] |
+| New players (first impression) | [positive/neutral/negative] — because [reason] | [LOW/MED/HIGH] |
+| Content creators | [positive/neutral/negative] — because [reason] | [LOW/MED/HIGH] |
+| Competitors' players | [positive/neutral/negative] — because [reason] | [LOW/MED/HIGH] |
+
+3. **Top controversy risk:** What's the one thing most likely to generate negative posts? What's the counter-narrative?
+
+4. **Timing check:** Is this release competing with a major competitor's launch, gaming event, or platform sale? Bad timing can bury a good release.
+
+### Action Classification
+
+- **AUTO:** Flag release during known competitor launch windows or major events
+- **ASK:** Whether to adjust release timing, messaging, or patch notes based on risk
+- **ESCALATE:** Release contains a change known to anger a large segment with no mitigation plan
+
+**STOP.** One issue per AskUserQuestion.
+
+---
+
 ## Required Outputs
 
 ### Release Completion Report
@@ -620,6 +672,7 @@ Phase Completion:
   Phase 5 — Submission:        _/_ items verified    [PASS/FAIL]
   Phase 6 — Smoke Test:        _/10 steps passed     [PASS/FAIL]
   Phase 7 — Rollback Plan:     [documented/tested]   [DONE/SKIP]
+  Phase 8 — Launch Window Risk: [assessed]            [DONE/SKIP]
 
 Overall Completion: ___%
 Status: SHIPPED / SHIPPED_WITH_KNOWN_ISSUES / BLOCKED / ABORTED

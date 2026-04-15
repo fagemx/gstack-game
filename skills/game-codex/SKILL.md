@@ -205,6 +205,24 @@ Missing: {what was requested but not covered}
 
 If drift is justified (found a blocking issue that forced scope expansion), say so. Otherwise, refocus.
 
+## Evidence Standards (T3 skills)
+
+Every HIGH or CRITICAL finding must include structured evidence. Do not make bold claims without backing.
+
+**Required per finding:**
+- **≥2 data points** — specific numbers, metrics, or concrete observations (not vibes)
+- **≥1 direct quote or reference** — from the GDD, playtest data, codebase, or player feedback
+- **Comparison context** — "compared to [genre benchmark / prior review / stated design goal]"
+
+**Confidence Calibration:**
+- **HIGH confidence:** Finding is supported by multiple independent sources (GDD + playtest data + implementation evidence). Trend is clear.
+- **MEDIUM confidence:** Finding is supported by 1-2 sources. Directional but counter-evidence may exist. State: "Medium confidence — based on [source], but [caveat]."
+- **LOW confidence:** Finding is based on inference, analogy, or limited data. State: "Low confidence — inferred from [basis]. Verify with [what's needed]."
+
+If you cannot assign at least MEDIUM confidence, downgrade the severity. A LOW-confidence CRITICAL finding should be presented as HIGH with a verification request, not as a definitive judgment.
+
+**Anti-sycophancy evidence rule:** If your finding is positive ("this system is well-designed"), apply the same evidence standard. Unearned praise is as harmful as unfounded criticism.
+
 ## Review Staleness Check
 
 If the artifacts being reviewed are older than the current branch HEAD:

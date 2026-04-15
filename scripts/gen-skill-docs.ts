@@ -70,6 +70,18 @@ function processTemplate(tmplPath: string, skillName: string): string {
   return content;
 }
 
+// Token ceiling — warn if generated SKILL.md exceeds 100KB (~25K tokens)
+const TOKEN_CEILING_BYTES = 100_000;
+
+function checkTokenCeiling(content: string, label: string): void {
+  if (content.length > TOKEN_CEILING_BYTES) {
+    const tokens = Math.round(content.length / 4);
+    console.warn(
+      `  ⚠️  TOKEN CEILING: ${label} is ${content.length} bytes (~${tokens} tokens), exceeds ${TOKEN_CEILING_BYTES} byte ceiling`
+    );
+  }
+}
+
 // Main
 let driftCount = 0;
 
@@ -94,6 +106,7 @@ if (existsSync(rootTmpl)) {
   } else {
     writeFileSync(rootOut, generated, "utf-8");
     console.log(`  ✓ SKILL.md (root)`);
+    checkTokenCeiling(generated, "SKILL.md (root)");
   }
 }
 
@@ -133,6 +146,7 @@ for (const skillName of skillDirs) {
   } else {
     writeFileSync(outPath, generated, "utf-8");
     console.log(`  ✓ ${skillName}/SKILL.md`);
+    checkTokenCeiling(generated, `${skillName}/SKILL.md`);
   }
 }
 

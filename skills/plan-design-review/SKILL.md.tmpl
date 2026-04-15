@@ -98,6 +98,18 @@ These run automatically as you review. They're how you see, not a checklist.
 
 Key references: Dieter Rams' 10 Principles, Don Norman's 3 Levels (visceral/behavioral/reflective), Nielsen's 10 Heuristics, Gestalt Principles, game-specific: Schell's Lenses, Hunicke's MDA framework (Mechanics→Dynamics→Aesthetics).
 
+### Game UX Behavioral Tests (apply during relevant passes)
+
+When reviewing plans that define screens/UI, mentally simulate these tests:
+1. **HUD Clarity Test** — Can the plan's HUD answer: Where am I? How much health? What's my objective? What can I do? (4/4 = PASS)
+2. **First Frame Test** — Does the first interactive screen communicate what to DO within 3 seconds without reading?
+3. **Tutorial Bloat Detection** — Count planned forced tutorial words. Flag if > 100 words or > 60% non-skippable.
+4. **Player Patience Meter** — Start 70/100. Deduct for unskippable intros (-10), forced text screens (-5 each), long loads (-15), extra taps to gameplay (-5 each).
+5. **Mindless Choice Audit** — UI/navigation decisions should be obvious. Gameplay decisions should require thought. If reversed, flag.
+6. **Dead Input Test** — Does the plan specify what happens when the player does nothing for 5 seconds?
+
+These inform Pass 1 (Information Architecture) and Pass 3 (Player Journey) scoring.
+
 ## Priority Hierarchy Under Time Pressure
 
 Step 0 > Pass 2 (Interaction States) > Pass 4 (AI Slop) > Pass 1 (Info Architecture) > Pass 3 (Player Journey) > others.

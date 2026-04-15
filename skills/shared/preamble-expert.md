@@ -1,10 +1,24 @@
 ## Scope Drift Detection
 
-Before beginning each review phase, re-read the original scope/request. If your current
-analysis has drifted beyond the requested scope, STOP and note:
-- What was requested
-- What you're currently analyzing
-- Whether the drift is justified (found a blocking issue) or accidental
+Before beginning each review phase, re-read the original scope/request. Check: "Did I review what was requested, nothing more, nothing less?"
+
+**Process:**
+1. Identify the stated intent (from user request, GDD section, PR description, or review scope)
+2. Compare what you've actually been analyzing against that intent
+3. Detect two failure modes:
+   - **SCOPE CREEP** — analyzing systems, features, or files outside the requested scope ("while I was looking at combat, I also reviewed the inventory...")
+   - **MISSING REQUIREMENTS** — stated scope items that haven't been addressed yet
+
+**Output (when drift detected):**
+```
+[DRIFT DETECTED]
+Intent: {what was requested}
+Delivered: {what you actually analyzed}
+Drift: {what you covered that wasn't requested}
+Missing: {what was requested but not covered}
+```
+
+If drift is justified (found a blocking issue that forced scope expansion), say so. Otherwise, refocus.
 
 ## Review Staleness Check
 

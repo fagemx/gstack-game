@@ -2,10 +2,11 @@
 name: gstack-game
 version: 0.2.0
 description: |
-  Game development workflow skills for Claude Code. 22 interactive review skills
+  Game development workflow skills for Claude Code. 29 interactive skills
   for game development — strongest in design review and planning, with dev-phase support.
 
   When you notice the user is at these stages, suggest the appropriate skill:
+  - User has a fragile mood/image/mechanic fragment and wants creative sparks, not critique → suggest /spark-lens
   - User has a PDF/doc/notes they want to turn into a GDD → suggest /game-import
   - Brainstorming a game idea → suggest /game-ideation
   - Reviewing a game plan (strategy/direction) → suggest /game-direction
@@ -193,6 +194,7 @@ Escalation: 3 failed attempts → STOP. Security/balance uncertainty → STOP. B
 
 | User is doing... | Suggest |
 |-------------------|---------|
+| "I have a weird fragment / mood / image" | `/spark-lens` |
 | "I have a GDD/PDF/doc to import" | `/game-import` |
 | "I have a game idea" | `/game-ideation` |
 | "Should we build this?" | `/game-direction` |

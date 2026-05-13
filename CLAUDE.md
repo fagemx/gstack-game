@@ -39,7 +39,7 @@ gstack-game/
 │   └── gstack-slug              ← repo slug detection
 ├── scripts/
 │   └── gen-skill-docs.ts        ← template engine (SKILL.md.tmpl → SKILL.md)
-├── skills/                      ← 28 published skills + shared/
+├── skills/                      ← 29 published skills + shared/
 │   ├── shared/
 │   │   ├── preamble-core.md     ← T1+: bash setup, artifacts, completion status
 │   │   ├── preamble-standard.md ← T2+: voice, AskUser, vocabulary, routing
@@ -50,6 +50,7 @@ gstack-game/
 │   ├── player-experience/       ← player walkthrough (273L, 75%)
 │   ├── pitch-review/            ← pitch evaluation (302L, 70%)
 │   ├── gameplay-implementation-review/        ← PR review (186L, 75%)
+│   ├── spark-lens/              ← creative spark companion, no scoring
 │   ├── game-ideation/           ← concept brainstorming (524L, 65%)
 │   ├── game-direction/          ← direction review (490L, 55%)
 │   ├── game-eng-review/         ← tech architecture (462L + 5 refs, 70%)

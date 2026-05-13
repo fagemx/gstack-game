@@ -4,9 +4,9 @@
 
 [繁體中文](README.zh-TW.md)
 
-28 interactive AI review skills for game development — from concept to shipped build. Covers the **complete game production workflow**: design review, prototype planning, implementation handoff, game feel diagnosis, playability assessment, code review, QA, and release. Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
+29 interactive AI skills for game development — from creative spark to shipped build. Covers the **complete game production workflow**: spark exploration, design review, prototype planning, implementation handoff, game feel diagnosis, playability assessment, code review, QA, and release. Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture and review methodology, fully rewritten for game development.
 
-> **What this IS:** A structured review and quality assurance system — it helps you judge, score, and improve your game design and code.
+> **What this IS:** A structured game development support system — it helps you protect early creative sparks, then judge, score, and improve your game design and code when you are ready.
 > **What this is NOT:** A game builder or code generator — it doesn't implement features or create assets for you.
 
 gstack is Garry Tan's AI engineering workflow for Web/SaaS. gstack-game ports that same methodology to game dev: game design theory (MDA, SDT, Flow State) replaces SaaS metrics (MRR, churn). Core loop, retention hooks, and Sink/Faucet economy models replace API endpoints and database schemas. The engineering backbone (template engine, preamble injection, anti-sycophancy) maintains gstack-level quality.
@@ -22,8 +22,8 @@ gstack is Garry Tan's AI engineering workflow for Web/SaaS. gstack-game ports th
 
 1. Install gstack-game (30 seconds — see below)
 2. Run `/triage` — it detects your project state and tells you which skill to run first.
-3. Or jump straight in: `/game-import` (have a doc), `/game-ideation` (starting from scratch), `/game-review` (have a GDD).
-4. Each skill ends with a **Next Step** recommendation — follow the chain.
+3. Or jump straight in: `/spark-lens` (have a fragile fragment), `/game-import` (have a doc), `/game-ideation` (ready to structure), `/game-review` (have a GDD).
+4. Most structured skills end with a **Next Step** recommendation — follow the chain when you are ready.
 5. Stop after 2-3 skills. You'll know if this is for you.
 
 ---
@@ -36,7 +36,7 @@ gstack is Garry Tan's AI engineering workflow for Web/SaaS. gstack-game ports th
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /triage, /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /plan-design-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
+> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /triage, /spark-lens, /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /plan-design-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
 
 ### Option B: Add to your repo so teammates get it
 
@@ -182,13 +182,14 @@ Six commands. Concept to code review. Each step's output feeds the next.
 
 gstack-game is a process, not a collection of tools. Skills are ordered the way a game dev sprint runs:
 
-**Think → Plan → Review → Slice → Handoff → Build → Feel → Playability → Test → Ship → Reflect**
+**Spark → Think → Plan → Review → Slice → Handoff → Build → Feel → Playability → Test → Ship → Reflect**
 
-Each skill feeds the next. `/game-import` converts your PDF into a GDD that `/game-review` reads. `/game-review` flags risks that `/prototype-slice-plan` uses to decide what to build first. `/implementation-handoff` packages the slice for coding. `/feel-pass` checks if the build feels alive. `/build-playability-review` asks "is this worth playing?" before QA. All outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
+Each skill feeds the next. `/spark-lens` can leave an optional spark trace before structure. `/game-import` converts your PDF into a GDD that `/game-review` reads. `/game-review` flags risks that `/prototype-slice-plan` uses to decide what to build first. `/implementation-handoff` packages the slice for coding. `/feel-pass` checks if the build feels alive. `/build-playability-review` asks "is this worth playing?" before QA. Structured outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
 
 | Skill | Your specialist | What they do |
 |-------|----------------|--------------|
 | `/triage` | **Project Navigator** | Detects project state (BLANK/IDEA/DOCUMENTED/REVIEWED/BUILDING/SHIPPING), routes to the right skill. Run this first if unsure. |
+| `/spark-lens` | **Creative Spark Companion** | Protects fragile early ideas, turns moods/images/mechanics into creative riffs, finds the emotional imprint and optional soul slice without critique or scoring |
 | `/game-import` | **Document Specialist** | Convert any format (PDF, Notion, verbal description) into standardized `docs/gdd.md`. Audit completeness against 8-section standard. Pipeline gateway. |
 | `/game-ideation` | **Game Design Mentor** | Structure concepts with Fantasy/Loop/Twist, challenge assumptions with 6 forcing questions, plan next validation step with Iceberg framework |
 | `/game-direction` | **Producer / Creative Director** | Challenge "why build this game?", 10 cognitive patterns for strategic review, scope decisions (ADD/KEEP/DEFER/CUT) |
@@ -296,7 +297,7 @@ gstack-game/
 ├── package.json                        ← Build scripts
 ├── bin/                                ← 7 utilities (config, diff-scope, telemetry...)
 ├── scripts/gen-skill-docs.ts           ← Template engine
-├── skills/                             ← 28 skills + shared preamble (many with references/)
+├── skills/                             ← 29 skills + shared preamble (many with references/)
 ├── test/                               ← Tier 1 validation tests
 └── docs/                               ← Domain judgment gaps, source assessment, dev guide
 ```
@@ -327,7 +328,7 @@ gstack-game includes **opt-in** usage telemetry, disabled by default.
 
 ```
 ## gstack-game
-Available skills: /triage, /game-import, /game-ideation, /game-direction,
+Available skills: /triage, /spark-lens, /game-import, /game-ideation, /game-direction,
 /game-review, /game-eng-review, /balance-review, /player-experience,
 /game-ux-review, /plan-design-review, /pitch-review, /prototype-slice-plan, /implementation-handoff,
 /gameplay-implementation-review, /feel-pass, /build-playability-review,

@@ -4,9 +4,9 @@
 
 [English](README.md)
 
-28 個互動式 AI 審查技能，涵蓋**完整的遊戲製作工作流**：設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
+29 個互動式 AI 技能，涵蓋**完整的遊戲製作工作流**：創作火花探索、設計審查、原型切片規劃、實作交接、遊戲手感診斷、可玩性評估、程式碼審查、QA、發布。基於 [gstack](https://github.com/garrytan/gstack) 的工程架構和審查方法論，為遊戲開發全面重寫。
 
-> **這是什麼：** 結構化的審查和品質保證系統——幫你判斷、評分、改善你的遊戲設計和程式碼。
+> **這是什麼：** 遊戲開發支援系統——先幫你保護早期創作火花，等你準備好，再幫你判斷、評分、改善遊戲設計和程式碼。
 > **這不是什麼：** 不是遊戲生成器，不會幫你寫程式碼或做美術素材。
 
 gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-game 把同一套方法論搬到遊戲開發：用遊戲設計理論（MDA、SDT、Flow State）取代 SaaS 指標（MRR、churn），用 core loop、retention hook、Sink/Faucet 經濟模型取代 API endpoint 和 database schema。工程骨架（template engine、preamble injection、反諂媚機制）維持 gstack 同等品質。
@@ -22,8 +22,8 @@ gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-ga
 
 1. 安裝 gstack-game（30 秒 — 見下方）
 2. 跑 `/triage` — 自動偵測專案狀態，告訴你該跑哪個 skill。
-3. 或直接跳進去：`/game-import`（有文件）、`/game-ideation`（從零開始）、`/game-review`（有 GDD）。
-4. 每個 skill 結束時會推薦 **Next Step** — 跟著走就好。
+3. 或直接跳進去：`/spark-lens`（有脆弱片段）、`/game-import`（有文件）、`/game-ideation`（準備結構化）、`/game-review`（有 GDD）。
+4. 多數結構化 skill 結束時會推薦 **Next Step** — 準備好再跟著走。
 5. 跑 2-3 個 skill 就能判斷適不適合你。
 
 ---
@@ -36,7 +36,7 @@ gstack 是 Garry Tan 為 Web/SaaS 開發打造的 AI 工程工作流。gstack-ga
 
 打開 Claude Code，貼上這段。Claude 會自己完成安裝。
 
-> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /triage, /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /plan-design-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
+> Install gstack-game: run **`git clone https://github.com/fagemx/gstack-game.git ~/.claude/skills/gstack-game && cd ~/.claude/skills/gstack-game && bun run build`** then add a "gstack-game" section to CLAUDE.md that lists the available skills: /triage, /spark-lens, /game-import, /game-ideation, /game-direction, /game-review, /game-eng-review, /balance-review, /player-experience, /game-ux-review, /plan-design-review, /pitch-review, /prototype-slice-plan, /implementation-handoff, /gameplay-implementation-review, /feel-pass, /build-playability-review, /game-qa, /game-ship, /game-debug, /game-retro, /game-codex, /game-docs, /game-visual-qa, /asset-review, /playtest, /careful, /guard, /unfreeze. Then ask the user if they also want to add gstack-game to the current project.
 
 ### 方式 B：加到專案讓隊友也能用
 
@@ -124,13 +124,14 @@ Claude: Diff: 847 LOC, 12 files
 
 gstack-game 是一套流程，不是工具集合。Skill 按照遊戲開發 sprint 排列：
 
-**想 → 規劃 → 審查 → 做 → 測試 → 發布 → 回顧**
+**點火 → 想 → 規劃 → 審查 → 做 → 測試 → 發布 → 回顧**
 
-每個 skill 的產出餵給下一個。`/game-ideation` 產出概念文件，`/game-review` 讀它來審查。`/gameplay-implementation-review` 發現的問題，`/game-ship` 會確認已修。
+每個 skill 的產出餵給下一個。`/spark-lens` 可以在結構化之前留下可選的火花紀錄。`/game-ideation` 產出概念文件，`/game-review` 讀它來審查。`/gameplay-implementation-review` 發現的問題，`/game-ship` 會確認已修。
 
 | Skill | 你的專家 | 做什麼 |
 |-------|---------|--------|
 | `/triage` | **專案導航員** | 偵測專案狀態（BLANK/IDEA/DOCUMENTED/REVIEWED/BUILDING/SHIPPING），引導你跑對的 skill。不知道從哪開始就跑這個。 |
+| `/spark-lens` | **創作火花陪跑者** | 保護早期脆弱點子，把情緒、畫面、角色、機制片段延展成創作火花，找出作品印記與可選的靈魂切片，不評分、不審查 |
 | `/game-ideation` | **遊戲設計 Mentor** | 用 Fantasy/Loop/Twist 結構化概念，6 個逼問問題挑戰前提，冰山驗證框架規劃下一步 |
 | `/game-direction` | **製作人 / 創意總監** | 挑戰「為什麼做這個遊戲」，10 個認知模式審查方向，Scope 決策（ADD/KEEP/DEFER/CUT） |
 | `/game-review` | **資深遊戲設計師** | GDD 審查：Core Loop、Progression、Economy、Motivation、Risk，量化 GDD Health Score |
@@ -251,7 +252,7 @@ gstack-game 包含 **opt-in** 的使用統計，預設關閉。
 
 ```
 ## gstack-game
-Available skills: /triage, /game-import, /game-ideation, /game-direction,
+Available skills: /triage, /spark-lens, /game-import, /game-ideation, /game-direction,
 /game-review, /game-eng-review, /balance-review, /player-experience,
 /game-ux-review, /plan-design-review, /pitch-review, /prototype-slice-plan, /implementation-handoff,
 /gameplay-implementation-review, /feel-pass, /build-playability-review,

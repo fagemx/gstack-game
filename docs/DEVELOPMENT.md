@@ -2,15 +2,15 @@
 
 ## What is this?
 
-A **complete game production workflow** for Claude Code — 26 published skills from concept to shipped build, plus 4 internal maintenance skills. Standalone, no gstack dependency.
+A **complete game production workflow** for Claude Code — 29 published skills from creative spark to shipped build, plus 6 internal maintenance skills. Standalone, no gstack dependency.
 
 ## Skill Map (v0.3.0)
 
 ### Three Layers
 
 ```
-LAYER A — Design (think + plan + review)
-  /game-import → /game-ideation → /game-direction → /game-review → /game-eng-review
+LAYER A — Design (spark + think + plan + review)
+  /spark-lens → /game-import → /game-ideation → /game-direction → /game-review → /game-eng-review
   /balance-review    /player-experience    /game-ux-review    /pitch-review
 
 LAYER B — Bridge + Production (slice → build → verify)
@@ -28,13 +28,14 @@ SAFETY
 ### Full Workflow
 
 ```
-design → slice-plan → handoff → build → feel-pass → impl-review → playability → QA → ship
+spark → design → slice-plan → handoff → build → feel-pass → impl-review → playability → QA → ship
 ```
 
-### All 26 Published Skills
+### All 29 Published Skills
 
 | Skill | Layer | Type | references/ |
 |-------|-------|------|-------------|
+| `/spark-lens` | A | Creative spark | — |
 | `/game-import` | A | Scaffolding | — |
 | `/game-ideation` | A | Design | gotchas |
 | `/game-direction` | A | Review | gotchas |
@@ -124,14 +125,14 @@ gstack-game/
 ├── .github/ISSUE_TEMPLATE/         ← 4 contribution templates
 ├── bin/                            ← 7 utilities
 ├── scripts/gen-skill-docs.ts       ← Template engine
-├── skills/                         ← 26 published skills + shared/
+├── skills/                         ← 29 published skills + shared/
 │   ├── shared/preamble.md
 │   ├── game-review/
 │   │   ├── SKILL.md.tmpl           ← source
 │   │   ├── SKILL.md                ← generated
 │   │   └── references/             ← 8 files
-│   └── ... (25 more skills)
-├── .claude/skills/                 ← 5 internal maintenance skills
+│   └── ... (28 more skills)
+├── .claude/skills/                 ← 6 internal maintenance skills
 │   ├── skill-review/               ← skill quality assessment
 │   ├── contribute-review/          ← domain knowledge integration
 │   ├── issue-create/               ← create GitHub issues

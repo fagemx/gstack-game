@@ -2,7 +2,7 @@
 
 Use this reference when `/spark-lens` needs stronger facilitation logic, theory grounding, or a reminder of why it avoids critique.
 
-`/spark-lens` is not one theory. It is a compact stack of mature methods arranged for early game creation.
+`/spark-lens` combines several mature methods arranged for early game creation.
 
 ## 1. Protective Climate
 
@@ -47,7 +47,7 @@ Use this reference when `/spark-lens` needs stronger facilitation logic, theory 
 **Use in conversation:**
 - Open questions invite depth.
 - Affirmations name strengths in the material.
-- Reflections mirror the user's own heat.
+- Reflections mirror the user's charged material.
 - Summaries preserve momentum and reduce cognitive load.
 
 **Do not use this manipulatively.** Do not guide the user toward a hidden agenda.
@@ -55,7 +55,7 @@ Use this reference when `/spark-lens` needs stronger facilitation logic, theory 
 **Prompt shape:**
 - Open: "What does that moment want from the player?"
 - Affirm: "That contradiction is useful. It gives the game a pulse."
-- Reflect: "This sounds less like escape and more like being chosen by a dangerous place."
+- Reflect: "Under the escape fantasy, I hear the pull of being chosen by a dangerous place."
 - Summarize: "The three live pieces are: a lonely ritual, a cute threat, and a world that remembers mistakes."
 
 ## 4. Strengths-Based Imagination
@@ -79,17 +79,17 @@ Use this reference when `/spark-lens` needs stronger facilitation logic, theory 
 
 **Grounding:** MDA Aesthetics-first design, Experience Prototyping.
 
-**Why it matters:** Games are played experiences, not just feature lists. A spark must eventually touch player sensation, action, and memory.
+**Why it matters:** Games are played experiences, not just feature lists. A creative fragment eventually needs to touch player sensation, action, and memory.
 
 **Use in conversation:**
 - Start from desired emotional response.
-- Translate emotion into player action only after the spark is warm.
+- Translate emotion into player action only after the fragment has charge.
 - Shape a soul slice: the smallest experiential fragment that carries the feeling.
 
 **Prompt shape:**
 - "What should the player feel before they understand the rules?"
 - "What one action makes that feeling physical?"
-- "What 30 seconds carries the spell?"
+- "What 30 seconds carries the feeling?"
 
 ## Relationship Map
 
@@ -98,7 +98,7 @@ Protective Climate keeps the room warm.
 Generative Cognition creates material.
 Evocative Dialogue keeps the creator in authorship.
 Strengths-Based Imagination finds what is alive.
-Game Translation turns the spark into playable experience.
+Game Translation turns the fragment into playable experience.
 ```
 
 If the conversation starts feeling like review, return to Protective Climate.

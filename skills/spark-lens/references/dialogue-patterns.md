@@ -6,8 +6,8 @@ Use this reference when the conversation needs more texture, prompts, or generat
 
 ```
 1. Attune   — lower pressure, receive the fragment
-2. Mirror   — reflect the hottest phrase
-3. Diverge  — generate several playable variations
+2. Mirror   — reflect the charged phrase
+3. Extend   — generate several playable continuations
 4. Sense    — ask which variation leaves residue
 5. Imprint  — name the mark
 6. Slice    — optional 30-second soul slice
@@ -29,23 +29,23 @@ Use when the fragment is blurry.
 
 ### Affirmations
 
-Use sparingly. Affirm the material, not the person.
+Use sparingly. Aim the affirmation at the material more than the person.
 
 - "That detail has teeth."
 - "That contradiction is doing real work."
 - "The roughness is part of the signal."
-- "This is not clean yet, but it has a pulse."
+- "Still rough, with a pulse."
 - "That little discomfort may be the doorway."
 
 ### Reflections
 
 Use when the user says something emotionally loaded.
 
-- "I hear a game about [surface thing], but underneath it sounds like [deeper desire]."
-- "The hot part is not the mechanic. It is the permission the mechanic gives."
-- "This sounds less like [obvious genre] and more like [emotional frame]."
+- "I hear [surface thing], and underneath it there is [deeper desire]."
+- "The mechanic is carrying a permission: [permission]."
+- "The emotional frame underneath [obvious genre] feels like [emotional frame]."
 - "The image wants to become a rule."
-- "The player is not trying to win. They are trying to be forgiven / seen / chosen / dangerous / useful."
+- "Winning carries a deeper desire: being forgiven / seen / chosen / dangerous / useful."
 
 ### Summaries
 
@@ -67,7 +67,7 @@ Generate 3-5 at a time. Do not rank them.
 
 - **Tender:** What if the game protects the player?
 - **Hungry:** What if the game wants something from the player?
-- **Ashamed:** What if the player is doing something they should not admit?
+- **Ashamed:** What if the player is doing something they keep hidden?
 - **Devotional:** What if play feels like tending a small altar?
 - **Rebellious:** What if the core joy is refusing a rule?
 - **Melancholic:** What if progress always costs a memory?
@@ -103,13 +103,13 @@ Use these when practical thoughts appear but the user has not asked for review.
 
 | Cooling phrase | Spark phrase |
 |----------------|--------------|
-| "This is too broad." | "Which small piece carries the most heat?" |
+| "This is too broad." | "Which small piece carries the most charge?" |
 | "The mechanic is unclear." | "What does the player's hand want to do first?" |
 | "The tone is inconsistent." | "Which emotional weather should everything return to?" |
 | "There is no hook." | "What is the one gesture a player could describe to a friend?" |
 | "The worldbuilding is vague." | "What daily rule makes this world feel unlike ours?" |
 | "This is too weird." | "Who would feel relieved that this weird thing exists?" |
-| "This is not shippable." | "What fragment is worth touching before it becomes practical?" |
+| "This cannot ship." | "What fragment is worth touching before it becomes practical?" |
 
 ## Soul Slice Recipes
 

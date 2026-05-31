@@ -11,6 +11,7 @@
 
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "fs";
 import { join, resolve } from "path";
+import { toYamlInlineScalar } from "./yaml";
 
 const ROOT = resolve(import.meta.dir, "..");
 const SKILLS_DIR = join(ROOT, "skills");
@@ -67,7 +68,32 @@ function processTemplate(tmplPath: string, skillName: string): string {
   // Replace skill-specific variables
   content = content.replaceAll("{{SKILL_NAME}}", skillName);
 
-  return content;
+  return normalizeFrontmatterScalars(content);
+}
+
+function normalizeFrontmatterScalars(content: string): string {
+  if (!content.startsWith("---\n")) return content;
+
+  const endIdx = content.indexOf("\n---\n", 4);
+  if (endIdx === -1) return content;
+
+  const fmRaw = content.slice(4, endIdx);
+  const normalized = fmRaw
+    .split("\n")
+    .map((line) => {
+      const match = line.match(/^(\w[\w-]*):\s*(.*)$/);
+      if (!match) return line;
+
+      const [, key, value] = match;
+      if (value === "" || value === "|" || value === ">" || value.startsWith("\"") || value.startsWith("'")) {
+        return line;
+      }
+
+      return `${key}: ${toYamlInlineScalar(value)}`;
+    })
+    .join("\n");
+
+  return `---\n${normalized}${content.slice(endIdx)}`;
 }
 
 // Token ceiling — warn if generated SKILL.md exceeds 100KB (~25K tokens)

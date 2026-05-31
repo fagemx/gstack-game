@@ -68,6 +68,25 @@ a cross-model second opinion challenges a premise — the finding is presented t
 not auto-applied. Cross-model agreement is a strong signal, not a mandate. Your
 direction is the default unless you explicitly change it.
 
+## Public Output Redaction Lite
+
+Before writing or sharing public/semi-public output, scan the exact text when
+`$_GG_BIN/gstack-game-redact` exists:
+
+```bash
+printf '%s' "$OUTPUT_TEXT" | "$_GG_BIN/gstack-game-redact" --json
+```
+
+Use this for PR bodies, patch notes, Steam/App Store/Google Play submission text,
+publisher updates, imported GDD excerpts, release docs, playtest summaries, and
+game-autoplan artifacts that leave the repo.
+
+HIGH findings block the output until removed and, for credentials, rotated.
+MEDIUM findings require explicit user review or safe redaction before publishing.
+Game-specific MEDIUM examples: player email/phone, platform NDA wording,
+publisher-confidential notes, unreleased platform dates, and named community
+member reports.
+
 ## Completion Status Protocol
 
 DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT.

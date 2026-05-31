@@ -1,6 +1,6 @@
 ---
 name: gstack-game
-version: 0.2.0
+version: 0.5.0
 description: |
   Game development workflow skills for Claude Code. 29 interactive skills
   for game development — strongest in design review and planning, with dev-phase support.
@@ -50,7 +50,7 @@ allowed-tools:
 ## Preamble (run first)
 
 ```bash
-_GD_VERSION="0.2.0"
+_GD_VERSION="0.5.0"
 _GG_BIN=""
 for _p in "bin" ".claude/skills/gstack-game/bin" "$(dirname "$(readlink -f .claude/skills/game-review/SKILL.md 2>/dev/null)" 2>/dev/null)/../../bin"; do
   [ -f "$_p/gstack-config" ] && _GG_BIN="$_p" && break

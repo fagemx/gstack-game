@@ -4,7 +4,7 @@
 
 A **complete game production workflow** for Claude Code — 29 published skills from creative spark to shipped build, plus 6 internal maintenance skills. Standalone, no gstack dependency.
 
-## Skill Map (v0.3.0)
+## Skill Map (v0.5.0)
 
 ### Three Layers
 
@@ -120,7 +120,7 @@ gstack-game/
 ├── CONTRIBUTING.md / .zh-TW.md    ← Contributor guide (3-layer)
 ├── ETHOS.md                        ← Game dev philosophy
 ├── CHANGELOG.md                    ← Version history
-├── VERSION                         ← 0.3.0
+├── VERSION                         ← 0.5.0
 ├── package.json                    ← Build scripts
 ├── .github/ISSUE_TEMPLATE/         ← 4 contribution templates
 ├── bin/                            ← 7 utilities

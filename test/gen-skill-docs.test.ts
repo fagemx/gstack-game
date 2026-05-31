@@ -197,3 +197,31 @@ describe("preamble tiers", () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe("version metadata", () => {
+  test("package, VERSION, root skill, preamble, and docs use the same version", () => {
+    const version = readFileSync(join(ROOT, "VERSION"), "utf-8").trim();
+    const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf-8"));
+
+    expect(pkg.version).toBe(version);
+
+    const checks = [
+      { file: "SKILL.md.tmpl", pattern: new RegExp(`version:\\s*${escapedVersion}`) },
+      { file: "SKILL.md.tmpl", pattern: new RegExp(`_GD_VERSION="${escapedVersion}"`) },
+      { file: "SKILL.md", pattern: new RegExp(`version:\\s*${escapedVersion}`) },
+      { file: "SKILL.md", pattern: new RegExp(`_GD_VERSION="${escapedVersion}"`) },
+      { file: "skills/shared/preamble-core.md", pattern: new RegExp(`_GD_VERSION="${escapedVersion}"`) },
+      { file: "README.md", pattern: new RegExp(`VERSION\\s+.*${escapedVersion}`) },
+      { file: "CLAUDE.md", pattern: new RegExp(`current version \\(${escapedVersion}\\)`) },
+      { file: "docs/DEVELOPMENT.md", pattern: new RegExp(`Skill Map \\(v${escapedVersion}\\)`) },
+      { file: "docs/DEVELOPMENT.md", pattern: new RegExp(`VERSION\\s+.*${escapedVersion}`) },
+    ];
+
+    const failures = checks
+      .filter(({ file, pattern }) => !pattern.test(readFileSync(join(ROOT, file), "utf-8")))
+      .map(({ file, pattern }) => `${file}: missing ${pattern}`);
+
+    expect(failures).toEqual([]);
+  });
+});

@@ -27,7 +27,7 @@ gstack-game/
 ├── README.zh-TW.md             ← user-facing docs (繁中)
 ├── ETHOS.md                     ← game dev philosophy
 ├── CHANGELOG.md                 ← version history (user-facing)
-├── VERSION                      ← current version (0.3.0)
+├── VERSION                      ← current version (0.5.0)
 ├── package.json                 ← build scripts
 ├── bin/                         ← shared utilities
 │   ├── install.sh               ← umbrella installer

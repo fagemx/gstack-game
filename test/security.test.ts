@@ -9,30 +9,54 @@
  */
 
 import { describe, test, expect } from "bun:test";
-import { execSync } from "child_process";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { execFileSync } from "child_process";
+import { existsSync, readFileSync } from "fs";
+import { delimiter, join } from "path";
 
 const ROOT = join(import.meta.dir, "..");
 const BIN = join(ROOT, "bin");
+
+function resolveBash(): string {
+  if (process.platform !== "win32") return "bash";
+
+  const pathCandidates = (process.env.PATH || "")
+    .split(delimiter)
+    .filter(Boolean)
+    .map((dir) => join(dir, "bash.exe"))
+    .filter((candidate) => !candidate.toLowerCase().includes("\\windows\\system32\\bash.exe"));
+
+  const candidates = [
+    "C:\\Program Files\\Git\\bin\\bash.exe",
+    "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+    "C:\\Program Files (x86)\\Git\\bin\\bash.exe",
+    "C:\\Program Files (x86)\\Git\\usr\\bin\\bash.exe",
+    ...pathCandidates,
+  ];
+
+  return candidates.find((candidate) => existsSync(candidate)) || "bash";
+}
+
+const BASH = resolveBash();
+
+function runReviewLog(payload: string): string {
+  return execFileSync(
+    BASH,
+    [join(BIN, "gstack-review-log"), payload],
+    { cwd: ROOT, encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] },
+  );
+}
 
 // ─── gstack-review-log security ─────────────────────────────────────
 
 describe("gstack-review-log security", () => {
   test("accepts valid JSON", () => {
-    const result = execSync(
-      `bash "${join(BIN, "gstack-review-log")}" '{"skill":"test","timestamp":"2024-01-01","status":"pass"}'`,
-      { cwd: ROOT, encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] }
-    );
+    const result = runReviewLog('{"skill":"test","timestamp":"2024-01-01","status":"pass"}');
     // Exit code 0 means it didn't throw
   });
 
   test("rejects malformed JSON", () => {
     try {
-      execSync(
-        `bash "${join(BIN, "gstack-review-log")}" '{broken'`,
-        { cwd: ROOT, encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] }
-      );
+      runReviewLog("{broken");
       // Should not reach here
       expect(true).toBe(false);
     } catch (err: any) {
@@ -43,10 +67,7 @@ describe("gstack-review-log security", () => {
 
   test("rejects injection payload", () => {
     try {
-      execSync(
-        `bash "${join(BIN, "gstack-review-log")}" '{"a":"b` + "\n" + `"injected":"c"}'`,
-        { cwd: ROOT, encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] }
-      );
+      runReviewLog('{"a":"b' + "\n" + '"injected":"c"}');
       expect(true).toBe(false);
     } catch (err: any) {
       expect(err.status).toBe(1);

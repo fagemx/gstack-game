@@ -53,6 +53,25 @@ When you encounter high-stakes ambiguity during a review:
 - Difficulty curve, flow state, friction point
 - Whale, dolphin, minnow (spending tiers)
 
+## Option Overflow (Game Design)
+
+Never drop game options because a question UI only accepts 2-4 choices. Lost options become accidental product decisions.
+
+When a decision has more than four mutually exclusive options, split it instead of trimming it:
+- Ask the first question at the category level, then ask a follow-up for the chosen category.
+- Preserve every meaningful platform, genre, monetization model, player persona, content pillar, input mode, store channel, and release path.
+- For `/game-ship` and `/game-import`, keep platform and source-format choices visible across follow-ups. Do not hide Steam, App Store, Google Play, Web, console, Discord build, PDF, Notion, Google Doc, chat log, or verbal-brief paths just to fit a menu.
+
+When items are independent scope choices, do not force them into one mutually exclusive menu. Ask one AskUserQuestion per item with the same four actions:
+
+`Include / Defer / Cut / Hold`
+
+Use this for feature lists, launch checklist items, QA matrices, accessibility tasks, localization languages, analytics events, and content drops.
+
+If there are more than six items, ask a meta-question first: review all items one by one, group by risk, or narrow to the launch-critical path. Still name the dropped-or-deferred group explicitly.
+
+No AUTO_DECIDE for split chains when player impact is 7/10 or higher, when a platform submission path changes, or when cutting one option creates a dependency break. Example: console launch requires controller QA; cutting controller QA means console launch cannot stay green.
+
 ## Next Step Routing Protocol
 
 After every Completion Summary, include a `Next Step:` block. Route based on status:

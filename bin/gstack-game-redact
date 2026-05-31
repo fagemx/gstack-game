@@ -1,0 +1,158 @@
+#!/usr/bin/env bun
+
+import { readFileSync } from "fs";
+
+type Severity = "high" | "medium" | "low";
+type Category = "credential" | "pii" | "platform" | "business";
+
+type PatternSpec = {
+  id: string;
+  severity: Severity;
+  category: Category;
+  regex: RegExp;
+};
+
+type Finding = {
+  id: string;
+  severity: Severity;
+  category: Category;
+  line: number;
+  col: number;
+  preview: string;
+};
+
+const PATTERNS: PatternSpec[] = [
+  {
+    id: "github.pat",
+    severity: "high",
+    category: "credential",
+    regex: /\bgh[pousr]_[A-Za-z0-9_]{20,255}\b/g,
+  },
+  {
+    id: "openai.key",
+    severity: "high",
+    category: "credential",
+    regex: /\bsk-[A-Za-z0-9_-]{32,}\b/g,
+  },
+  {
+    id: "aws.access_key",
+    severity: "high",
+    category: "credential",
+    regex: /\bAKIA[0-9A-Z]{16}\b/g,
+  },
+  {
+    id: "steam.publisher_key",
+    severity: "high",
+    category: "credential",
+    regex: /\bsteam(?:works)?[_-]?(?:api|publisher)?[_-]?key\s*[:=]\s*["']?[A-Za-z0-9]{24,}["']?/gi,
+  },
+  {
+    id: "pii.email",
+    severity: "medium",
+    category: "pii",
+    regex: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
+  },
+  {
+    id: "platform.nda",
+    severity: "medium",
+    category: "platform",
+    regex: /\b(?:platform NDA|under NDA|confidential publisher|first-party confidential|embargoed build)\b/gi,
+  },
+];
+
+const args = process.argv.slice(2);
+const jsonMode = args.includes("--json");
+const helpMode = args.includes("--help") || args.includes("-h");
+const fromFileIdx = args.indexOf("--from-file");
+
+function usage(): void {
+  console.log(`Usage: gstack-game-redact [--json] [--from-file path]
+
+Scans public or semi-public game workflow output before it leaves the repo.
+High findings block. Medium findings require review or redaction.
+`);
+}
+
+function readInput(): string {
+  if (fromFileIdx !== -1) {
+    const path = args[fromFileIdx + 1];
+    if (!path) {
+      console.error("Missing path after --from-file");
+      process.exit(1);
+    }
+    return readFileSync(path, "utf-8");
+  }
+
+  return readFileSync(0, "utf-8");
+}
+
+function locate(text: string, index: number): { line: number; col: number } {
+  let line = 1;
+  let lineStart = 0;
+  for (let i = 0; i < index; i++) {
+    if (text.charCodeAt(i) === 10) {
+      line++;
+      lineStart = i + 1;
+    }
+  }
+  return { line, col: index - lineStart + 1 };
+}
+
+function mask(value: string): string {
+  const clean = value.replace(/\s+/g, " ");
+  if (clean.length <= 8) return "[redacted]";
+  return `${clean.slice(0, 4)}...${clean.slice(-4)}`;
+}
+
+function scan(text: string): Finding[] {
+  const findings: Finding[] = [];
+
+  for (const pattern of PATTERNS) {
+    pattern.regex.lastIndex = 0;
+    for (const match of text.matchAll(pattern.regex)) {
+      const index = match.index ?? 0;
+      const pos = locate(text, index);
+      findings.push({
+        id: pattern.id,
+        severity: pattern.severity,
+        category: pattern.category,
+        line: pos.line,
+        col: pos.col,
+        preview: mask(match[0]),
+      });
+    }
+  }
+
+  return findings.sort((a, b) => a.line - b.line || a.col - b.col || a.id.localeCompare(b.id));
+}
+
+function countsFor(findings: Finding[]): Record<Severity, number> {
+  return {
+    high: findings.filter((f) => f.severity === "high").length,
+    medium: findings.filter((f) => f.severity === "medium").length,
+    low: findings.filter((f) => f.severity === "low").length,
+  };
+}
+
+if (helpMode) {
+  usage();
+  process.exit(0);
+}
+
+const input = readInput();
+const findings = scan(input);
+const counts = countsFor(findings);
+const exitCode = counts.high > 0 ? 3 : counts.medium > 0 ? 2 : 0;
+
+if (jsonMode) {
+  console.log(JSON.stringify({ ok: exitCode === 0, counts, findings }, null, 2));
+} else if (exitCode === 0) {
+  console.log("No high or medium redaction findings.");
+} else {
+  console.log(`Redaction findings: high=${counts.high} medium=${counts.medium} low=${counts.low}`);
+  for (const finding of findings) {
+    console.log(`${finding.severity.toUpperCase()} ${finding.id} ${finding.line}:${finding.col} ${finding.preview}`);
+  }
+}
+
+process.exit(exitCode);
